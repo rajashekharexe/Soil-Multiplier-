@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kad Multiplier | Advanced Bio-Stimulant</title>
+    <meta name="description" content="Discover KAD Multiplier, the premium solution for maximizing your yield. Shop our exclusive 1Kg, 5Kg, and 10Kg packages online.">
+    <meta property="og:title" content="KAD Multiplier - Premium Yield Transformation">
+    <meta property="og:description" content="Maximize your yield with our premium multiplier. Shop now.">
+    <meta property="og:type" content="website">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- Custom Scroll Cursor -->
+    <div id="scroll-cursor">
+      <img src="/scroll-down.svg" alt="Scroll Down" />
+    </div>
+
+    <!-- Video Canvas Background moved to cinematic-stage -->
+
+    <!-- Preloader -->
+    <div class="preloader">
+      <div class="preloader-text">
+        <span class="reveal-text">KAD MULTIPLIER</span>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="logo">KAD Multiplier</div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#benefits">Benefits</a>
+        <a href="#specs">Details</a>
+        <a href="#purchase" class="nav-buy-btn">Buy Now</a>
+      </div>
+      <div class="nav-actions">
+        <a href="login.html" class="nav-login-link">Log In</a>
+        <a href="login.html" class="nav-signup-btn">Sign Up</a>
+        <button class="video-cart-btn nav-video-cart" id="nav-cart">
+          <div class="vcb-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+          </div>
+          <div class="vcb-text">
+            <span>C</span><span>a</span><span>r</span><span>t</span>
+          </div>
+          <div class="vcb-added">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Opened!</span>
+          </div>
+          <span id="cart-badge" style="position: absolute; top: 6px; right: 8px; background: #e74c3c; color: white; border-radius: 12px; font-size: 11px; font-weight: bold; padding: 2px 6px; display: none; line-height: 1; z-index: 10;">0</span>
+        </button>
+      </div>
+    </nav>
+
+    <main id="smooth-wrapper">
+      <div id="smooth-content">
+
+        <!-- Video Canvas Background -->
+        <canvas id="video-canvas"></canvas>
+
+        <!-- Hero Section -->
+        <section class="hero">
+          <div class="hero-content" style="flex-direction: row; align-items: center; justify-content: space-between; gap: 2rem;">
+            <div class="hero-text-area" style="flex: 1.2;">
+              <h1 class="hero-title">
+                <div class="title-line">Revitalize Your Soil.</div>
+                <div class="title-line highlight">Maximize Your Yield.</div>
+              </h1>
+              <p class="hero-subtitle">Kad Multiplier is the ultimate bio-stimulant technology for zero-cost organic farming and chemical-free crop production.</p>
+            </div>
+            <div class="hero-image-wrapper" style="display: flex; flex: 1; justify-content: center; perspective: 1000px;">
+              <div class="product-placeholder" style="position: relative; max-width: 450px; transform-style: preserve-3d; animation: float 6s ease-in-out infinite;">
+                <img src="/kad-multiplier-cropped.png" alt="Kad Multiplier Package" id="product-img" style="width: 100%; height: auto; max-height: 80vh; object-fit: contain; filter: drop-shadow(0 30px 40px rgba(0,0,0,0.4)); transform: rotateY(-10deg) rotateX(5deg); cursor: pointer; position: relative; z-index: 20;" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Story Section 1: The Problem -->
+        <section class="story-section bg-dark" id="features">
+          <div class="story-container">
+            <div class="story-text">
+              <h2 class="section-title split-text">Why Farmers Need Kad Multiplier</h2>
+              <p class="section-desc fade-up">Long-term use of chemical fertilizers destroys soil life. It leads to a severe drop in organic matter, reducing the soil's water retention and natural fertility, ultimately lowering your crop yields and increasing costs.</p>
+            </div>
+            <div class="story-visual">
+              <div class="abstract-shape green-shape"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Story Section 2: Soil Improvement -->
+        <section class="story-section bg-light" id="benefits">
+          <div class="story-container">
+            <div class="story-columns">
+              
+              <div class="story-text">
+                <h2 class="section-title split-text">Heal and Enrich Your Soil</h2>
+                <p class="section-desc fade-up">Kad Multiplier penetrates deep into the earth to completely rebuild your soil's structure. It rapidly multiplies beneficial microbes, unlocking trapped minerals and drastically improving water retention so your soil becomes naturally fertile again.</p>
+                <ul class="feature-list">
+                  <li class="fade-up">✓ Restores Natural Soil Fertility</li>
+                  <li class="fade-up">✓ Maximizes Water Retention</li>
+                  <li class="fade-up">✓ Unlocks Hidden Nutrients</li>
+                </ul>
+              </div>
+              
+              <div class="story-extra-details fade-up">
+                <h3 class="detail-subtitle">Advanced Soil Action</h3>
+                <ul class="detail-list">
+                  <li><strong>Microbial & Earthworm Growth:</strong> Exponentially increases beneficial soil organisms.</li>
+                  <li><strong>Accelerates Decomposition:</strong> Rapidly breaks down raw organic matter into active plant food.</li>
+                  <li><strong>Restores Nutrient Cycles:</strong> Re-activates dormant Carbon, Nitrogen, and Phosphorus cycles in the earth.</li>
+                  <li><strong>Improves Aeration:</strong> Loosens hard soil structure for better oxygen flow and massive root expansion.</li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- Story Section 3: Root Development -->
+        <section class="story-section bg-dark" id="root-development">
+          <div class="story-container">
+            <div class="story-columns">
+              
+              <div class="story-text">
+                <h2 class="section-title split-text">Explosive Root Development</h2>
+                <p class="section-desc fade-up">A strong plant starts with a massive root network. Kad Multiplier actively penetrates the root zone, significantly improving nutrient availability exactly where the plant needs it most.</p>
+                <ul class="feature-list">
+                  <li class="fade-up">✓ Promotes Robust Root Growth</li>
+                  <li class="fade-up">✓ Maximizes Nutrient Uptake</li>
+                  <li class="fade-up">✓ Builds a Strong Foundation</li>
+                </ul>
+              </div>
+              
+              <div class="story-extra-details fade-up">
+                <h3 class="detail-subtitle">Maximum Crop Potential</h3>
+                <ul class="detail-list">
+                  <li><strong>Superior Growth:</strong> Accelerates overall plant development from the roots up.</li>
+                  <li><strong>Higher Yields:</strong> Dramatically improves flower, fruit, and grain production.</li>
+                  <li><strong>Premium Quality:</strong> Enhances the taste, color, and size of the harvest.</li>
+                  <li><strong>Longer Shelf Life:</strong> Increases the storage capacity and durability of crops.</li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- Story Section 4: Crop Health & Final Output -->
+        <section class="story-section bg-dark" id="crop-health">
+          <div class="story-container">
+            <div class="story-columns">
+              
+              <div class="story-text">
+                <h2 class="section-title split-text">Vibrant Crop Health</h2>
+                <p class="section-desc fade-up">The ultimate result of a revitalized soil ecosystem is thriving, dynamic crops. Kad Multiplier ensures your plants grow naturally balanced, displaying rich green foliage and unparalleled vitality.</p>
+                <ul class="feature-list">
+                  <li class="fade-up">✓ Naturally Balanced Plant Growth</li>
+                  <li class="fade-up">✓ Deep Green, Vibrant Foliage</li>
+                  <li class="fade-up">✓ 100% Chemical-Free Production</li>
+                </ul>
+              </div>
+              
+              <div class="story-extra-details fade-up">
+                <h3 class="detail-subtitle">The Ultimate Harvest</h3>
+                <ul class="detail-list">
+                  <li><strong>Sustainable Yields:</strong> Guarantees long-term, highly stable crop production year after year.</li>
+                  <li><strong>Zero-Cost Farming:</strong> Drastically reduces your dependency on expensive external chemical fertilizers.</li>
+                  <li><strong>Maximum Profit:</strong> Higher yields combined with lower input costs skyrocket farmer profitability.</li>
+                  <li><strong>Eco-Friendly:</strong> Protects the natural environment while delivering superior agricultural results.</li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- Specs Section -->
+        <section class="specs-section" id="specs">
+          <div class="specs-split-layout">
+            <!-- Left Side Details -->
+            <div class="specs-column left-column">
+              <div class="spec-detail fade-up">
+                <h3 class="spec-heading text-yellow">Usage & Application</h3>
+                <p>Suitable for <span class="text-green">all crop types</span>. Apply 2 to 3 times at intervals of 10-15 days. Effortlessly mixes with soil, water, or compost.</p>
+              </div>
+              <div class="spec-detail fade-up">
+                <h3 class="spec-heading text-yellow">Bio-Stimulant Action</h3>
+                <p>Rapidly breaks down raw organic matter and activates dormant <span class="text-green">beneficial microbes</span> and vital earthworm populations.</p>
+              </div>
+              <div class="spec-detail fade-up">
+                <h3 class="spec-heading text-yellow">Soil Restoration</h3>
+                <p>Rebuilds deep soil structure, drastically improving <span class="text-green">oxygen flow</span> and permanent water retention capacity.</p>
+              </div>
+            </div>
+
+            <!-- Right Side Details -->
+            <div class="specs-column right-column">
+              <div class="spec-detail fade-up">
+                <h3 class="spec-heading text-yellow">Zero-Cost Farming</h3>
+                <p>Unlocks massive hidden nutrient reserves, eventually eliminating dependency on <span class="text-green">expensive chemical fertilizers</span>.</p>
+              </div>
+              <div class="spec-detail fade-up">
+                <h3 class="spec-heading text-yellow">Guaranteed Yields</h3>
+                <p>Produces unparalleled crop vitality, delivering dramatically <span class="text-green">larger sizes</span> and significantly extended shelf life.</p>
+              </div>
+              <div class="spec-detail fade-up">
+                <h3 class="spec-heading text-yellow">100% Chemical-Free</h3>
+                <p>A fully organic, bio-active solution ensuring safe, <span class="text-green">poison-free food</span> production and a permanently protected ecosystem.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Purchase Section -->
+        <section class="purchase-section" id="purchase">
+          <div class="purchase-container">
+            <!-- Left Side: Selectors -->
+            <div class="purchase-left fade-up">
+              <h2 class="purchase-title">Ready to Transform Your Yield?</h2>
+              
+              <div class="selector-group">
+                <span class="selector-label">Select Package Size</span>
+                <div class="weight-selectors">
+                  <button class="weight-btn active" data-mrp="1099" data-price="1099" data-discount="0" data-weight="1" data-image="/kad-multiplier-cropped.png">
+                    <span class="wb-title">1 Kg Multiplier</span>
+                  </button>
+                  <button class="weight-btn" data-mrp="6099" data-price="4099" data-discount="33" data-weight="5" data-image="/5kg-20x250.png">
+                    <span class="wb-title">5 Kg</span>
+                    <span class="wb-sub">(20 × 250g)</span>
+                  </button>
+                  <button class="weight-btn" data-mrp="12199" data-price="7799" data-discount="36" data-weight="10" data-image="/10kg-40x250.png">
+                    <span class="wb-title">10 Kg</span>
+                    <span class="wb-sub">(40 × 250g)</span>
+                  </button>
+                  <button class="weight-btn" data-mrp="10999" data-price="7499" data-discount="32" data-weight="10" data-image="/10kg-10x1.png">
+                    <span class="wb-title">10 Kg Multiplier</span>
+                    <span class="wb-sub">(10 × 1 Kg)</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="selector-group">
+                <span class="selector-label">Quantity</span>
+                <div class="quantity-selector">
+                  <button class="qty-btn minus">-</button>
+                  <span class="qty-display">1</span>
+                  <button class="qty-btn plus">+</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Center: Dynamic Product Image -->
+            <div class="purchase-center fade-up" style="display: flex; justify-content: center; align-items: center; flex: 1; min-height: 400px;">
+              <img id="dynamic-product-image" src="/kad-multiplier-cropped.png" alt="KAD Multiplier Product" style="width: 100%; height: 400px; object-fit: contain; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15)); transition: transform 0.4s ease, opacity 0.4s ease; cursor: pointer; position: relative; z-index: 20;" />
+            </div>
+
+            <!-- Right Side: Price and Action -->
+            <div class="purchase-right fade-up">
+              <div class="price-display-wrapper">
+                <div class="price-mrp" id="display-mrp" style="display: none;">MRP <span class="mrp-strike">₹ 1,099</span></div>
+                <div class="price-main-row">
+                  <div class="price-display">
+                    <span class="currency">₹</span>
+                    <span class="amount" id="display-price">1,100</span>
+                  </div>
+                  <div class="price-discount-badge" id="display-discount" style="display: none;">33% OFF</div>
+                </div>
+                <div class="price-label">Our Price</div>
+              </div>
+              <p class="shipping-note">+ Shipping: <span id="shipping-cost">₹100</span></p>
+              <div class="delivery-estimate-badge" style="display: flex; align-items: center; gap: 8px; color: #113c18; font-size: 0.9rem; font-weight: bold; background: rgba(17, 60, 24, 0.05); padding: 8px 12px; border-radius: 6px; margin-bottom: 2rem;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="3" width="15" height="13"></rect>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+              </svg>
+              Estimated Delivery: 8 to 11 Days
+            </div>
+              
+              <!-- Animated Video Button -->
+              <button class="video-cart-btn bottom-video-cart" id="bottom-cart-btn">
+                <div class="vcb-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                  </svg>
+                </div>
+                <div class="vcb-text">
+                  <span>A</span><span>d</span><span>d</span><span class="space">&nbsp;</span><span>T</span><span>o</span><span class="space">&nbsp;</span><span>C</span><span>a</span><span>r</span><span>t</span>
+                </div>
+                <div class="vcb-added">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Added!</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Full Page Bubble Cart -->
+    <div class="full-page-cart" id="full-page-cart">
+      <div class="fpc-inner">
+        
+        <!-- Header / Stepper -->
+        <header class="fpc-header">
+          <button id="close-cart" class="go-back-btn" type="button">
+            <div class="go-back-icon-container">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" height="25px" width="25px">
+                <path d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z" fill="#000000"></path>
+                <path d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z" fill="#000000"></path>
+              </svg>
+            </div>
+            <p class="go-back-text">Go Back</p>
+          </button>
+          
+          <div class="fpc-stepper">
+            <div class="step active">
+              <span class="step-num">1</span>
+              <span class="step-label">Shopping cart</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step">
+              <span class="step-num">2</span>
+              <span class="step-label">Checkout details</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step">
+              <span class="step-num">3</span>
+              <span class="step-label">Order complete</span>
+            </div>
+          </div>
+          
+          <!-- Empty div to balance header flexbox -->
+          <div style="width: 170px;"></div>
+        </header>
+
+        <h1 class="fpc-title">Your Shopping Cart</h1>
+
+        <div class="fpc-content">
+          <!-- Left: Cart Items -->
+          <div class="fpc-items-section">
+            <div class="fpc-items-header">
+              <h3>Your cart</h3>
+            </div>
+            
+            <div class="fpc-items-list" id="cart-items-container">
+              <!-- JS will populate cart items here -->
+            </div>
+          </div>
+
+          <!-- Right: Order Summary -->
+          <div class="fpc-summary-section">
+            <div class="fpc-summary-card">
+              <h3>Order Summary</h3>
+              
+              <div class="fpc-coupon">
+                <input type="text" placeholder="Coupon Code">
+                <button>Apply</button>
+              </div>
+
+              <div class="fpc-summary-row">
+                <span>Subtotal</span>
+                <span id="cart-subtotal">₹ 0</span>
+              </div>
+              <div class="fpc-summary-row highlight-red" style="display: none;">
+                <span>Discount</span>
+                <span>-₹ 0</span>
+              </div>
+              <div class="fpc-summary-row">
+                <span>Delivery Fee</span>
+                <span id="cart-shipping">₹ 0</span>
+              </div>
+              
+              <div class="fpc-divider"></div>
+              
+              <div class="fpc-summary-total">
+                <span>Total</span>
+                <span id="cart-total">₹ 0</span>
+              </div>
+              
+              <a href="checkout.html" class="fpc-checkout-btn" style="text-decoration: none;">Go to Checkout <span class="checkout-arrow">&rarr;</span></a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

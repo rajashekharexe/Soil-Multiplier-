@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout - KAD Multiplier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body class="checkout-page">
+
+  <div class="checkout-container">
+    
+    <!-- Left Side: Forms -->
+    <div class="checkout-main">
+      <div class="checkout-header">
+        <a href="index.html" class="checkout-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          KAD Multiplier
+        </a>
+        <nav class="checkout-breadcrumbs">
+          <a href="index.html">Cart</a>
+          <span class="separator">›</span>
+          <span class="current">Checkout</span>
+        </nav>
+      </div>
+
+      <form class="checkout-form" action="#" method="POST">
+        
+        <!-- Contact -->
+        <section class="checkout-section">
+          <h2>Contact Information</h2>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <input type="email" id="chk-email" class="form-input" placeholder=" " required>
+              <label for="chk-email" class="form-label">Email Address</label>
+            </div>
+            <div class="form-group full-width">
+              <input type="tel" id="chk-phone" class="form-input" placeholder=" " required>
+              <label for="chk-phone" class="form-label">Phone Number</label>
+            </div>
+          </div>
+        </section>
+
+        <!-- Delivery Address -->
+        <section class="checkout-section">
+          <h2>Delivery Address</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <input type="text" id="chk-fname" class="form-input" placeholder=" " required>
+              <label for="chk-fname" class="form-label">First Name</label>
+            </div>
+            <div class="form-group">
+              <input type="text" id="chk-lname" class="form-input" placeholder=" " required>
+              <label for="chk-lname" class="form-label">Last Name</label>
+            </div>
+            <div class="form-group full-width">
+              <input type="text" id="chk-address" class="form-input" placeholder=" " required>
+              <label for="chk-address" class="form-label">Address</label>
+            </div>
+            <div class="form-group">
+              <input type="text" id="chk-city" class="form-input" placeholder=" " required>
+              <label for="chk-city" class="form-label">City</label>
+            </div>
+            <div class="form-group">
+              <input type="text" id="chk-state" class="form-input" placeholder=" " required>
+              <label for="chk-state" class="form-label">State</label>
+            </div>
+            <div class="form-group">
+              <input type="text" id="chk-pin" class="form-input" placeholder=" " required>
+              <label for="chk-pin" class="form-label">PIN Code</label>
+            </div>
+          </div>
+        </section>
+
+        <!-- Payment Options -->
+        <section class="checkout-section">
+          <h2>Payment Method</h2>
+          <p class="section-subtitle">All transactions are secure and encrypted.</p>
+          
+          <div class="payment-options">
+            
+            <!-- Option 1: UPI / QR -->
+            <div class="payment-method-box active" id="method-online">
+              <div class="method-header">
+                <div class="radio-custom"></div>
+                <input type="radio" name="payment_method" value="online" id="pay-online" checked style="display:none;">
+                <label for="pay-online" class="method-title">Pay Online (UPI / QR)</label>
+                <div class="method-icons">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h6v6H3z"/><path d="M15 3h6v6h-6z"/><path d="M3 15h6v6H3z"/><path d="M15 15h1.5v1.5H15z"/><path d="M19.5 19.5H21V21h-1.5z"/><path d="M15 19.5h1.5V21H15z"/><path d="M19.5 15H21v1.5h-1.5z"/></svg>
+                </div>
+              </div>
+              
+              <!-- Expanding Content for QR -->
+              <div class="method-content" style="display: block;">
+                <div class="qr-container">
+                  <div class="qr-placeholder">
+                    <img src="qr-code.jpeg" id="qr-img" alt="Payment QR Code" style="width: 150px; height: auto; border-radius: 8px; cursor: pointer; transition: transform 0.2s;" title="Click to zoom">
+                  </div>
+                  <div class="qr-text">
+                    <p>Scan with any UPI app</p>
+                    <div class="upi-apps">
+                      <span class="badge">GPay</span>
+                      <span class="badge">PhonePe</span>
+                      <span class="badge">Paytm</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group" style="margin-top: 1.5rem;">
+                  <input type="text" id="chk-utr" name="utr" class="form-input" placeholder=" ">
+                  <label for="chk-utr" class="form-label">Enter 12-digit UTR/Transaction ID</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Option 2: COD -->
+            <div class="payment-method-box" id="method-cod">
+              <div class="method-header">
+                <div class="radio-custom"></div>
+                <input type="radio" name="payment_method" value="cod" id="pay-cod" style="display:none;">
+                <label for="pay-cod" class="method-title">Pay on Delivery (Cash / UPI)</label>
+                <div class="method-icons">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                </div>
+              </div>
+              <div class="method-content" style="display: none;">
+                <p class="cod-notice">You can pay via Cash or UPI to the delivery executive when your order arrives.</p>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <button type="submit" class="checkout-submit-btn">
+          Complete Order
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        </button>
+
+        <div class="checkout-footer-links">
+          <a href="#">Refund policy</a>
+          <a href="#">Shipping policy</a>
+          <a href="#">Terms of service</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Right Side: Order Summary -->
+    <div class="checkout-sidebar">
+      <div class="summary-wrapper">
+        <h2>Order Summary</h2>
+        
+        <div class="summary-items" id="checkout-items-container">
+          <!-- JS will populate checkout items here -->
+        </div>
+
+        <div class="summary-totals">
+          <div class="total-row">
+            <span>Subtotal</span>
+            <span id="checkout-subtotal">₹ 0</span>
+          </div>
+          <div class="total-row">
+            <span>Shipping</span>
+            <span id="checkout-shipping">₹ 0</span>
+          </div>
+          <div class="total-row grand-total">
+            <span>Total</span>
+            <span class="final-price"><span class="currency">INR</span> <span id="checkout-total">₹ 0</span></span>
+          </div>
+          
+          <div class="delivery-estimate-badge" style="display: flex; align-items: center; gap: 8px; color: #113c18; font-size: 0.95rem; font-weight: bold; background: rgba(17, 60, 24, 0.05); padding: 12px; border-radius: 8px; margin-top: 1.5rem; border: 1px dashed rgba(17, 60, 24, 0.3);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="3" width="15" height="13"></rect>
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+              <circle cx="5.5" cy="18.5" r="2.5"></circle>
+              <circle cx="18.5" cy="18.5" r="2.5"></circle>
+            </svg>
+            Estimated Delivery: 8 to 11 Days
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Success Modal -->
+  <div id="success-modal" class="success-modal">
+    <div class="success-modal-content">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      <h2>Order Successful!</h2>
+      <p>Thank you for choosing KAD Multiplier. Your yield transformation begins soon.</p>
+      <a href="index.html" class="checkout-submit-btn" style="text-decoration:none; display:inline-flex; width:auto; padding: 1rem 2rem; margin-top: 1.5rem;">Return Home</a>
+    </div>
+  </div>
+
+  <!-- QR Zoom Modal -->
+  <div id="qr-zoom-modal" class="success-modal" style="cursor: zoom-out;">
+    <div class="success-modal-content" style="background: transparent; box-shadow: none; padding: 0;">
+      <img src="qr-code.jpeg" alt="Zoomed QR" style="max-width: 90vw; max-height: 80vh; border-radius: 12px; border: 4px solid white;">
+      <p style="color: white; margin-top: 1rem; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Tap anywhere to close</p>
+    </div>
+  </div>
+
+  <script type="module" src="./checkout.js"></script>
+</body>
+</html>

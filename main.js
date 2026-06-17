@@ -60,36 +60,61 @@ gsap.to(airpods, {
 })
 
 
-// --- 3. Preloader Animation ---
-  // --- Wow Factor Preloader ---
   const preloaderText = new SplitType('.reveal-text', { types: 'chars' });
+  const tl = gsap.timeline();
   
-  const tl = gsap.timeline()
-  
-  tl.from(preloaderText.chars, { 
-      opacity: 0, 
-      y: 100, 
-      rotateX: -90, 
-      stagger: 0.05, 
-      duration: 1.2, 
-      ease: 'expo.out',
-      delay: 0.2
-    })
-    .to(preloaderText.chars, {
-      color: '#c2f970',
-      '-webkit-text-stroke': '1px #c2f970',
-      textShadow: '0 0 30px rgba(194,249,112,0.8)',
-      duration: 0.5,
-      stagger: 0.03,
-      ease: 'power2.inOut'
-    }, "-=0.5")
-    .to('.preloader-text', {
-      scale: 1.5,
-      opacity: 0,
-      duration: 0.8,
-      ease: 'power4.in'
-    }, "+=0.4")
-    .to('.preloader', { yPercent: -100, duration: 1, ease: 'power4.inOut' }, "-=0.4")
+  // Set initial states for Ripple Focus
+  gsap.set(preloaderText.chars, { opacity: 0, scale: 1.5, filter: 'blur(20px)' });
+
+  // 1. Draw the glowing line
+  tl.to('.preloader-line', {
+    width: '100%',
+    duration: 1,
+    ease: 'expo.inOut',
+    delay: 0.2
+  })
+  // 2. Split the window open
+  .to('.preloader-content', {
+    clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+    duration: 1.2,
+    ease: 'power4.inOut'
+  }, "-=0.2")
+  // 3. Ripple Focus Reveal (Staggered de-blur and scale per character)
+  .to(preloaderText.chars, {
+    opacity: 1,
+    scale: 1,
+    filter: 'blur(0px)',
+    duration: 0.8,
+    stagger: 0.03,
+    ease: 'power3.out'
+  }, "-=0.6")
+  // 4. Gold sheen across characters
+  .to(preloaderText.chars, {
+    backgroundPosition: '-200% 0%',
+    duration: 1.2,
+    ease: 'power2.inOut'
+  }, "-=0.6")
+  // 5. Hide the line early
+  .to('.preloader-line', {
+    opacity: 0,
+    duration: 0.3
+  }, "-=1.5")
+  // 6. Fade the text out instantly
+  .to('.preloader-text', {
+    opacity: 0,
+    y: -20,
+    duration: 0.5,
+    ease: 'power2.inOut'
+  }, "-=0.4")
+  // 7. Reveal website fast
+  .to('.preloader', {
+    yPercent: -100,
+    borderBottomLeftRadius: '50% 20%',
+    borderBottomRightRadius: '50% 20%',
+    duration: 0.8,
+    ease: 'power4.inOut'
+  }, "-=0.2")
+  .set('.preloader', { display: 'none' })
     .to('.hero', { opacity: 1, duration: 0.5 }, "-=1") // Make hero visible
     .from('.hero-title .title-line', { y: 100, opacity: 0, duration: 1, stagger: 0.1, ease: 'power4.out' }, "-=0.5")
     .from('.hero-subtitle', { opacity: 0, y: 20, duration: 1, ease: 'power3.out' }, "-=0.8")
@@ -185,7 +210,12 @@ const scrollToBottom = () => {
 };
 
 if (heroProductImg) {
-  heroProductImg.addEventListener('click', scrollToBottom);
+  heroProductImg.addEventListener('click', () => {
+    const specsSection = document.getElementById('specs');
+    if (specsSection) {
+      lenis.scrollTo(specsSection, { offset: -80, duration: 1.5, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+    }
+  });
 }
 
 if (dynamicProductImg) {
@@ -213,12 +243,32 @@ videoCartBtns.forEach(btn => {
     
     const tl = gsap.timeline({
       onComplete: () => {
+        // --- Premium UX: Confetti & Toast ---
+        if (!isNav) {
+          const rect = btn.getBoundingClientRect();
+          const x = (rect.left + rect.width / 2) / window.innerWidth;
+          const y = (rect.top + rect.height / 2) / window.innerHeight;
+          
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { x, y },
+            colors: ['#4ade80', '#fbbf24', '#ffffff']
+          });
+
+          const toast = document.getElementById('toast');
+          gsap.to(toast, { top: 20, opacity: 1, duration: 0.5, ease: 'back.out(1.5)' });
+          setTimeout(() => {
+            gsap.to(toast, { top: -100, opacity: 0, duration: 0.5, ease: 'power2.in' });
+          }, 3000);
+        }
+
         // Open the full-page bubble cart after animation completes
         openFullPageCart(this);
         
         // Reset button state after 2 seconds so they can do it again
         setTimeout(() => {
-          gsap.set(this, { width: origWidth, background: 'white' });
+          gsap.set(this, { clearProps: "width,background" });
           gsap.set(icon, { x: 0, opacity: 1 });
           gsap.set(letters, { y: 0, opacity: 1, rotation: 0 });
           gsap.set(addedState, { opacity: 0, scale: 0.8 });
@@ -330,9 +380,16 @@ if(activeBtn) updatePrice();
 
 weightBtns.forEach(btn => {
   btn.addEventListener('click', () => {
-    weightBtns.forEach(b => b.classList.remove('active'));
+    weightBtns.forEach(b => {
+      b.classList.remove('active');
+      const val = b.querySelector('.fq-val');
+      if(val) val.innerHTML = '1';
+    });
     btn.classList.add('active');
     activeBtn = btn;
+    currentQty = 1;
+    if(qtyDisplay) qtyDisplay.innerHTML = '1';
+    
     updatePrice();
 
     const productImage = document.getElementById('dynamic-product-image');
@@ -359,10 +416,18 @@ weightBtns.forEach(btn => {
   });
 });
 
+function updateAllQtyDisplays() {
+  if (qtyDisplay) qtyDisplay.innerHTML = currentQty;
+  if (activeBtn) {
+    const val = activeBtn.querySelector('.fq-val');
+    if (val) val.innerHTML = currentQty;
+  }
+}
+
 if(btnPlus) {
   btnPlus.addEventListener('click', () => {
     currentQty++;
-    qtyDisplay.innerHTML = currentQty;
+    updateAllQtyDisplays();
     updatePrice();
   });
 }
@@ -371,11 +436,41 @@ if(btnMinus) {
   btnMinus.addEventListener('click', () => {
     if (currentQty > 1) {
       currentQty--;
-      qtyDisplay.innerHTML = currentQty;
+      updateAllQtyDisplays();
       updatePrice();
     }
   });
 }
+
+// Bind mobile inline quantity selectors
+document.querySelectorAll('.wb-fake-qty').forEach(fq => {
+  const m = fq.querySelector('.minus');
+  const p = fq.querySelector('.plus');
+  
+  if (m) {
+    m.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const btn = fq.closest('.weight-btn');
+      if (activeBtn !== btn) btn.click();
+      if (currentQty > 1) {
+        currentQty--;
+        updateAllQtyDisplays();
+        updatePrice();
+      }
+    });
+  }
+  
+  if (p) {
+    p.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const btn = fq.closest('.weight-btn');
+      if (activeBtn !== btn) btn.click();
+      currentQty++;
+      updateAllQtyDisplays();
+      updatePrice();
+    });
+  }
+});
 
 // --- 8. Cart Data Engine ---
 function getCart() {
@@ -526,16 +621,7 @@ if (cartItemsContainer) {
   renderCart();
 }
 
-// --- Navbar Color State (Dark Text on White Sections) ---
-const lightSections = document.querySelectorAll('.bg-light, .purchase-section');
-lightSections.forEach(sec => {
-  ScrollTrigger.create({
-    trigger: sec,
-    start: 'top 80px',
-    end: 'bottom 80px',
-    toggleClass: { targets: '.navbar', className: 'text-dark' }
-  });
-});
+// --- Navbar Color State removed (Handled flawlessly by CSS mix-blend-mode: difference) ---
 
 // --- Auth State Navbar Update ---
 const navLoginLinks = document.querySelectorAll('.nav-login-link, .nav-signup-btn');
@@ -569,8 +655,8 @@ if (scrollCursor) {
       return;
     }
 
-    // Hide cursor if we hover over navbar (top 80px) or if scrolled down
-    if (e.clientY < 80 || window.scrollY > 50) {
+    // Hide cursor if we hover over navbar (top 80px), the dropdown itself, or if scrolled down
+    if (e.clientY < 80 || window.scrollY > 50 || e.target.closest('.navbar')) {
       document.body.classList.remove('has-scroll-cursor');
     } else {
       document.body.classList.add('has-scroll-cursor');
@@ -598,5 +684,131 @@ if (scrollCursor) {
     if (window.scrollY > 50) {
       document.body.classList.remove('has-scroll-cursor');
     }
+  });
+}
+
+// --- 11. Premium UX: Magnetic Buttons ---
+const magneticElements = document.querySelectorAll('.nav-links a, .nav-actions a, .nav-actions button, .bottom-video-cart');
+
+magneticElements.forEach((elem) => {
+  elem.addEventListener('mousemove', (e) => {
+    const rect = elem.getBoundingClientRect();
+    const h = rect.width / 2;
+    const w = rect.height / 2;
+    const x = e.clientX - rect.left - h;
+    const y = e.clientY - rect.top - w;
+    
+    // Smoothly move the element towards the cursor, max distance 15px
+    gsap.to(elem, {
+      x: x * 0.3,
+      y: y * 0.3,
+      duration: 0.4,
+      ease: 'power2.out'
+    });
+  });
+
+  elem.addEventListener('mouseleave', () => {
+    // Snap back instantly
+    gsap.to(elem, {
+      x: 0,
+      y: 0,
+      duration: 0.7,
+      ease: 'elastic.out(1, 0.3)'
+    });
+  });
+});
+
+// --- 12. Premium UX: 3D Holographic Tilt ---
+const tiltImages = document.querySelectorAll('.product-placeholder, .purchase-center');
+
+tiltImages.forEach((container) => {
+  const img = container.querySelector('img');
+  if(!img) return;
+
+  container.addEventListener('mousemove', (e) => {
+    const rect = container.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Calculate rotation (-15 to +15 degrees)
+    const xPct = (x / rect.width) - 0.5;
+    const yPct = (y / rect.height) - 0.5;
+    
+    gsap.to(img, {
+      rotateY: xPct * 30,
+      rotateX: -yPct * 30,
+      duration: 0.5,
+      ease: 'power2.out',
+      transformPerspective: 1000
+    });
+  });
+
+  container.addEventListener('mouseleave', () => {
+    // Reset based on which image it is
+    const isHero = img.id === 'product-img';
+    gsap.to(img, {
+      rotateY: isHero ? -10 : 0,
+      rotateX: isHero ? 5 : 0,
+      duration: 1,
+      ease: 'elastic.out(1, 0.3)'
+    });
+  });
+});
+
+// --- Short Pause Pin for Purchase Section ---
+// Pins for exactly 150px (approx 1 scroll tick)
+ScrollTrigger.create({
+  trigger: ".purchase-section",
+  start: "top top", 
+  end: "+=150", 
+  pin: true,
+  pinSpacing: true
+});
+
+// --- Navbar Color Toggle for Purchase Section ---
+ScrollTrigger.create({
+  trigger: ".purchase-section",
+  start: "top 5%", // Switch to black when the purchase section reaches the navbar
+  end: "bottom 5%", // Switch back to white when leaving the purchase section
+  toggleClass: {targets: ".navbar", className: "nav-dark"}
+});
+
+// --- Mobile Hamburger Menu Logic ---
+const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+const navLinksContainer = document.querySelector(".nav-links");
+
+if(mobileMenuBtn && navLinksContainer) {
+  mobileMenuBtn.addEventListener("click", () => {
+    navLinksContainer.classList.toggle("mobile-active");
+  });
+}
+
+// --- Mock Authentication Logic ---
+function updateAuthUI() {
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  const authOutState = document.getElementById('auth-out-state');
+  const authInState = document.getElementById('auth-in-state');
+  
+  if (authOutState && authInState) {
+    if (isLoggedIn) {
+      authOutState.style.display = 'none';
+      authInState.style.display = 'block';
+    } else {
+      authOutState.style.display = 'block';
+      authInState.style.display = 'none';
+    }
+  }
+}
+
+// Run on page load
+document.addEventListener('DOMContentLoaded', updateAuthUI);
+
+// Handle Log Out
+const logoutBtn = document.getElementById('logout-btn');
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.removeItem('isLoggedIn');
+    updateAuthUI();
   });
 }

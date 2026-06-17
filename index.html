@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/png" href="/kad-multiplier-cropped.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kad Multiplier | Advanced Bio-Stimulant</title>
     <meta name="description" content="Discover KAD Multiplier, the premium solution for maximizing your yield. Shop our exclusive 1Kg, 5Kg, and 10Kg packages online.">
@@ -12,21 +12,28 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script type="module" src="/main.js" defer></script>
   </head>
   <body>
-    <!-- Custom Scroll Cursor -->
-    <div id="scroll-cursor">
-      <img src="/scroll-down.svg" alt="Scroll Down" />
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+      <div class="toast-icon">✓</div>
+      <div class="toast-msg">Added to your cart!</div>
     </div>
+    
 
     <!-- Video Canvas Background moved to cinematic-stage -->
 
-    <!-- Preloader -->
+    <!-- Luxury Preloader -->
     <div class="preloader">
-      <div class="preloader-text">
-        <span class="reveal-text">KAD MULTIPLIER</span>
+      <div class="preloader-line"></div>
+      <div class="preloader-content">
+        <div class="preloader-text">
+          <span class="reveal-text">KAD MULTIPLIER</span>
+        </div>
       </div>
     </div>
 
@@ -40,8 +47,16 @@
         <a href="#purchase" class="nav-buy-btn">Buy Now</a>
       </div>
       <div class="nav-actions">
-        <a href="login.html" class="nav-login-link">Log In</a>
-        <a href="login.html" class="nav-signup-btn">Sign Up</a>
+        <!-- Hamburger Menu Button (Mobile Only) -->
+        <button id="mobile-menu-btn" class="hamburger-btn">
+          <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        
+        <!-- Cart Button -->
         <button class="video-cart-btn nav-video-cart" id="nav-cart">
           <div class="vcb-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -61,6 +76,34 @@
           </div>
           <span id="cart-badge" style="position: absolute; top: 6px; right: 8px; background: #e74c3c; color: white; border-radius: 12px; font-size: 11px; font-weight: bold; padding: 2px 6px; display: none; line-height: 1; z-index: 10;">0</span>
         </button>
+
+        <!-- Profile Section -->
+        <div class="profile-container" id="profile-section">
+          <!-- Profile Button -->
+          <button class="profile-btn" id="profile-btn">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </button>
+          
+          <!-- Dropdown Menu -->
+          <div class="profile-dropdown" id="profile-dropdown">
+            <!-- Logged Out State -->
+            <div id="auth-out-state">
+              <a href="login.html" class="dropdown-item">Log In</a>
+              <a href="register.html" class="dropdown-item signup-highlight">Sign Up</a>
+            </div>
+            
+            <!-- Logged In State -->
+            <div id="auth-in-state" style="display: none;">
+              <a href="account.html" class="dropdown-item">My Orders</a>
+              <a href="account.html" class="dropdown-item">Account Settings</a>
+              <div class="dropdown-divider"></div>
+              <button id="logout-btn" class="dropdown-item text-danger">Log Out</button>
+            </div>
+          </div>
+        </div>
       </div>
     </nav>
 
@@ -75,10 +118,10 @@
           <div class="hero-content" style="flex-direction: row; align-items: center; justify-content: space-between; gap: 2rem;">
             <div class="hero-text-area" style="flex: 1.2;">
               <h1 class="hero-title">
-                <div class="title-line">Revitalize Your Soil.</div>
-                <div class="title-line highlight">Maximize Your Yield.</div>
+                <div class="title-line">Healthy Soil.</div>
+                <div class="title-line highlight">Bigger Harvest.</div>
               </h1>
-              <p class="hero-subtitle">Kad Multiplier is the ultimate bio-stimulant technology for zero-cost organic farming and chemical-free crop production.</p>
+              <p class="hero-subtitle">Kad Multiplier is a 100% natural fertilizer that helps you grow more crops without using harmful chemicals or extra costs.</p>
             </div>
             <div class="hero-image-wrapper" style="display: flex; flex: 1; justify-content: center; perspective: 1000px;">
               <div class="product-placeholder" style="position: relative; max-width: 450px; transform-style: preserve-3d; animation: float 6s ease-in-out infinite;">
@@ -93,7 +136,7 @@
           <div class="story-container">
             <div class="story-text">
               <h2 class="section-title split-text">Why Farmers Need Kad Multiplier</h2>
-              <p class="section-desc fade-up">Long-term use of chemical fertilizers destroys soil life. It leads to a severe drop in organic matter, reducing the soil's water retention and natural fertility, ultimately lowering your crop yields and increasing costs.</p>
+              <p class="section-desc fade-up">Using chemical fertilizers for a long time kills the good life in your soil. It makes the earth hard, dry, and poor, which leads to smaller harvests and higher costs for you.</p>
             </div>
             <div class="story-visual">
               <div class="abstract-shape green-shape"></div>
@@ -108,7 +151,7 @@
               
               <div class="story-text">
                 <h2 class="section-title split-text">Heal and Enrich Your Soil</h2>
-                <p class="section-desc fade-up">Kad Multiplier penetrates deep into the earth to completely rebuild your soil's structure. It rapidly multiplies beneficial microbes, unlocking trapped minerals and drastically improving water retention so your soil becomes naturally fertile again.</p>
+                <p class="section-desc fade-up">Kad Multiplier goes deep into the ground to fix your soil. It grows good bacteria quickly, frees up hidden food for your plants, and helps the soil hold more water so it becomes naturally rich again.</p>
                 <ul class="feature-list">
                   <li class="fade-up">✓ Restores Natural Soil Fertility</li>
                   <li class="fade-up">✓ Maximizes Water Retention</li>
@@ -137,7 +180,7 @@
               
               <div class="story-text">
                 <h2 class="section-title split-text">Explosive Root Development</h2>
-                <p class="section-desc fade-up">A strong plant starts with a massive root network. Kad Multiplier actively penetrates the root zone, significantly improving nutrient availability exactly where the plant needs it most.</p>
+                <p class="section-desc fade-up">A strong plant needs deep, spreading roots. Kad Multiplier goes straight to the roots, giving them the exact food they need to grow big and healthy.</p>
                 <ul class="feature-list">
                   <li class="fade-up">✓ Promotes Robust Root Growth</li>
                   <li class="fade-up">✓ Maximizes Nutrient Uptake</li>
@@ -166,7 +209,7 @@
               
               <div class="story-text">
                 <h2 class="section-title split-text">Vibrant Crop Health</h2>
-                <p class="section-desc fade-up">The ultimate result of a revitalized soil ecosystem is thriving, dynamic crops. Kad Multiplier ensures your plants grow naturally balanced, displaying rich green foliage and unparalleled vitality.</p>
+                <p class="section-desc fade-up">When your soil is healthy, your crops will thrive. Kad Multiplier makes your plants grow strong and naturally green, giving you the best possible harvest.</p>
                 <ul class="feature-list">
                   <li class="fade-up">✓ Naturally Balanced Plant Growth</li>
                   <li class="fade-up">✓ Deep Green, Vibrant Foliage</li>
@@ -190,36 +233,58 @@
 
         <!-- Specs Section -->
         <section class="specs-section" id="specs">
+          <!-- Toggle Button for Language -->
+          <div class="lang-toggle-container fade-up" style="text-align: center; margin-bottom: 3rem; display: flex; justify-content: center; align-items: center; gap: 1rem;">
+            <span style="color: var(--color-text-light); font-size: 0.9rem; font-weight: 600;">Technical</span>
+            <label class="switch">
+              <input type="checkbox" id="langToggle" checked onchange="document.body.classList.toggle('lang-scientific', !this.checked)">
+              <span class="slider round"></span>
+            </label>
+            <span style="color: var(--color-text-light); font-size: 0.9rem; font-weight: 600;">Simple</span>
+          </div>
+
           <div class="specs-split-layout">
             <!-- Left Side Details -->
             <div class="specs-column left-column">
               <div class="spec-detail fade-up">
-                <h3 class="spec-heading text-yellow">Usage & Application</h3>
-                <p>Suitable for <span class="text-green">all crop types</span>. Apply 2 to 3 times at intervals of 10-15 days. Effortlessly mixes with soil, water, or compost.</p>
+                <h3 class="spec-heading text-yellow text-scientific">Usage & Application</h3>
+                <h3 class="spec-heading text-yellow text-simple">How to use</h3>
+                <p class="text-scientific">Suitable for <span class="text-green">all crop types</span>. Apply 2 to 3 times at intervals of 10-15 days. Effortlessly mixes with soil, water, or compost.</p>
+                <p class="text-simple">Good for <span class="text-green">all crops</span>. Use 2 to 3 times, every 10-15 days. Mixes easily with soil, water, or compost.</p>
               </div>
               <div class="spec-detail fade-up">
-                <h3 class="spec-heading text-yellow">Bio-Stimulant Action</h3>
-                <p>Rapidly breaks down raw organic matter and activates dormant <span class="text-green">beneficial microbes</span> and vital earthworm populations.</p>
+                <h3 class="spec-heading text-yellow text-scientific">Bio-Stimulant Action</h3>
+                <h3 class="spec-heading text-yellow text-simple">Soil Life</h3>
+                <p class="text-scientific">Rapidly breaks down raw organic matter and activates dormant <span class="text-green">beneficial microbes</span> and vital earthworm populations.</p>
+                <p class="text-simple">Quickly turns dead leaves into food. Wakes up <span class="text-green">good bacteria</span> and brings back helpful earthworms.</p>
               </div>
               <div class="spec-detail fade-up">
-                <h3 class="spec-heading text-yellow">Soil Restoration</h3>
-                <p>Rebuilds deep soil structure, drastically improving <span class="text-green">oxygen flow</span> and permanent water retention capacity.</p>
+                <h3 class="spec-heading text-yellow text-scientific">Soil Restoration</h3>
+                <h3 class="spec-heading text-yellow text-simple">Water Saving</h3>
+                <p class="text-scientific">Rebuilds deep soil structure, drastically improving <span class="text-green">oxygen flow</span> and permanent water retention capacity.</p>
+                <p class="text-simple">Softens hard earth, letting <span class="text-green">more air</span> in and helping the soil hold water for much longer.</p>
               </div>
             </div>
-
-            <!-- Right Side Details -->
+            
+            <!-- Right Column -->
             <div class="specs-column right-column">
               <div class="spec-detail fade-up">
-                <h3 class="spec-heading text-yellow">Zero-Cost Farming</h3>
-                <p>Unlocks massive hidden nutrient reserves, eventually eliminating dependency on <span class="text-green">expensive chemical fertilizers</span>.</p>
+                <h3 class="spec-heading text-yellow text-scientific">Zero-Cost Farming</h3>
+                <h3 class="spec-heading text-yellow text-simple">Cost Savings</h3>
+                <p class="text-scientific">Unlocks massive hidden nutrient reserves, eventually eliminating dependency on <span class="text-green">expensive chemical fertilizers</span>.</p>
+                <p class="text-simple">Unlocks hidden food in the dirt, so you don't need to buy <span class="text-green">expensive chemical fertilizers</span> anymore.</p>
               </div>
               <div class="spec-detail fade-up">
-                <h3 class="spec-heading text-yellow">Guaranteed Yields</h3>
-                <p>Produces unparalleled crop vitality, delivering dramatically <span class="text-green">larger sizes</span> and significantly extended shelf life.</p>
+                <h3 class="spec-heading text-yellow text-scientific">Guaranteed Yields</h3>
+                <h3 class="spec-heading text-yellow text-simple">Better Quality</h3>
+                <p class="text-scientific">Produces unparalleled crop vitality, delivering dramatically <span class="text-green">larger sizes</span> and significantly extended shelf life.</p>
+                <p class="text-simple">Makes crops incredibly strong, giving you <span class="text-green">bigger sizes</span> that stay fresh for much longer.</p>
               </div>
               <div class="spec-detail fade-up">
-                <h3 class="spec-heading text-yellow">100% Chemical-Free</h3>
-                <p>A fully organic, bio-active solution ensuring safe, <span class="text-green">poison-free food</span> production and a permanently protected ecosystem.</p>
+                <h3 class="spec-heading text-yellow text-scientific">100% Chemical-Free</h3>
+                <h3 class="spec-heading text-yellow text-simple">100% Safe</h3>
+                <p class="text-scientific">A fully organic, bio-active solution ensuring safe, <span class="text-green">poison-free food</span> production and a permanently protected ecosystem.</p>
+                <p class="text-simple">A completely natural, organic solution for growing safe, <span class="text-green">poison-free food</span> and keeping your farm healthy.</p>
               </div>
             </div>
           </div>
@@ -236,19 +301,67 @@
                 <span class="selector-label">Select Package Size</span>
                 <div class="weight-selectors">
                   <button class="weight-btn active" data-mrp="1099" data-price="1099" data-discount="0" data-weight="1" data-image="/kad-multiplier-cropped.png">
-                    <span class="wb-title">1 Kg Multiplier</span>
+                    <div class="wb-desktop-content">
+                      <span class="wb-title">1 Kg</span>
+                    </div>
+                    <div class="wb-mobile-content">
+                      <div class="wb-radio"><div class="wb-radio-inner"></div></div>
+                      <div class="wb-img-wrap"><img class="wb-img" src="/kad-multiplier-cropped.png" alt="1 Kg" /></div>
+                      <div class="wb-content">
+                        <span class="wb-title">1 Kg Multiplier</span>
+                        <span class="wb-sub">Category: Fertilizer</span>
+                        <div class="wb-fake-qty"><span class="minus" style="padding: 0 5px; cursor: pointer;">-</span> <span class="fq-val">1</span> <span class="plus" style="padding: 0 5px; cursor: pointer;">+</span></div>
+                      </div>
+                      <div class="wb-price-tag">₹1,099</div>
+                    </div>
                   </button>
                   <button class="weight-btn" data-mrp="6099" data-price="4099" data-discount="33" data-weight="5" data-image="/5kg-20x250.png">
-                    <span class="wb-title">5 Kg</span>
-                    <span class="wb-sub">(20 × 250g)</span>
+                    <div class="wb-desktop-content">
+                      <span class="wb-title">5 Kg</span>
+                      <span class="wb-sub">(20 × 250g)</span>
+                    </div>
+                    <div class="wb-mobile-content">
+                      <div class="wb-radio"><div class="wb-radio-inner"></div></div>
+                      <div class="wb-img-wrap"><img class="wb-img" src="/5kg-20x250.png" alt="5 Kg" /></div>
+                      <div class="wb-content">
+                        <span class="wb-title">5 Kg Multiplier</span>
+                        <span class="wb-sub">Category: Fertilizer</span>
+                        <div class="wb-fake-qty"><span class="minus" style="padding: 0 5px; cursor: pointer;">-</span> <span class="fq-val">1</span> <span class="plus" style="padding: 0 5px; cursor: pointer;">+</span></div>
+                      </div>
+                      <div class="wb-price-tag">₹4,099</div>
+                    </div>
                   </button>
                   <button class="weight-btn" data-mrp="12199" data-price="7799" data-discount="36" data-weight="10" data-image="/10kg-40x250.png">
-                    <span class="wb-title">10 Kg</span>
-                    <span class="wb-sub">(40 × 250g)</span>
+                    <div class="wb-desktop-content">
+                      <span class="wb-title">10 Kg</span>
+                      <span class="wb-sub">(40 × 250g)</span>
+                    </div>
+                    <div class="wb-mobile-content">
+                      <div class="wb-radio"><div class="wb-radio-inner"></div></div>
+                      <div class="wb-img-wrap"><img class="wb-img" src="/10kg-40x250.png" alt="10 Kg" /></div>
+                      <div class="wb-content">
+                        <span class="wb-title">10 Kg Multiplier</span>
+                        <span class="wb-sub">Category: Fertilizer</span>
+                        <div class="wb-fake-qty"><span class="minus" style="padding: 0 5px; cursor: pointer;">-</span> <span class="fq-val">1</span> <span class="plus" style="padding: 0 5px; cursor: pointer;">+</span></div>
+                      </div>
+                      <div class="wb-price-tag">₹7,799</div>
+                    </div>
                   </button>
                   <button class="weight-btn" data-mrp="10999" data-price="7499" data-discount="32" data-weight="10" data-image="/10kg-10x1.png">
-                    <span class="wb-title">10 Kg Multiplier</span>
-                    <span class="wb-sub">(10 × 1 Kg)</span>
+                    <div class="wb-desktop-content">
+                      <span class="wb-title">10 Kg</span>
+                      <span class="wb-sub">(10 × 1 Kg)</span>
+                    </div>
+                    <div class="wb-mobile-content">
+                      <div class="wb-radio"><div class="wb-radio-inner"></div></div>
+                      <div class="wb-img-wrap"><img class="wb-img" src="/10kg-10x1.png" alt="10 Kg" /></div>
+                      <div class="wb-content">
+                        <span class="wb-title">10 Kg Multiplier</span>
+                        <span class="wb-sub">Category: Fertilizer</span>
+                        <div class="wb-fake-qty"><span class="minus" style="padding: 0 5px; cursor: pointer;">-</span> <span class="fq-val">1</span> <span class="plus" style="padding: 0 5px; cursor: pointer;">+</span></div>
+                      </div>
+                      <div class="wb-price-tag">₹7,499</div>
+                    </div>
                   </button>
                 </div>
               </div>
@@ -264,8 +377,8 @@
             </div>
 
             <!-- Center: Dynamic Product Image -->
-            <div class="purchase-center fade-up" style="display: flex; justify-content: center; align-items: center; flex: 1; min-height: 400px;">
-              <img id="dynamic-product-image" src="/kad-multiplier-cropped.png" alt="KAD Multiplier Product" style="width: 100%; height: 400px; object-fit: contain; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15)); transition: transform 0.4s ease, opacity 0.4s ease; cursor: pointer; position: relative; z-index: 20;" />
+            <div class="purchase-center fade-up" style="display: flex; justify-content: center; align-items: center; flex: 1.5; min-height: 550px;">
+              <img id="dynamic-product-image" src="/kad-multiplier-cropped.png" alt="KAD Multiplier Product" style="width: 100%; height: 550px; object-fit: contain; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15)); transition: transform 0.4s ease, opacity 0.4s ease; cursor: pointer; position: relative; z-index: 20;" />
             </div>
 
             <!-- Right Side: Price and Action -->
@@ -279,6 +392,7 @@
                   </div>
                   <div class="price-discount-badge" id="display-discount" style="display: none;">33% OFF</div>
                 </div>
+                <p class="tax-info" style="color: #94a3b8; font-size: 0.9rem; margin-top: -0.5rem; margin-bottom: 1rem;">(Inclusive of all taxes)</p>
                 <div class="price-label">Our Price</div>
               </div>
               <p class="shipping-note">+ Shipping: <span id="shipping-cost">₹100</span></p>
@@ -289,7 +403,7 @@
                 <circle cx="5.5" cy="18.5" r="2.5"></circle>
                 <circle cx="18.5" cy="18.5" r="2.5"></circle>
               </svg>
-              Estimated Delivery: 8 to 11 Days
+              Estimated Delivery: 5-7 days
             </div>
               
               <!-- Animated Video Button -->
@@ -319,7 +433,7 @@
     </main>
 
     <!-- Full Page Bubble Cart -->
-    <div class="full-page-cart" id="full-page-cart">
+    <div class="full-page-cart" id="full-page-cart" data-lenis-prevent>
       <div class="fpc-inner">
         
         <!-- Header / Stepper -->
@@ -407,6 +521,129 @@
       </div>
     </div>
 
-    <script type="module" src="./main.js"></script>
-  </body>
+    <!-- Professional Footer -->
+    <footer class="site-footer" style="position: relative; z-index: 2; padding: 10vh 2%; min-height: 100vh; display: flex; align-items: center; background-color: transparent;">
+      <div class="specs-split-layout" style="align-items: flex-start; margin-top: auto; margin-bottom: auto;">
+        <!-- Left Side: Brand, Contact & Legal -->
+        <div class="specs-column left-column" style="text-align: left; display: flex; flex-direction: column; gap: 2.5rem;">
+
+          
+          <div class="spec-detail fade-up">
+            <h3 style="color: #ffffff; font-size: 1.2rem; margin-bottom: 1rem; font-family: var(--font-display);">Contact Us</h3>
+            <p style="color: #ffffff; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px;">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <a href="mailto:organicindia.missions@gmail.com" style="color: #ffffff; text-decoration: none;">organicindia.missions@gmail.com</a>
+            </p>
+            <p style="color: #ffffff; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px;">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path>
+              </svg>
+              <a href="https://wa.me/918088055223" style="color: #ffffff; text-decoration: none;">+91 8088055223</a>
+            </p>
+            <p style="color: #ffffff; display: flex; align-items: center; gap: 8px;">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+              <a href="tel:+918088775223" style="color: #ffffff; text-decoration: none;">+91 8088775223</a>
+            </p>
+          </div>
+
+          <div class="spec-detail fade-up">
+            <h3 style="color: #ffffff; font-size: 1.2rem; margin-bottom: 1rem; font-family: var(--font-display);">Community</h3>
+            <p style="color: #ffffff; font-size: 0.95rem; margin-bottom: 1rem; line-height: 1.4;">
+              Join our <a href="https://chat.whatsapp.com/Es0LBUAHIDiB5glDBKye42" target="_blank" style="color: #4ade80; text-decoration: underline; font-weight: bold;">WhatsApp group</a> for the latest updates!
+            </p>
+            <div class="button-container" style="justify-content: flex-start;">
+              <a class="button" href="https://chat.whatsapp.com/Es0LBUAHIDiB5glDBKye42" target="_blank" title="Join for latest updates">
+                <svg class="btn-svg" viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="spec-detail fade-up">
+            <h3 style="color: #ffffff; font-size: 1.2rem; margin-bottom: 1rem; font-family: var(--font-display);">Legal</h3>
+            <ul style="list-style: none; padding: 0;">
+              <li style="margin-bottom: 0.8rem;"><a href="privacy.html" style="color: #ffffff; text-decoration: none; transition: color 0.3s;">Privacy Policy</a></li>
+              <li style="margin-bottom: 0.8rem;"><a href="terms.html" style="color: #ffffff; text-decoration: none; transition: color 0.3s;">Terms of Service</a></li>
+            </ul>
+          </div>
+          
+          <div class="spec-detail fade-up" style="margin-top: 2rem;">
+            <p style="color: #ffffff; font-size: 0.9rem;">&copy; 2026 KAD Multiplier. All rights reserved.</p>
+          </div>
+        </div>
+        
+        <!-- Center: Empty space for massive canvas bag -->
+        
+        <!-- Right Side: Links & Support -->
+        <div class="specs-column right-column" style="text-align: left; display: flex; flex-direction: column; gap: 2.5rem;">
+          <div class="spec-detail fade-up">
+            <h3 style="color: #ffffff; font-size: 1.5rem; margin-bottom: 1.5rem; font-family: var(--font-display);">Explore</h3>
+            <ul style="list-style: none; padding: 0;">
+              <li style="margin-bottom: 1rem;"><a href="#features" style="color: #ffffff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s;">Features</a></li>
+              <li style="margin-bottom: 1rem;"><a href="#benefits" style="color: #ffffff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s;">Benefits</a></li>
+              <li style="margin-bottom: 1rem;"><a href="#specs" style="color: #ffffff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s;">Details</a></li>
+              <li style="margin-bottom: 1rem;"><a href="#purchase" style="color: #4ade80; text-decoration: none; font-size: 1.2rem; font-weight: bold; text-shadow: 0 0 10px rgba(74,222,128,0.3); transition: all 0.3s;">Buy Now &rarr;</a></li>
+            </ul>
+          </div>
+          
+            <div class="spec-detail fade-up">
+              <h3 style="color: #ffffff; font-size: 1.5rem; margin-bottom: 1.5rem; font-family: var(--font-display);">Customer Care</h3>
+              <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
+                <li style="margin-bottom: 1rem;"><a href="#" style="color: #ffffff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s;">Shipping & Delivery</a></li>
+                <li style="margin-bottom: 1rem;"><a href="#" style="color: #ffffff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s;">Return Policy</a></li>
+                <li style="margin-bottom: 1rem;"><a href="#" style="color: #ffffff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s;">FAQ</a></li>
+              </ul>
+
+              <!-- Social Links -->
+              <h3 style="color: #4ade80; text-shadow: 0 0 10px rgba(74,222,128,0.3); font-size: 1.2rem; margin-bottom: 1rem; font-family: var(--font-display);">Follow Us</h3>
+              <div class="button-container">
+                <a class="button" href="https://www.instagram.com/organic_india.mission?utm_source=qr&igsh=eWo1cDRnYzN1M3Bs" target="_blank">
+                  <svg class="btn-svg" viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                </a>
+                <a class="button" href="https://www.facebook.com/share/192E7pCAqY/" target="_blank">
+                  <svg class="btn-svg" viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                  </svg>
+                </a>
+                <a class="button" href="https://youtube.com/@organicindiamission?si=gkpFMUhHyDjVMf7C" target="_blank">
+                  <svg class="btn-svg" viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path>
+                    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                  </svg>
+                </a>
+              </div>
+            </div>
+        </div>
+        <!-- Middle Bottom: Back to Top Button -->
+        <div style="position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);">
+          <button class="back-to-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+            <svg class="svgIcon" viewBox="0 0 384 512">
+              <path d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Custom Scroll Cursor -->
+    <div id="scroll-cursor">
+      <img src="/scroll-down.svg" alt="Scroll Down" />
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- Main Scripts -->
+  <script type="module" src="/main.js"></script>
+  <script src="/nav.js"></script>
+</body>
 </html>

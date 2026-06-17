@@ -5,8 +5,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 const lenis = new Lenis({
-  lerp: 0.06, // Physics-based dampening for ultra-smooth organic feel
-  wheelMultiplier: 1.2, // Slightly more scroll per wheel tick
+  lerp: 0.04, // Extremely smooth, heavy, cinematic interpolation
+  wheelMultiplier: 0.7, // Slower scrolling speed for a premium feel
   smoothWheel: true,
   smoothTouch: false, // Native mobile touch is already perfectly hardware accelerated
   syncTouch: true // Syncs touch scroll with JS to prevent desync on mobile

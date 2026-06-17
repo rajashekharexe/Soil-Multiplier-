@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="/kad-multiplier-cropped.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Log In - KAD Multiplier</title>
+  <title>Sign Up - KAD Multiplier</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
@@ -34,22 +34,27 @@
         </a>
 
         <div class="login-header">
-          <h1>Welcome back!</h1>
-          <p>Please enter your details.</p>
+          <h1>Create Account</h1>
+          <p>Join us to multiply your harvest.</p>
         </div>
 
         <div id="auth-error" class="auth-error" style="display: none;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-          <span id="auth-error-text">Invalid credentials. Please try again.</span>
+          <span id="auth-error-text">Please fill out all fields.</span>
         </div>
 
         <form class="login-form" action="#" method="POST">
+          <div class="form-group" id="name-group">
+            <input type="text" id="name" class="form-input" placeholder=" " required>
+            <label for="name" class="form-label">Full Name</label>
+          </div>
+
           <div class="form-group" id="phone-group">
             <input type="tel" id="phone" class="form-input" placeholder=" " pattern="[0-9]*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
             <label for="phone" class="form-label">Phone Number</label>
           </div>
 
-          <div class="form-group password-group" id="password-group">
+          <div class="form-group password-group">
             <!-- Left Orange Blob -->
             <div id="blob-left" class="blob-character" style="position: absolute; left: -90px; top: -20px; cursor: grab; z-index: 10;">
               <svg viewBox="0 0 100 100" width="80" height="80" style="overflow: visible; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
@@ -98,7 +103,7 @@
 
             <input type="password" id="password" class="form-input" placeholder=" " required>
             <label for="password" class="form-label">Password</label>
-            <button type="button" class="toggle-password">
+            <button type="button" class="toggle-password" data-target="password">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                 <circle cx="12" cy="12" r="3"></circle>
@@ -106,12 +111,19 @@
             </button>
           </div>
 
-          <div class="form-options" id="form-options">
-            <label class="remember-me">
-              <input type="checkbox">
-              Remember me
-            </label>
-            <a href="forgot-password.html" class="forgot-password">Forgot password?</a>
+          <div class="form-group password-group" id="confirm-password-group">
+            <input type="password" id="confirm-password" class="form-input" placeholder=" " required>
+            <label for="confirm-password" class="form-label">Confirm Password</label>
+            <button type="button" class="toggle-password" data-target="confirm-password">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+
+          <div class="form-options" id="form-options" style="justify-content: flex-end;">
+            <span class="forgot-password" style="font-size: 0.8rem;">By signing up, you agree to our Terms.</span>
           </div>
 
           <!-- Log in Button with Peeking Character -->
@@ -141,7 +153,7 @@
                 <path d="M68 80 C68 65, 86 65, 86 80 Z" fill="#ff8a3d" stroke="#2d3748" stroke-width="2.5" />
               </svg>
             </div>
-            <button type="submit" class="login-submit-btn" style="position: relative; z-index: 1; margin-top: 0;">Log in</button>
+            <button type="submit" class="login-submit-btn" style="position: relative; z-index: 1; margin-top: 0;">Sign Up</button>
           </div>
           
           <!-- Google Button with Peeking Character -->
@@ -178,24 +190,28 @@
                 <path d="M6.89 13.14c-.18-.56-.29-1.16-.29-1.78s.11-1.22.29-1.78V6.53H3.7C3.06 7.82 2.7 9.3 2.7 10.86s.36 3.04 1 4.33l3.19-2.05z" fill="#FBBC05" stroke="none"/>
                 <path d="M12 4.76c1.38 0 2.62.47 3.59 1.4l2.69-2.69C16.64 1.93 14.52 1.1 12 1.1 8.35 1.1 5.26 3.01 3.7 6.09l3.19 3.05C7.6 6.98 9.62 5.38 12 5.38z" fill="#EA4335" stroke="none"/>
               </svg>
-              Log in with Google
+              Sign Up with Google
             </button>
           </div>
         </form>
 
         <div class="login-footer">
-          Don't have an account? <a href="register.html">Sign Up</a>
+          Already have an account? <a href="login.html">Log In</a>
         </div>
       </div>
     </div>
   </div>
   <script>
     // --- Draggable Blob Logic ---
+    const nameInput = document.getElementById('name');
     const phoneInput = document.getElementById('phone');
     const passInput = document.getElementById('password');
-    const togglePassBtn = document.querySelector('.toggle-password');
+    const confirmPassInput = document.getElementById('confirm-password');
+    const togglePassBtns = document.querySelectorAll('.toggle-password');
     const leftEyes = document.querySelector('#blob-left .blob-eyes');
     const rightEyes = document.querySelector('#blob-right .blob-eyes');
+    const authError = document.getElementById('auth-error');
+    const authErrorText = document.getElementById('auth-error-text');
     
     // Initialize GSAP Draggable for the blobs
     Draggable.create(".blob-character", {
@@ -241,19 +257,15 @@
 
     // Function to determine where the eyes should look when the mouse stops moving
     function updateIdleEyes() {
-      if (document.activeElement === phoneInput) {
-        // Look UP at the phone field, and track the length of the text!
-        const length = Math.min(phoneInput.value.length, 25);
-        
-        // Left Blob: Look UP and RIGHT towards the start of the email text
+      const active = document.activeElement;
+      if (active === phoneInput || active === nameInput) {
+        const length = Math.min(active.value.length, 25);
         const leftX = 4 + (length / 25) * 3;
-        // Right Blob: Look UP and LEFT towards the email text
         const rightX = -7 + (length / 25) * 3;
-        
         gsap.to(leftEyes, { x: leftX, y: -6, duration: 0.2 });
         gsap.to(rightEyes, { x: rightX, y: -6, duration: 0.2 });
-      } else if (document.activeElement === passInput && isPasswordVisible) {
-        // Look directly at the visible password! Left blob looks right, Right blob looks left.
+      } else if ((active === passInput || active === confirmPassInput) && isPasswordVisible) {
+        // Look directly at the visible password
         gsap.to(leftEyes, { x: 5, y: 0, duration: 0.2 });
         gsap.to(rightEyes, { x: -5, y: 0, duration: 0.2 });
       } else {
@@ -264,8 +276,8 @@
 
     // 1. Mouse & Touch Tracking
     function handlePointerMove(e) {
-      // If password is focused and hidden, their hands are covering their eyes! Don't track mouse/touch.
-      if (document.activeElement === passInput && !isPasswordVisible) return;
+      const active = document.activeElement;
+      if ((active === passInput || active === confirmPassInput) && !isPasswordVisible) return;
 
       clearTimeout(mouseTimeout);
       
@@ -290,54 +302,61 @@
     window.addEventListener('mousemove', handlePointerMove);
     window.addEventListener('touchmove', handlePointerMove);
 
-    // 2. Phone Focus
-    phoneInput.addEventListener('focus', updateIdleEyes);
-    phoneInput.addEventListener('input', updateIdleEyes);
-    phoneInput.addEventListener('blur', updateIdleEyes);
+    // 2. Input Focus
+    [nameInput, phoneInput].forEach(input => {
+      input.addEventListener('focus', updateIdleEyes);
+      input.addEventListener('input', updateIdleEyes);
+      input.addEventListener('blur', updateIdleEyes);
+    });
 
     // 3. Password Focus
-    passInput.addEventListener('focus', () => {
-      updateIdleEyes();
-      if (!isPasswordVisible) {
-        // Hands fly up to the eyes!
-        gsap.to('.blob-hand-l', { x: 18, y: -25, duration: 0.4, ease: 'back.out(1.5)' });
-        gsap.to('.blob-hand-r', { x: -18, y: -25, duration: 0.4, ease: 'back.out(1.5)' });
-      }
-    });
-
-    passInput.addEventListener('blur', () => {
-      updateIdleEyes();
-      // Hands go back down
-      gsap.to(['.blob-hand-l', '.blob-hand-r'], { x: 0, y: 0, duration: 0.4, ease: 'power2.out' });
-    });
-
-    // 4. Toggle Password Visibility (Peek!)
-    togglePassBtn.addEventListener('click', () => {
-      if (passInput.type === 'password') {
-        passInput.type = 'text';
-        isPasswordVisible = true;
+    [passInput, confirmPassInput].forEach(input => {
+      input.addEventListener('focus', () => {
         updateIdleEyes();
-        
-        // Peek through fingers
-        if (document.activeElement === passInput) {
-          gsap.to('.blob-hand-l', { y: -15, duration: 0.3, ease: 'power2.out' });
-          gsap.to('.blob-hand-r', { y: -15, duration: 0.3, ease: 'power2.out' });
+        if (!isPasswordVisible) {
+          gsap.to('.blob-hand-l', { x: 18, y: -25, duration: 0.4, ease: 'back.out(1.5)' });
+          gsap.to('.blob-hand-r', { x: -18, y: -25, duration: 0.4, ease: 'back.out(1.5)' });
         }
-      } else {
-        passInput.type = 'password';
-        isPasswordVisible = false;
-        
-        // Cover eyes tightly
-        if (document.activeElement === passInput) {
-          gsap.to('.blob-hand-l', { x: 18, y: -25, duration: 0.3, ease: 'back.out(1.5)' });
-          gsap.to('.blob-hand-r', { x: -18, y: -25, duration: 0.3, ease: 'back.out(1.5)' });
+      });
+      input.addEventListener('blur', () => {
+        updateIdleEyes();
+        const active = document.activeElement;
+        // Only put hands down if not moving to the other password field
+        if (active !== passInput && active !== confirmPassInput) {
+          gsap.to(['.blob-hand-l', '.blob-hand-r'], { x: 0, y: 0, duration: 0.4, ease: 'power2.out' });
         }
-      }
+      });
     });
-    // --- Login Form Submission ---
+
+    // 4. Toggle Password Visibility
+    togglePassBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const targetInput = document.getElementById(targetId);
+        
+        if (targetInput.type === 'password') {
+          targetInput.type = 'text';
+          isPasswordVisible = true;
+          updateIdleEyes();
+          
+          if (document.activeElement === targetInput) {
+            gsap.to('.blob-hand-l', { y: -15, duration: 0.3, ease: 'power2.out' });
+            gsap.to('.blob-hand-r', { y: -15, duration: 0.3, ease: 'power2.out' });
+          }
+        } else {
+          targetInput.type = 'password';
+          isPasswordVisible = (passInput.type === 'text' || confirmPassInput.type === 'text');
+          
+          if (document.activeElement === targetInput) {
+            gsap.to('.blob-hand-l', { x: 18, y: -25, duration: 0.3, ease: 'back.out(1.5)' });
+            gsap.to('.blob-hand-r', { x: -18, y: -25, duration: 0.3, ease: 'back.out(1.5)' });
+          }
+        }
+      });
+    });
+
+    // --- Sign Up Form Submission ---
     const loginForm = document.querySelector('.login-form');
-    const authError = document.getElementById('auth-error');
-    const authErrorText = document.getElementById('auth-error-text');
 
     if (loginForm) {
       loginForm.addEventListener('submit', (e) => {
@@ -345,27 +364,28 @@
         
         const btn = document.querySelector('.login-submit-btn');
 
-        if (phoneInput.value.length < 10) {
-          authErrorText.textContent = "Please enter a valid 10-digit phone number.";
+        // Validation Error UI
+        if (passInput.value !== confirmPassInput.value) {
+          authErrorText.textContent = "Passwords do not match.";
           authError.style.display = "flex";
+          // Shake animation
           gsap.fromTo(authError, { x: -5 }, { x: 5, duration: 0.05, yoyo: true, repeat: 5 });
           return;
         }
-
-        if (passInput.value.length < 6) {
-          authErrorText.textContent = "Invalid password. Please try again.";
-          authError.style.display = "flex";
-          gsap.fromTo(authError, { x: -5 }, { x: 5, duration: 0.05, yoyo: true, repeat: 5 });
-          return;
-        }
-
+        
         authError.style.display = "none";
         
-        btn.textContent = 'Logging in...';
+        // Simulate registration
+        localStorage.setItem('kadUser', JSON.stringify({
+          name: nameInput.value,
+          phone: phoneInput.value
+        }));
+        localStorage.setItem('isLoggedIn', 'true');
+        
+        btn.textContent = 'Creating Account...';
         btn.style.opacity = '0.8';
-
+        
         setTimeout(() => {
-          localStorage.setItem('isLoggedIn', 'true');
           window.location.href = 'account.html'; 
         }, 800);
       });

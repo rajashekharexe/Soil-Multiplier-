@@ -24,6 +24,14 @@ function initTabs() {
       document.getElementById(targetId).classList.add('active');
     });
   });
+
+  const sidebarLogoutBtn = document.getElementById('sidebar-logout-btn');
+  if (sidebarLogoutBtn) {
+    sidebarLogoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('isLoggedIn');
+      window.location.href = 'index.html';
+    });
+  }
 }
 
 // --- Mock Backend Setup ---
@@ -113,13 +121,7 @@ async function loadData() {
     document.getElementById('prof-phone').value = user.phone || '';
   }
 
-  const farm = await api.getFarmProfile();
-  if (farm) {
-    document.getElementById('farm-acres').value = farm.acres || '';
-    document.getElementById('farm-soil').value = farm.soil || 'Loamy';
-    document.getElementById('farm-crops').value = farm.crops || '';
-    document.getElementById('farm-irrigation').value = farm.irrigation || 'Drip';
-  }
+
 
   renderAddresses();
   renderOrders();
@@ -143,24 +145,7 @@ document.getElementById('profile-form').addEventListener('submit', async (e) => 
   }, 500);
 });
 
-// Farm Save Event
-document.getElementById('farm-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const btn = e.target.querySelector('button');
-  btn.textContent = 'Saving...';
-  
-  await api.saveFarmProfile({
-    acres: document.getElementById('farm-acres').value,
-    soil: document.getElementById('farm-soil').value,
-    crops: document.getElementById('farm-crops').value,
-    irrigation: document.getElementById('farm-irrigation').value
-  });
 
-  setTimeout(() => {
-    btn.textContent = 'Updated!';
-    setTimeout(() => btn.textContent = 'Update Farm Profile', 2000);
-  }, 500);
-});
 
 // --- Address Logic ---
 const addressFormContainer = document.getElementById('address-form-container');
@@ -185,10 +170,14 @@ addressForm.addEventListener('submit', async (e) => {
   
   const newAddress = {
     id: 'addr_' + Date.now(),
-    label: document.getElementById('addr-label').value,
-    street: document.getElementById('addr-street').value,
+    name: document.getElementById('addr-name').value,
+    phone: document.getElementById('addr-phone').value,
+    house: document.getElementById('addr-house').value,
+    area: document.getElementById('addr-area').value,
     city: document.getElementById('addr-city').value,
+    state: document.getElementById('addr-state').value,
     pin: document.getElementById('addr-pin').value,
+    label: document.getElementById('addr-label').value,
     isDefault: document.getElementById('addr-default').checked
   };
 
@@ -215,9 +204,13 @@ async function renderAddresses() {
     card.className = `card-box ${addr.isDefault ? 'default' : ''}`;
     card.innerHTML = `
       ${addr.isDefault ? '<div class="card-badge">Default</div>' : ''}
-      <h3>${addr.label}</h3>
-      <p>${addr.street}</p>
-      <p>${addr.city}, PIN: ${addr.pin}</p>
+      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+        <h3 style="margin: 0;">${addr.label}</h3>
+      </div>
+      <p style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-color);">${addr.name || 'John Doe'} | ${addr.phone || '+91 9876543210'}</p>
+      <p style="margin-bottom: 0.2rem; color: #718096; font-size: 0.95rem;">${addr.house || addr.street || ''}, ${addr.area || ''}</p>
+      <p style="margin-bottom: 0.2rem; color: #718096; font-size: 0.95rem;">${addr.city || ''}, ${addr.state || ''}</p>
+      <p style="color: #718096; font-size: 0.95rem;">PIN: ${addr.pin || ''}</p>
       <div class="card-actions">
         <button class="btn-outline" onclick="deleteAddress('${addr.id}')">Delete</button>
       </div>
@@ -293,3 +286,20 @@ window.cancelOrder = async (id) => {
     renderOrders();
   }
 };
+
+// --- Payment Preference Logic ---
+const paymentRadios = document.querySelectorAll('input[name="payment-pref"]');
+const savedPref = localStorage.getItem('paymentPref');
+if (savedPref) {
+  paymentRadios.forEach(radio => {
+    if (radio.value === savedPref) radio.checked = true;
+  });
+}
+paymentRadios.forEach(radio => {
+  radio.addEventListener('change', (e) => {
+    if (e.target.checked) {
+      localStorage.setItem('paymentPref', e.target.value);
+    }
+  });
+});
+

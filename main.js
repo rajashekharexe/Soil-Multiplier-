@@ -37,22 +37,28 @@ const airpods = { frame: 1 }
     images.push(new Image());
   }
 
-  // Load the first frame immediately so the hero section renders instantly
   images[0].src = currentFrame(1);
 
   const preloaderText = new SplitType('.reveal-text', { types: 'chars' });
   const tl = gsap.timeline({ paused: true });
 
   function render() {
-    context.clearRect(0, 0, canvas.width, canvas.height)
-    const frameIndex = Math.round(airpods.frame - 1)
-    const img = images[frameIndex];
-    if (img && img.complete && img.naturalWidth > 0) {
-      context.drawImage(img, 0, 0)
+    let targetIndex = Math.round(airpods.frame - 1);
+    
+    // If the exact frame isn't loaded yet, find the closest previous frame that IS loaded!
+    // This prevents the screen from going black when scrolling fast over the internet!
+    while (targetIndex >= 0) {
+      const img = images[targetIndex];
+      if (img && img.complete && img.naturalWidth > 0) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(img, 0, 0);
+        break; // Successfully drawn!
+      }
+      targetIndex--; // Fall back to the previous frame
     }
   }
 
-  // Animate video frames on scroll, locked to a perfect 950vh length!
+  // Animate video frames on scroll
   gsap.to(airpods, {
     frame: frameCount,
     snap: 'frame',
@@ -64,7 +70,7 @@ const airpods = { frame: 1 }
       scrub: 0.5
     },
     onUpdate: render
-  })
+  });
 
   let preloaderStarted = false;
   function startPreloader() {
@@ -77,10 +83,16 @@ const airpods = { frame: 1 }
     render();
     startPreloader();
     
-    // Now that the first frame is visible, load all the other frames in the background!
-    // This prevents the browser from choking on 500 simultaneous requests.
+    // Background load the rest of the frames
     for (let i = 2; i <= frameCount; i++) {
-      images[i - 1].src = currentFrame(i);
+      const img = images[i - 1];
+      img.onload = () => {
+        // If this image finishes loading and it's currently the frame the user is looking at, re-render immediately!
+        if (Math.round(airpods.frame - 1) === i - 1) {
+          render();
+        }
+      };
+      img.src = currentFrame(i);
     }
   };
   
@@ -88,13 +100,15 @@ const airpods = { frame: 1 }
     images[0].onload();
   }
 
-  // Fallback: If Vercel/network is extremely slow, reveal the site anyway after 4 seconds
   setTimeout(() => {
     startPreloader();
-    // Start loading the rest even if the first frame is still struggling
     for (let i = 2; i <= frameCount; i++) {
       if (!images[i - 1].src) {
-         images[i - 1].src = currentFrame(i);
+         const img = images[i - 1];
+         img.onload = () => {
+           if (Math.round(airpods.frame - 1) === i - 1) render();
+         };
+         img.src = currentFrame(i);
       }
     }
   }, 4000);

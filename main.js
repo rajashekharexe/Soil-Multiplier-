@@ -72,6 +72,17 @@ const airpods = { frame: 1 }
     onUpdate: render
   });
 
+  // Fade out the static product pouch immediately as you start scrolling
+  gsap.to('.hero-image-wrapper', {
+    opacity: 0,
+    scrollTrigger: {
+      trigger: '#smooth-content',
+      start: 'top top',
+      end: '+=500', // Fade out over 500px of scroll
+      scrub: true
+    }
+  });
+
   let preloaderStarted = false;
   function startPreloader() {
     if (preloaderStarted) return;

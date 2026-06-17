@@ -512,7 +512,7 @@ html.lenis {
   pointer-events: none;
 }
 .hero-image-wrapper {
-  display: none; /* Hide placeholder since we have background video */
+  display: flex;
 }
 .fallback-pack {
   width: 300px;

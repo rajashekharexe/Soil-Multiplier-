@@ -33,18 +33,23 @@ const currentFrame = index => `/frames/frame_${String(index).padStart(4, '0')}.j
 const images = []
 const airpods = { frame: 1 }
 
-for (let i = 1; i <= frameCount; i++) {
-  const img = new Image()
-  img.src = currentFrame(i)
-  images.push(img)
-}
+  for (let i = 1; i <= frameCount; i++) {
+    images.push(new Image());
+  }
+
+  // Load the first frame immediately so the hero section renders instantly
+  images[0].src = currentFrame(1);
 
   const preloaderText = new SplitType('.reveal-text', { types: 'chars' });
   const tl = gsap.timeline({ paused: true });
 
   function render() {
     context.clearRect(0, 0, canvas.width, canvas.height)
-    context.drawImage(images[airpods.frame - 1], 0, 0)
+    const frameIndex = Math.round(airpods.frame - 1)
+    const img = images[frameIndex];
+    if (img && img.complete && img.naturalWidth > 0) {
+      context.drawImage(img, 0, 0)
+    }
   }
 
   // Animate video frames on scroll, locked to a perfect 950vh length!
@@ -71,15 +76,28 @@ for (let i = 1; i <= frameCount; i++) {
   images[0].onload = () => {
     render();
     startPreloader();
+    
+    // Now that the first frame is visible, load all the other frames in the background!
+    // This prevents the browser from choking on 500 simultaneous requests.
+    for (let i = 2; i <= frameCount; i++) {
+      images[i - 1].src = currentFrame(i);
+    }
   };
   
   if (images[0].complete) {
-    render();
-    startPreloader();
+    images[0].onload();
   }
 
   // Fallback: If Vercel/network is extremely slow, reveal the site anyway after 4 seconds
-  setTimeout(startPreloader, 4000);
+  setTimeout(() => {
+    startPreloader();
+    // Start loading the rest even if the first frame is still struggling
+    for (let i = 2; i <= frameCount; i++) {
+      if (!images[i - 1].src) {
+         images[i - 1].src = currentFrame(i);
+      }
+    }
+  }, 4000);
   
   // Set initial states for Ripple Focus
   gsap.set(preloaderText.chars, { opacity: 0, scale: 1.5, filter: 'blur(20px)' });

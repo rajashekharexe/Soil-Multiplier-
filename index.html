@@ -112,11 +112,11 @@
 
         <!-- Video Canvas Background -->
         <canvas id="video-canvas"></canvas>
-        <div id="video-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 40%, transparent 100%); z-index: 1; pointer-events: none;"></div>
 
         <!-- Hero Section -->
-        <section class="hero">
-          <div class="hero-content" style="flex-direction: row; align-items: center; justify-content: space-between; gap: 2rem;">
+        <section class="hero" style="position: relative;">
+          <div class="hero-gradient-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100vh; background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 40%, transparent 100%); pointer-events: none; z-index: 0;"></div>
+          <div class="hero-content" style="position: relative; z-index: 1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 2rem;">
             <div class="hero-text-area" style="flex: 1.2;">
               <h1 class="hero-title">
                 <div class="title-line">Healthy Soil.</div>

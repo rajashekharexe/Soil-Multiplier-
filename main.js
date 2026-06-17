@@ -39,29 +39,47 @@ for (let i = 1; i <= frameCount; i++) {
   images.push(img)
 }
 
-images[0].onload = render
-function render() {
-  context.clearRect(0, 0, canvas.width, canvas.height)
-  context.drawImage(images[airpods.frame - 1], 0, 0)
-}
-
-// Animate video frames on scroll, locked to a perfect 950vh length!
-gsap.to(airpods, {
-  frame: frameCount,
-  snap: 'frame',
-  ease: 'none',
-  scrollTrigger: {
-    trigger: '#smooth-content',
-    start: 'top top',
-    end: () => "+=" + (window.innerHeight * 9.5), // Lock the video scroll length to exactly 950vh to permanently preserve perfect timing
-    scrub: 0.5 // smooth scrubbing
-  },
-  onUpdate: render
-})
-
-
   const preloaderText = new SplitType('.reveal-text', { types: 'chars' });
-  const tl = gsap.timeline();
+  const tl = gsap.timeline({ paused: true });
+
+  function render() {
+    context.clearRect(0, 0, canvas.width, canvas.height)
+    context.drawImage(images[airpods.frame - 1], 0, 0)
+  }
+
+  // Animate video frames on scroll, locked to a perfect 950vh length!
+  gsap.to(airpods, {
+    frame: frameCount,
+    snap: 'frame',
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '#smooth-content',
+      start: 'top top',
+      end: () => "+=" + (window.innerHeight * 9.5),
+      scrub: 0.5
+    },
+    onUpdate: render
+  })
+
+  let preloaderStarted = false;
+  function startPreloader() {
+    if (preloaderStarted) return;
+    preloaderStarted = true;
+    tl.play();
+  }
+
+  images[0].onload = () => {
+    render();
+    startPreloader();
+  };
+  
+  if (images[0].complete) {
+    render();
+    startPreloader();
+  }
+
+  // Fallback: If Vercel/network is extremely slow, reveal the site anyway after 4 seconds
+  setTimeout(startPreloader, 4000);
   
   // Set initial states for Ripple Focus
   gsap.set(preloaderText.chars, { opacity: 0, scale: 1.5, filter: 'blur(20px)' });

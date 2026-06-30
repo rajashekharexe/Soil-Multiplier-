@@ -378,6 +378,11 @@
     margin-bottom: 24px;
   }
 
+  /* Force dark footer on mobile */
+  .site-footer {
+    background-color: #020617 !important;
+  }
+
   .mp-label {
     font-size: 0.9rem;
     font-weight: 600;

@@ -134,11 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
       qty: currentQty,
       weight: parsedWeight,
       total: currentPrice * currentQty,
-      image: '/kad-multiplier-cropped.png'
+      image: 'kad-multiplier-cropped.png'
     };
     
     localStorage.setItem('kadCart', JSON.stringify([cartData]));
-    window.location.href = '/checkout.html';
+    window.location.href = 'checkout.html';
   }
 
   addToCartBtns.forEach(btn => {
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (headerCartBtn) {
     headerCartBtn.addEventListener('click', () => {
-      window.location.href = '/checkout.html';
+      window.location.href = 'checkout.html';
     });
   }
 

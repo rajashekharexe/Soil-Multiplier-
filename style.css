@@ -2787,3 +2787,54 @@ body.dark-mode #navbar.scrolled {
   }
   .site-footer p { margin-left: 0; margin-right: auto; }
 }
+
+/* ==========================================================================
+   MOBILE OPTIMIZATION FOR CHECKOUT (Prevent touching bezels, stack panels)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .checkout-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .checkout-main {
+    padding: 2rem 1.5rem;
+    border-right: none;
+    order: 2; /* Move form below summary */
+  }
+
+  .checkout-sidebar {
+    padding: 2rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    order: 1; /* Move summary to top */
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr; /* Stack all form inputs */
+  }
+
+  .full-width {
+    grid-column: span 1; /* Fix grid overflow */
+  }
+
+  .payment-method-box {
+    padding: 1rem;
+  }
+
+  .method-content {
+    padding-left: 1rem; /* Reduce left padding on mobile */
+  }
+
+  .qr-container {
+    flex-direction: column; /* Stack QR code and text */
+    text-align: center;
+  }
+
+  .method-title {
+    font-size: 0.95rem;
+  }
+
+  .checkout-submit-btn {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+}

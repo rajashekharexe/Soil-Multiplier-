@@ -1,0 +1,827 @@
+/* ==========================================================================
+   APEX MOBILE UI/UX MASTER STYLES
+   ========================================================================== */
+
+/* Hide mobile view by default (on desktop) */
+.mobile-only {
+  display: none !important;
+}
+
+/* Base Mobile Setup */
+@media (max-width: 767px) {
+  .desktop-only {
+    display: none !important;
+  }
+  
+  .mobile-only {
+    display: block !important;
+  }
+  
+  /* Reset navbar to not interfere with mobile */
+  .navbar {
+    display: none !important;
+  }
+
+  body {
+    background-color: #f8fafc; /* Premium subtle off-white */
+    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ----------------------------------------------------------------------
+     MOBILE HEADER
+     ---------------------------------------------------------------------- */
+  .mobile-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    z-index: 100;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  .mobile-header .logo {
+    color: #0f172a !important;
+  }
+
+  .mh-back-btn, .mh-cart-btn, .mh-share-btn {
+    background: none;
+    border: none;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+  }
+  
+  .mh-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  .mh-cart-btn {
+    position: relative;
+  }
+
+  .mh-cart-badge {
+    position: absolute;
+    top: 4px;
+    right: 2px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  .mh-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+  }
+
+  /* ----------------------------------------------------------------------
+     MOBILE HERO (CINEMATIC)
+     ---------------------------------------------------------------------- */
+  .mobile-hero {
+    position: relative;
+    padding-top: 80px; /* Account for header */
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .mh-bg-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 65%;
+    background: url('/frames/frame_0001.jpg') center/cover; /* Reusing first frame */
+    z-index: 0;
+  }
+  
+  .mh-bg-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Subtle noise + dramatic fade to white */
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 70%, #fff 100%);
+  }
+
+  .mh-badges {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    margin-top: 10px;
+  }
+
+  .badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  .best-seller {
+    background: #4ade80;
+    color: #14532d;
+  }
+
+  .new-packing {
+    background: #1e293b;
+    color: #fff;
+  }
+
+  .mh-content {
+    position: relative;
+    z-index: 10;
+    padding: 20px;
+    margin-top: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mh-rating {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .mh-rating-score {
+    font-weight: 700;
+    color: #b45309;
+  }
+
+  .mh-stars {
+    color: #fbbf24;
+    font-size: 1rem;
+    letter-spacing: 1px;
+  }
+
+  .mh-rating-count {
+    color: #64748b;
+    font-size: 0.8rem;
+  }
+
+  .mh-product-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(2.8rem, 12vw, 3.8rem);
+    font-weight: 900;
+    line-height: 1.1;
+    color: #0f172a;
+    margin: 0 0 12px 0;
+    letter-spacing: -1px;
+  }
+
+  .mh-product-title .highlight {
+    color: #16a34a;
+  }
+
+  .mh-product-subtitle {
+    display: inline-block;
+    background: #0f172a;
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+  }
+
+  .mh-product-desc {
+    font-size: 1rem;
+    color: #334155;
+    line-height: 1.5;
+    max-width: 90%;
+    margin: 0 auto 24px auto;
+  }
+
+  .mh-product-image-container {
+    position: relative;
+    width: 75%;
+    margin: 0 auto;
+    z-index: 5;
+    perspective: 1000px;
+    display: flex;
+    justify-content: center;
+    transform: translateY(-20px);
+  }
+
+  .mh-product-image {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    filter: drop-shadow(0 25px 35px rgba(0,0,0,0.25));
+    transform: rotateY(-5deg) rotateX(5deg);
+  }
+
+  /* ----------------------------------------------------------------------
+     TRUST BADGES (HORIZONTAL SCROLL)
+     ---------------------------------------------------------------------- */
+  .mobile-trust-badges {
+    background: #fff;
+    padding: 20px 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .mtb-scroll {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
+    padding: 0 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Hide scrollbar */
+  }
+  .mtb-scroll::-webkit-scrollbar { display: none; }
+
+  .mtb-item {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .mtb-icon {
+    font-size: 1.5rem;
+  }
+
+  .mtb-item span {
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    color: #0f172a;
+  }
+
+  .mtb-item small {
+    font-weight: 400;
+    color: #64748b;
+    font-size: 0.75rem;
+  }
+
+  /* ----------------------------------------------------------------------
+     PRICING & SELECTION
+     ---------------------------------------------------------------------- */
+  .mobile-purchase {
+    background: #fff;
+    padding: 24px 20px;
+    margin-top: 12px;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .mp-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 4px;
+  }
+
+  .mp-current-price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .mp-mrp {
+    font-size: 1.1rem;
+    color: #94a3b8;
+    text-decoration: line-through;
+    margin: 0 8px;
+  }
+
+  .mp-discount {
+    background: #dcfce7;
+    color: #166534;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transform: translateY(-4px);
+    display: inline-block;
+  }
+
+  .mp-qty-selector {
+    display: flex;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 30px;
+    overflow: hidden;
+  }
+
+  .mp-qty-btn {
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #scroll-cursor {
+    display: none !important;
+  }
+
+  .mp-qty-val {
+    width: 30px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #0f172a !important;
+  }
+
+  .mp-tax-info {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 24px;
+  }
+
+  .mp-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .mp-variant-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .mp-variant-btn {
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+  }
+
+  .mp-variant-btn.active {
+    border-color: #22c55e;
+    background: #f0fdf4;
+  }
+
+  .mp-v-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #0f172a;
+  }
+  .mp-variant-btn.active .mp-v-title { color: #166534; }
+
+  .mp-v-price {
+    font-size: 0.8rem;
+    color: #64748b;
+  }
+  .mp-variant-btn.active .mp-v-price { color: #15803d; font-weight: 600; }
+
+  .mp-shipping-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: #f8fafc;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+  }
+
+  .mp-sb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #334155;
+    flex: 1 1 40%;
+  }
+  
+  .mp-sb svg {
+    color: #22c55e;
+  }
+
+  .mp-action-buttons {
+    display: flex;
+    gap: 12px;
+  }
+
+  .mp-add-cart-btn, .mp-buy-now-btn {
+    flex: 1;
+    height: 52px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+  }
+
+  .mp-add-cart-btn {
+    background: #14532d;
+    color: #fff;
+  }
+
+  .mp-buy-now-btn {
+    background: #fff;
+    color: #22c55e;
+    border: 2px solid #22c55e;
+  }
+
+  /* ----------------------------------------------------------------------
+     FEATURES
+     ---------------------------------------------------------------------- */
+  .mobile-features {
+    background: #fff;
+    padding: 32px 20px;
+    margin-top: 12px;
+  }
+
+  .mf-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #0f172a;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .mf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .mf-card {
+    background: #f8fafc;
+    padding: 20px 16px;
+    border-radius: 16px;
+    text-align: center;
+    border: 1px solid #f1f5f9;
+  }
+
+  .mf-icon {
+    font-size: 2rem;
+    margin-bottom: 12px;
+  }
+
+  .mf-card h4 {
+    margin: 0 0 4px 0;
+    font-size: 0.9rem;
+    color: #0f172a;
+  }
+
+  .mf-card p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  /* ----------------------------------------------------------------------
+     STICKY BOTTOM BAR
+     ---------------------------------------------------------------------- */
+  .mobile-sticky-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding: 12px 16px 24px 16px; /* Extra padding for iOS home indicator */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .mobile-sticky-bar.visible {
+    transform: translateY(0);
+  }
+
+  .msb-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .msb-img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 4px;
+  }
+
+  .msb-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .msb-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  .msb-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .msb-price {
+    font-weight: 800;
+    font-size: 1rem;
+    color: #0f172a;
+  }
+
+  .msb-mrp {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    text-decoration: line-through;
+  }
+
+  .msb-add-btn {
+    background: #14532d;
+    color: #fff;
+    border: none;
+    padding: 0 24px;
+    height: 44px;
+    border-radius: 22px;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  /* ==========================================================================
+     NEW MOBILE UPGRADES (Pipeline, Crops, FAQ, Contact)
+     ========================================================================== */
+  
+  .trust-font {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  /* ═══ MOBILE PIPELINE ═══ */
+  .mobile-pipeline-section {
+    padding: 60px 20px;
+    background: #0f172a;
+    color: white;
+  }
+  .mp-title {
+    font-size: 2rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #4ade80;
+  }
+  .mp-timeline {
+    position: relative;
+    padding-left: 30px;
+  }
+  .mp-timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 11px;
+    width: 2px;
+    background: linear-gradient(to bottom, #16a34a, rgba(22, 163, 74, 0.2));
+  }
+  .mp-step {
+    position: relative;
+    margin-bottom: 40px;
+  }
+  .mp-step-num {
+    position: absolute;
+    left: -42px;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    background: #16a34a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 12px;
+    box-shadow: 0 0 10px rgba(22, 163, 74, 0.5);
+  }
+  .mp-step-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: white;
+  }
+  .mp-step-desc {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+
+  /* ═══ CROPS MARQUEE ═══ */
+  .mobile-crops-section {
+    padding: 40px 0;
+    background: white;
+    overflow: hidden;
+  }
+  .mc-title {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 20px;
+  }
+  .mc-track {
+    display: flex;
+    gap: 12px;
+    width: max-content;
+    animation: mc-scroll 20s linear infinite;
+  }
+  @keyframes mc-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .mc-pill {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .mc-pill span {
+    font-size: 1.2rem;
+  }
+
+  /* ═══ MOBILE FAQ ═══ */
+  .mobile-faq-section {
+    padding: 60px 20px;
+    background: #f8fafc;
+  }
+  .mfaq-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #0f172a;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .mfaq-item {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .mfaq-q {
+    width: 100%;
+    padding: 16px 20px;
+    background: none;
+    border: none;
+    text-align: left;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #0f172a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: inherit;
+  }
+  .mfaq-icon {
+    font-size: 1.5rem;
+    color: #16a34a;
+    transition: transform 0.3s;
+  }
+  .mfaq-a {
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s, padding 0.3s;
+  }
+  .mfaq-a p {
+    font-size: 0.95rem;
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .mfaq-item.active .mfaq-a {
+    max-height: 500px;
+  }
+  .mfaq-item.active .mfaq-icon {
+    transform: rotate(45deg);
+  }
+
+  /* ═══ MOBILE LEAD FORM ═══ */
+  .mobile-contact-section {
+    padding: 60px 20px;
+    background: #064e3b;
+    color: white;
+  }
+  .mform-container {
+    background: white;
+    border-radius: 20px;
+    padding: 30px 20px;
+    color: #0f172a;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  }
+  .mform-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .mform-sub {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 24px;
+  }
+  .mform-group {
+    margin-bottom: 16px;
+  }
+  .mform-input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    background: #f8fafc;
+  }
+  .mform-btn {
+    width: 100%;
+    background: #16a34a;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 16px;
+    border: none;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Hide the desktop video canvas logic for mobile view */
+  .mobile-only .video-canvas {
+    display: none !important;
+  }
+}

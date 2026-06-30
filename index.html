@@ -20,17 +20,13 @@
     <script type="module" src="/mobile.js" defer></script>
     <style>
       /* FORCE OVERRIDE: Prevent cached external CSS from ruining visibility */
-      @media (max-width: 1024px) {
+      @media (max-width: 768px) {
         .desktop-only { display: none !important; }
         .mobile-only { display: block !important; }
       }
-      @media (min-width: 1025px) {
+      @media (min-width: 769px) {
         .mobile-only { display: none !important; }
-        .desktop-only { display: block !important; } /* If it's a block element */
-      }
-      /* Specifically hide navbar flex layout on mobile */
-      @media (max-width: 1024px) {
-        nav.navbar.desktop-only { display: none !important; }
+        /* Do NOT force display: block on desktop-only, let it inherit flex/grid normally */
       }
     </style>
   </head>

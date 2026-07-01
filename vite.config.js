@@ -13,7 +13,8 @@ export default defineConfig({
         forgotPassword: resolve(__dirname, 'forgot-password.html'),
         productInfo: resolve(__dirname, 'product-info.html'),
         privacy: resolve(__dirname, 'privacy.html'),
-        terms: resolve(__dirname, 'terms.html')
+        terms: resolve(__dirname, 'terms.html'),
+        admin: resolve(__dirname, 'admin.html')
       }
     }
   }

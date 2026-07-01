@@ -1,4 +1,7 @@
-// nav.js - Shared Navigation & Mock Auth Logic
+import { auth } from './firebase.js';
+import { onAuthStateChanged, signOut } from "firebase/auth";
+
+// nav.js - Shared Navigation & Auth Logic
 document.addEventListener('DOMContentLoaded', () => {
   const profileSection = document.getElementById('profile-section');
   const profileBtn = document.getElementById('profile-btn');
@@ -7,15 +10,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const logoutBtn = document.getElementById('logout-btn');
 
   if (profileBtn && profileSection) {
-    // Check mock auth state
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    if (isLoggedIn) {
-      if (authOutState) authOutState.style.display = 'none';
-      if (authInState) authInState.style.display = 'block';
-    } else {
-      if (authOutState) authOutState.style.display = 'block';
-      if (authInState) authInState.style.display = 'none';
-    }
+    // Check auth state via Firebase
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        if (authOutState) authOutState.style.display = 'none';
+        if (authInState) authInState.style.display = 'block';
+      } else {
+        if (authOutState) authOutState.style.display = 'block';
+        if (authInState) authInState.style.display = 'none';
+      }
+    });
 
     // Toggle dropdown
     profileBtn.addEventListener('click', (e) => {
@@ -34,8 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Handle Logout
   if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('isLoggedIn');
-      window.location.href = 'index.html'; // Redirect to home after logout
+      signOut(auth).then(() => {
+        localStorage.removeItem('isLoggedIn');
+        window.location.href = 'index.html'; // Redirect to home after logout
+      }).catch((error) => {
+        console.error('Logout error', error);
+      });
     });
   }
 });

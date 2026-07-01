@@ -101,26 +101,11 @@
               </svg>
             </div>
 
-            <input type="password" id="password" class="form-input" placeholder=" " required>
-            <label for="password" class="form-label">Password</label>
-            <button type="button" class="toggle-password" data-target="password">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-            </button>
+            <input type="text" id="otp" class="form-input" placeholder=" " maxlength="6" inputmode="numeric" style="display: none;" required>
+            <label for="otp" id="otp-label" class="form-label" style="display: none;">6-Digit OTP Code</label>
           </div>
 
-          <div class="form-group password-group" id="confirm-password-group">
-            <input type="password" id="confirm-password" class="form-input" placeholder=" " required>
-            <label for="confirm-password" class="form-label">Confirm Password</label>
-            <button type="button" class="toggle-password" data-target="confirm-password">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-            </button>
-          </div>
+          <div id="recaptcha-container" style="margin-top: 1rem; display: flex; justify-content: center;"></div>
 
           <div class="form-options" id="form-options" style="justify-content: flex-end;">
             <span class="forgot-password" style="font-size: 0.8rem;">By signing up, you agree to our Terms.</span>
@@ -153,45 +138,9 @@
                 <path d="M68 80 C68 65, 86 65, 86 80 Z" fill="#ff8a3d" stroke="#2d3748" stroke-width="2.5" />
               </svg>
             </div>
-            <button type="submit" class="login-submit-btn" style="position: relative; z-index: 1; margin-top: 0;">Sign Up</button>
+            <button type="submit" id="main-auth-btn" class="login-submit-btn">Send OTP Code</button>
           </div>
           
-          <!-- Google Button with Peeking Character -->
-          <div class="button-character-wrapper" style="position: relative; margin-top: 1rem;" onmouseenter="this.querySelector('.peek-character').style.transform = 'translateY(-100%)'" onmouseleave="this.querySelector('.peek-character').style.transform = 'translateY(0)'">
-            <div class="peek-character-container" style="position: absolute; bottom: calc(100% - 6px); right: 25px; width: 60px; height: 48px; overflow: hidden; pointer-events: none; z-index: 2;">
-              <svg class="peek-character" viewBox="0 0 100 80" width="60" height="48" style="position: absolute; top: 100%; left: 0; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-                <!-- Body -->
-                <path d="M20 80 C20 30, 35 10, 50 10 C65 10, 80 30, 80 80 Z" fill="#ff9838" stroke="#2d3748" stroke-width="2.5" />
-                <!-- Highlight -->
-                <path d="M28 75 C28 40, 40 20, 50 20 C60 20, 72 40, 72 75" fill="none" stroke="#ffcf9e" stroke-width="4" stroke-linecap="round" opacity="0.5" />
-                <!-- Cheeks -->
-                <ellipse cx="32" cy="60" rx="8" ry="4" fill="#ff6b6b" opacity="0.8" />
-                <ellipse cx="68" cy="60" rx="8" ry="4" fill="#ff6b6b" opacity="0.8" />
-                <!-- Left Eye -->
-                <circle cx="38" cy="50" r="10" fill="#2d3748" />
-                <circle cx="41" cy="47" r="3.5" fill="#fff" />
-                <circle cx="36" cy="53" r="1.5" fill="#fff" />
-                <!-- Right Eye -->
-                <circle cx="62" cy="50" r="10" fill="#2d3748" />
-                <circle cx="65" cy="47" r="3.5" fill="#fff" />
-                <circle cx="60" cy="53" r="1.5" fill="#fff" />
-                <!-- Mouth -->
-                <path d="M46 60 Q50 65 54 60" fill="none" stroke="#2d3748" stroke-width="3" stroke-linecap="round" />
-                <!-- Left Hand -->
-                <path d="M14 80 C14 65, 32 65, 32 80 Z" fill="#ff8a3d" stroke="#2d3748" stroke-width="2.5" />
-                <!-- Right Hand -->
-                <path d="M68 80 C68 65, 86 65, 86 80 Z" fill="#ff8a3d" stroke="#2d3748" stroke-width="2.5" />
-              </svg>
-            </div>
-            <button type="button" class="login-google-btn" style="position: relative; z-index: 1; margin-top: 0;">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12.04c0-.85-.08-1.66-.2-2.44H12v4.62h5.1c-.22 1.48-.88 2.74-1.93 3.58v2.96h3.11C20.1 19.05 21 15.82 21 12.04z" fill="#4285F4" stroke="none"/>
-                <path d="M12 21.24c2.53 0 4.65-.84 6.2-2.27l-3.11-2.96c-.84.56-1.92.89-3.1.89-2.38 0-4.4-1.6-5.11-3.76H3.7v3.05C5.26 19.33 8.35 21.24 12 21.24z" fill="#34A853" stroke="none"/>
-                <path d="M6.89 13.14c-.18-.56-.29-1.16-.29-1.78s.11-1.22.29-1.78V6.53H3.7C3.06 7.82 2.7 9.3 2.7 10.86s.36 3.04 1 4.33l3.19-2.05z" fill="#FBBC05" stroke="none"/>
-                <path d="M12 4.76c1.38 0 2.62.47 3.59 1.4l2.69-2.69C16.64 1.93 14.52 1.1 12 1.1 8.35 1.1 5.26 3.01 3.7 6.09l3.19 3.05C7.6 6.98 9.62 5.38 12 5.38z" fill="#EA4335" stroke="none"/>
-              </svg>
-              Sign Up with Google
-            </button>
           </div>
         </form>
 
@@ -203,48 +152,34 @@
   </div>
   <script>
     // --- Draggable Blob Logic ---
-    const nameInput = document.getElementById('name');
     const phoneInput = document.getElementById('phone');
-    const passInput = document.getElementById('password');
-    const confirmPassInput = document.getElementById('confirm-password');
-    const togglePassBtns = document.querySelectorAll('.toggle-password');
+    const nameInput = document.getElementById('name');
+    const otpInput = document.getElementById('otp');
     const leftEyes = document.querySelector('#blob-left .blob-eyes');
     const rightEyes = document.querySelector('#blob-right .blob-eyes');
-    const authError = document.getElementById('auth-error');
-    const authErrorText = document.getElementById('auth-error-text');
     
     // Initialize GSAP Draggable for the blobs
     Draggable.create(".blob-character", {
       type: "x,y",
       onPress: function() {
         gsap.to(this.target, { scale: 1.1, duration: 0.2 });
-        // Stop any current return flights if the user grabs them mid-air!
         gsap.killTweensOf(this.target, "x,y");
       },
       onRelease: function() {
         const el = this.target;
         const rect = el.getBoundingClientRect();
         
-        // Calculate distance to the bottom of the visible screen
         let fallDistance = window.innerHeight - rect.bottom - 10;
-        if (fallDistance < 0) fallDistance = 0; // Prevent upward falling
+        if (fallDistance < 0) fallDistance = 0; 
         
         const targetY = this.y + fallDistance;
 
-        // 1. Fall down with realistic gravity bounce
         gsap.to(el, { 
           y: targetY, 
           duration: 1.2, 
           ease: "bounce.out",
           onComplete: () => {
-            // 2. Fly rapidly back to their original assigned position
-            gsap.to(el, {
-              x: 0,
-              y: 0,
-              duration: 1,
-              ease: "elastic.out(1, 0.7)",
-              delay: 0.3
-            });
+            gsap.to(el, { x: 0, y: 0, duration: 1, ease: "elastic.out(1, 0.7)", delay: 0.3 });
           }
         });
         
@@ -252,22 +187,24 @@
       }
     });
 
-    let isPasswordVisible = false;
     let mouseTimeout;
 
     // Function to determine where the eyes should look when the mouse stops moving
     function updateIdleEyes() {
-      const active = document.activeElement;
-      if (active === phoneInput || active === nameInput) {
-        const length = Math.min(active.value.length, 25);
+      if (document.activeElement === phoneInput) {
+        const length = Math.min(phoneInput.value.length, 25);
         const leftX = 4 + (length / 25) * 3;
         const rightX = -7 + (length / 25) * 3;
+        
         gsap.to(leftEyes, { x: leftX, y: -6, duration: 0.2 });
         gsap.to(rightEyes, { x: rightX, y: -6, duration: 0.2 });
-      } else if ((active === passInput || active === confirmPassInput) && isPasswordVisible) {
-        // Look directly at the visible password
-        gsap.to(leftEyes, { x: 5, y: 0, duration: 0.2 });
-        gsap.to(rightEyes, { x: -5, y: 0, duration: 0.2 });
+      } else if (document.activeElement === nameInput) {
+        gsap.to(leftEyes, { x: -4, y: -8, duration: 0.2 });
+        gsap.to(rightEyes, { x: -8, y: -8, duration: 0.2 });
+      } else if (document.activeElement === otpInput) {
+        // Look directly down at the OTP field
+        gsap.to(leftEyes, { x: 2, y: 4, duration: 0.2 });
+        gsap.to(rightEyes, { x: -2, y: 4, duration: 0.2 });
       } else {
         // Look forward (idle)
         gsap.to('.blob-eyes', { x: 0, y: 0, duration: 0.2 });
@@ -276,11 +213,7 @@
 
     // 1. Mouse & Touch Tracking
     function handlePointerMove(e) {
-      const active = document.activeElement;
-      if ((active === passInput || active === confirmPassInput) && !isPasswordVisible) return;
-
       clearTimeout(mouseTimeout);
-      
       let clientX = e.clientX;
       let clientY = e.clientY;
       
@@ -289,107 +222,40 @@
         clientY = e.touches[0].clientY;
       }
       
-      // Calculate global position mapped to a -5 to +5 pixel range for the pupils
       const moveX = (clientX / window.innerWidth) * 10 - 5;
       const moveY = (clientY / window.innerHeight) * 10 - 5;
       
       gsap.to('.blob-eyes', { x: moveX, y: moveY, duration: 0.1 });
-
-      // After 500ms of no movement, revert to idle logic (look at input or forward)
       mouseTimeout = setTimeout(updateIdleEyes, 500);
     }
 
     window.addEventListener('mousemove', handlePointerMove);
     window.addEventListener('touchmove', handlePointerMove);
 
-    // 2. Input Focus
-    [nameInput, phoneInput].forEach(input => {
-      input.addEventListener('focus', updateIdleEyes);
-      input.addEventListener('input', updateIdleEyes);
-      input.addEventListener('blur', updateIdleEyes);
-    });
+    // 2. Input Focus Events
+    phoneInput.addEventListener('focus', updateIdleEyes);
+    phoneInput.addEventListener('input', updateIdleEyes);
+    phoneInput.addEventListener('blur', updateIdleEyes);
 
-    // 3. Password Focus
-    [passInput, confirmPassInput].forEach(input => {
-      input.addEventListener('focus', () => {
+    nameInput.addEventListener('focus', updateIdleEyes);
+    nameInput.addEventListener('input', updateIdleEyes);
+    nameInput.addEventListener('blur', updateIdleEyes);
+
+    if(otpInput) {
+      otpInput.addEventListener('focus', () => {
         updateIdleEyes();
-        if (!isPasswordVisible) {
-          gsap.to('.blob-hand-l', { x: 18, y: -25, duration: 0.4, ease: 'back.out(1.5)' });
-          gsap.to('.blob-hand-r', { x: -18, y: -25, duration: 0.4, ease: 'back.out(1.5)' });
-        }
+        // Hands move up excitedly to point at the OTP!
+        gsap.to('.blob-hand-l', { x: 10, y: -10, duration: 0.4, ease: 'back.out(1.5)' });
+        gsap.to('.blob-hand-r', { x: -10, y: -10, duration: 0.4, ease: 'back.out(1.5)' });
       });
-      input.addEventListener('blur', () => {
+
+      otpInput.addEventListener('blur', () => {
         updateIdleEyes();
-        const active = document.activeElement;
-        // Only put hands down if not moving to the other password field
-        if (active !== passInput && active !== confirmPassInput) {
-          gsap.to(['.blob-hand-l', '.blob-hand-r'], { x: 0, y: 0, duration: 0.4, ease: 'power2.out' });
-        }
-      });
-    });
-
-    // 4. Toggle Password Visibility
-    togglePassBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetId = btn.getAttribute('data-target');
-        const targetInput = document.getElementById(targetId);
-        
-        if (targetInput.type === 'password') {
-          targetInput.type = 'text';
-          isPasswordVisible = true;
-          updateIdleEyes();
-          
-          if (document.activeElement === targetInput) {
-            gsap.to('.blob-hand-l', { y: -15, duration: 0.3, ease: 'power2.out' });
-            gsap.to('.blob-hand-r', { y: -15, duration: 0.3, ease: 'power2.out' });
-          }
-        } else {
-          targetInput.type = 'password';
-          isPasswordVisible = (passInput.type === 'text' || confirmPassInput.type === 'text');
-          
-          if (document.activeElement === targetInput) {
-            gsap.to('.blob-hand-l', { x: 18, y: -25, duration: 0.3, ease: 'back.out(1.5)' });
-            gsap.to('.blob-hand-r', { x: -18, y: -25, duration: 0.3, ease: 'back.out(1.5)' });
-          }
-        }
-      });
-    });
-
-    // --- Sign Up Form Submission ---
-    const loginForm = document.querySelector('.login-form');
-
-    if (loginForm) {
-      loginForm.addEventListener('submit', (e) => {
-        e.preventDefault(); 
-        
-        const btn = document.querySelector('.login-submit-btn');
-
-        // Validation Error UI
-        if (passInput.value !== confirmPassInput.value) {
-          authErrorText.textContent = "Passwords do not match.";
-          authError.style.display = "flex";
-          // Shake animation
-          gsap.fromTo(authError, { x: -5 }, { x: 5, duration: 0.05, yoyo: true, repeat: 5 });
-          return;
-        }
-        
-        authError.style.display = "none";
-        
-        // Simulate registration
-        localStorage.setItem('kadUser', JSON.stringify({
-          name: nameInput.value,
-          phone: phoneInput.value
-        }));
-        localStorage.setItem('isLoggedIn', 'true');
-        
-        btn.textContent = 'Creating Account...';
-        btn.style.opacity = '0.8';
-        
-        setTimeout(() => {
-          window.location.href = 'account.html'; 
-        }, 800);
+        gsap.to(['.blob-hand-l', '.blob-hand-r'], { x: 0, y: 0, duration: 0.4, ease: 'power2.out' });
       });
     }
+
   </script>
+  <script type="module" src="/register.js"></script>
 </body>
 </html>

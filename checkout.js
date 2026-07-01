@@ -1,5 +1,25 @@
 import './lenis-init.js';
+import { auth, db } from './firebase.js';
+import { collection, addDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+
 document.addEventListener('DOMContentLoaded', () => {
+  let currentUser = null;
+
+  // Protect the checkout page
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUser = user;
+      const chkPhone = document.getElementById('chk-phone');
+      if (chkPhone && user.phoneNumber) {
+        chkPhone.value = user.phoneNumber;
+      }
+    } else {
+      // Redirect to login if they try to checkout without an account
+      window.location.href = 'login.html';
+    }
+  });
+
   const methodOnline = document.getElementById('method-online');
   const methodCod = document.getElementById('method-cod');
   
@@ -24,18 +44,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Click on the box to select
-  methodOnline.addEventListener('click', (e) => {
-    // Prevent double firing if clicking input
-    if (e.target.tagName !== 'INPUT') radioOnline.checked = true;
-    updatePaymentMethods();
-  });
+  if (methodOnline) {
+    methodOnline.addEventListener('click', (e) => {
+      if (e.target.tagName !== 'INPUT') radioOnline.checked = true;
+      updatePaymentMethods();
+    });
+  }
 
-  methodCod.addEventListener('click', (e) => {
-    if (e.target.tagName !== 'INPUT') radioCod.checked = true;
-    updatePaymentMethods();
-  });
+  if (methodCod) {
+    methodCod.addEventListener('click', (e) => {
+      if (e.target.tagName !== 'INPUT') radioCod.checked = true;
+      updatePaymentMethods();
+    });
+  }
   
-  updatePaymentMethods();
+  if (radioOnline && radioCod) updatePaymentMethods();
 
   // --- Cart Summary Rendering ---
   function getCart() {
@@ -64,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
       checkoutItemsContainer.innerHTML = '<p style="padding: 1rem 0; color: #666;">Your cart is empty.</p>';
     }
     
-    cart.forEach((item, index) => {
+    cart.forEach((item) => {
       const itemTotal = item.price * item.qty;
       subtotal += itemTotal;
       totalWeight += (item.weight * item.qty);
@@ -81,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="item-name">KAD Multiplier</span>
             <span class="item-variant">${item.title} ${item.sub}</span>
           </div>
-          <div class="item-price">\u20B9 ${formatCurrency(itemTotal)}</div>
+          <div class="item-price">₹ ${formatCurrency(itemTotal)}</div>
         </div>
       `;
       checkoutItemsContainer.insertAdjacentHTML('beforeend', itemHtml);
@@ -90,9 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const shipping = totalWeight > 0 ? Math.ceil(totalWeight / 5) * 100 : 0;
     const grandTotal = subtotal + shipping;
     
-    checkoutSubtotalEl.innerHTML = '\u20B9 ' + formatCurrency(subtotal);
-    checkoutShippingEl.innerHTML = shipping > 0 ? '\u20B9 ' + formatCurrency(shipping) : 'Free';
-    checkoutTotalEl.innerHTML = '\u20B9 ' + formatCurrency(grandTotal);
+    checkoutSubtotalEl.innerHTML = '₹ ' + formatCurrency(subtotal);
+    checkoutShippingEl.innerHTML = shipping > 0 ? '₹ ' + formatCurrency(shipping) : 'Free';
+    checkoutTotalEl.innerHTML = '₹ ' + formatCurrency(grandTotal);
   }
 
   renderCheckoutSummary();
@@ -113,27 +136,82 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  checkoutForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+  if (checkoutForm) {
+    checkoutForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    const cart = getCart();
-    if (cart.length === 0) {
-      window.location.href = 'index.html';
-      return;
-    }
-
-    if (radioOnline.checked) {
-      if (!chkUtr.value || chkUtr.value.trim().length < 8) {
-        alert("Please enter your valid UTR or Transaction ID to confirm payment.");
-        chkUtr.focus();
+      if (!currentUser) {
+        alert("Please log in to complete your order.");
+        window.location.href = 'login.html';
         return;
       }
-    }
 
-    // Simulate successful order
-    successModal.classList.add('show');
-    localStorage.removeItem('kadCart');
-  });
+      const cart = getCart();
+      if (cart.length === 0) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      if (radioOnline.checked) {
+        if (!chkUtr.value || chkUtr.value.trim().length < 8) {
+          alert("Please enter your valid UTR or Transaction ID to confirm payment.");
+          chkUtr.focus();
+          return;
+        }
+      }
+
+      submitBtn.innerText = 'Processing Order...';
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = '0.7';
+
+      // Recalculate totals securely
+      let subtotal = 0;
+      let totalWeight = 0;
+      cart.forEach(item => {
+        subtotal += (item.price * item.qty);
+        totalWeight += (item.weight * item.qty);
+      });
+      const shipping = totalWeight > 0 ? Math.ceil(totalWeight / 5) * 100 : 0;
+      const grandTotal = subtotal + shipping;
+
+      const orderData = {
+        uid: currentUser.uid,
+        customerAuthPhone: currentUser.phoneNumber,
+        contactEmail: document.getElementById('chk-email').value.trim(),
+        contactPhone: document.getElementById('chk-phone').value.trim(),
+        shippingAddress: {
+          firstName: document.getElementById('chk-fname').value.trim(),
+          lastName: document.getElementById('chk-lname').value.trim(),
+          address: document.getElementById('chk-address').value.trim(),
+          city: document.getElementById('chk-city').value.trim(),
+          state: document.getElementById('chk-state').value.trim(),
+          pin: document.getElementById('chk-pin').value.trim(),
+        },
+        paymentMethod: radioOnline.checked ? 'QR_CODE' : 'COD',
+        utr: radioOnline.checked ? chkUtr.value.trim() : null,
+        items: cart,
+        subtotal: subtotal,
+        shipping: shipping,
+        total: grandTotal,
+        status: 'Pending',
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        await addDoc(collection(db, "orders"), orderData);
+        
+        // Show success modal
+        successModal.classList.add('show');
+        localStorage.removeItem('kadCart');
+      } catch (error) {
+        console.error("Error creating order: ", error);
+        alert("There was an error processing your order. Please try again.");
+        submitBtn.innerText = 'Confirm & Pay';
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+      }
+    });
+  }
 
   // --- QR Zoom Logic ---
   const qrImg = document.getElementById('qr-img');
@@ -147,18 +225,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
-
-// --- Auth State Navbar Update ---
-const navLoginLinks = document.querySelectorAll('.nav-login-link, .nav-signup-btn');
-if (localStorage.getItem('kadUser') || localStorage.getItem('kadOrders')) {
-  navLoginLinks.forEach(link => {
-    if (link.classList.contains('nav-login-link')) {
-      link.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; margin-bottom: 2px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> My Account`;
-      link.style.display = 'inline-flex';
-      link.style.alignItems = 'center';
-      link.href = 'account.html';
-    } else {
-      link.style.display = 'none'; // Hide Sign Up if logged in
-    }
-  });
-}

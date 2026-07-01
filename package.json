@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@studio-freight/lenis": "^1.0.42",
+    "firebase": "^12.15.0",
     "gsap": "^3.15.0",
     "split-type": "^0.3.4"
   }

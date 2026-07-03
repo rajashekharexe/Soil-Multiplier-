@@ -2613,6 +2613,18 @@ body.dark-mode #navbar.scrolled {
   .nav-links.mobile-active {
     display: flex;
   }
+
+  /* Mobile nav-dark overrides */
+  .navbar.nav-dark .hamburger-btn {
+    color: #1a202c;
+  }
+  .navbar.nav-dark .nav-links {
+    background: #ffffff;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  .navbar.nav-dark .nav-links a {
+    color: #1a202c;
+  }
   .nav-login-link, .nav-signup-btn { display: none !important; }
   .logo { font-size: 1.2rem; }
   

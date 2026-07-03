@@ -1,9 +1,10 @@
 import { auth } from './firebase.js';
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 const phoneInput = document.getElementById('phone');
 const passInput = document.getElementById('password');
 const btn = document.querySelector('.login-submit-btn');
+const googleBtn = document.querySelector('.login-google-btn');
 const authError = document.getElementById('auth-error');
 const authErrorText = document.getElementById('auth-error-text');
 const loginForm = document.querySelector('.login-form');
@@ -50,9 +51,42 @@ if (loginForm) {
       })
       .catch((error) => {
         console.error(error);
-        showError("Invalid phone number or password.");
+        
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+          showError("Account doesn't exist or wrong password. Please create an account.");
+        } else if (error.code === 'auth/wrong-password') {
+          showError("Wrong password. Please try again.");
+        } else {
+          showError("Invalid phone number or password.");
+        }
+        
         btn.textContent = 'Log In';
         btn.style.opacity = '1';
+      });
+  });
+}
+
+// Google Login
+if (googleBtn) {
+  googleBtn.addEventListener('click', () => {
+    const provider = new GoogleAuthProvider();
+    googleBtn.textContent = 'Connecting...';
+    googleBtn.style.opacity = '0.8';
+    
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // Success
+        googleBtn.textContent = 'Success!';
+        localStorage.setItem('isLoggedIn', 'true');
+        setTimeout(() => {
+          window.location.href = 'account.html';
+        }, 800);
+      })
+      .catch((error) => {
+        console.error(error);
+        showError("Google login failed.");
+        googleBtn.textContent = 'Log in with Google';
+        googleBtn.style.opacity = '1';
       });
   });
 }

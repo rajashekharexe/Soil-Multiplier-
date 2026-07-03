@@ -1,12 +1,14 @@
 import { auth, db } from './firebase.js';
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
+
 
 const nameInput = document.getElementById('name');
 const phoneInput = document.getElementById('phone');
 const passInput = document.getElementById('password');
 const confirmPassInput = document.getElementById('confirm-password');
 const btn = document.querySelector('.login-submit-btn');
+const googleBtn = document.querySelector('.login-google-btn');
 const authError = document.getElementById('auth-error');
 const authErrorText = document.getElementById('auth-error-text');
 const registerForm = document.querySelector('.login-form');
@@ -81,6 +83,41 @@ if (registerForm) {
         }
         btn.textContent = 'Sign Up';
         btn.style.opacity = '1';
+      });
+  });
+}
+
+if (googleBtn) {
+  googleBtn.addEventListener('click', () => {
+    const provider = new GoogleAuthProvider();
+    googleBtn.textContent = 'Connecting...';
+    googleBtn.style.opacity = '0.8';
+    
+    signInWithPopup(auth, provider)
+      .then(async (result) => {
+        const user = result.user;
+        
+        try {
+          await setDoc(doc(db, "users", user.uid), {
+            name: user.displayName || "Google User",
+            email: user.email || "",
+            createdAt: new Date().toISOString()
+          }, { merge: true });
+        } catch (dbError) {
+          console.error("Error saving user profile:", dbError);
+        }
+
+        googleBtn.textContent = 'Success!';
+        localStorage.setItem('isLoggedIn', 'true');
+        setTimeout(() => {
+          window.location.href = 'account.html';
+        }, 800);
+      })
+      .catch((error) => {
+        console.error(error);
+        showError("Google signup failed.");
+        googleBtn.textContent = 'Sign Up with Google';
+        googleBtn.style.opacity = '1';
       });
   });
 }

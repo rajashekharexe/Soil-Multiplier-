@@ -55,43 +55,47 @@ function initTabs() {
 async function loadData() {
   if (!currentUser) return;
   
-  // 1. Fetch User Profile
   const profName = document.getElementById('prof-name');
   const profEmail = document.getElementById('prof-email');
   const profPhone = document.getElementById('prof-phone');
-  
-  try {
-    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-    
-    // Determine Display Email
-    let displayEmail = "";
-    if (currentUser.email && !currentUser.email.endsWith('@kad-multiplier.com')) {
-      displayEmail = currentUser.email;
-    }
 
-    if (userDoc.exists()) {
-      const data = userDoc.data();
-      profName.value = data.name || currentUser.displayName || '';
-      
-      let phone = data.phone || '';
-      if (phone.startsWith('+91')) phone = phone.substring(3);
-      profPhone.value = phone;
-
-      if (!displayEmail && data.email && !data.email.endsWith('@kad-multiplier.com')) {
-        displayEmail = data.email;
-      }
-    } else {
-      // New user from Google Login
-      profName.value = currentUser.displayName || '';
-    }
-
-    profEmail.value = displayEmail;
-  } catch (error) {
-    console.error("Error fetching profile:", error);
+  // --- Step 1: Always populate from Firebase Auth immediately ---
+  // Email: show real Google email, hide fake phone-based email
+  if (currentUser.email && !currentUser.email.endsWith('@kad-multiplier.com')) {
+    profEmail.value = currentUser.email;
+  }
+  // Name from Google auth
+  if (currentUser.displayName) {
+    profName.value = currentUser.displayName;
   }
 
-  renderAddresses(); // Currently mock
-  renderOrders();    // Real Firebase Orders
+  // --- Step 2: Try to enrich from Firestore ---
+  try {
+    const userDocRef = doc(db, "users", currentUser.uid);
+    const userDoc = await getDoc(userDocRef);
+    
+    if (userDoc.exists()) {
+      const data = userDoc.data();
+      
+      // Override name from Firestore if available (user may have updated it)
+      if (data.name) profName.value = data.name;
+      
+      // Set phone - strip +91 prefix for display
+      let phone = data.phone || '';
+      if (phone.startsWith('+91')) phone = phone.substring(3);
+      if (phone) profPhone.value = phone;
+
+      // For phone users: email won't be in auth, check Firestore
+      if (!profEmail.value && data.email && !data.email.endsWith('@kad-multiplier.com')) {
+        profEmail.value = data.email;
+      }
+    }
+  } catch (error) {
+    console.error("Firestore read error (check security rules):", error);
+  }
+
+  renderAddresses();
+  renderOrders();
 }
 
 // Profile Save Event

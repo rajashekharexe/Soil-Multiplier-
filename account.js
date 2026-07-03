@@ -196,15 +196,8 @@ function renderAddresses() {
   
   let addresses = JSON.parse(localStorage.getItem('kadAddresses')) || [];
   if (addresses.length === 0) {
-    addresses = [{
-      id: 'addr_1',
-      label: 'Main Farm',
-      street: 'Survey No 42, Village Road, Near Old Banyan Tree',
-      city: 'Nashik',
-      pin: '422003',
-      isDefault: true
-    }];
-    localStorage.setItem('kadAddresses', JSON.stringify(addresses));
+    list.innerHTML = '<p style="color: var(--text-muted); padding: 1rem 0;">No saved addresses yet. Add one below.</p>';
+    return;
   }
 
   list.innerHTML = '';

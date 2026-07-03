@@ -11,8 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (user) {
       currentUser = user;
       const chkPhone = document.getElementById('chk-phone');
-      if (chkPhone && user.phoneNumber) {
-        chkPhone.value = user.phoneNumber;
+      // Extract phone from fake email (e.g. +919876543210@kad-multiplier.com)
+      if (chkPhone && user.email) {
+        let phone = user.email.split('@')[0];
+        if (phone.startsWith('+91')) {
+          phone = phone.substring(3); // Remove +91 for the input field
+        }
+        chkPhone.value = phone;
       }
     } else {
       // Redirect to login if they try to checkout without an account
@@ -176,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const orderData = {
         uid: currentUser.uid,
-        customerAuthPhone: currentUser.phoneNumber,
+        customerAuthPhone: currentUser.email ? currentUser.email.split('@')[0] : null,
         contactEmail: document.getElementById('chk-email').value.trim(),
         contactPhone: document.getElementById('chk-phone').value.trim(),
         shippingAddress: {

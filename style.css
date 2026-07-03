@@ -142,12 +142,19 @@ html.lenis {
 }
 
 /* Dynamic Dark Navbar for White Sections */
-.navbar.nav-dark {
-  color: #000;
+.navbar.nav-dark,
+.navbar.nav-dark a,
+.navbar.nav-dark .logo,
+.navbar.nav-dark .nav-links a,
+.navbar.nav-dark button {
+  color: #1a202c;
   filter: none;
-  background-color: rgba(255, 255, 255, 0.95);
+}
+.navbar.nav-dark {
+  background-color: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  text-shadow: none;
 }
 
 .logo {

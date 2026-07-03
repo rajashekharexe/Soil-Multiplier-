@@ -63,14 +63,10 @@ async function loadData() {
   try {
     const userDoc = await getDoc(doc(db, "users", currentUser.uid));
     
-    // Set Email (read-only)
-    if (currentUser.email) {
-      // If it's a fake email from phone auth, extract the phone and leave email blank
-      if (currentUser.email.endsWith('@kad-multiplier.com')) {
-        profEmail.value = "";
-      } else {
-        profEmail.value = currentUser.email; // From Google Login
-      }
+    // Determine Display Email
+    let displayEmail = "";
+    if (currentUser.email && !currentUser.email.endsWith('@kad-multiplier.com')) {
+      displayEmail = currentUser.email;
     }
 
     if (userDoc.exists()) {
@@ -80,10 +76,16 @@ async function loadData() {
       let phone = data.phone || '';
       if (phone.startsWith('+91')) phone = phone.substring(3);
       profPhone.value = phone;
+
+      if (!displayEmail && data.email && !data.email.endsWith('@kad-multiplier.com')) {
+        displayEmail = data.email;
+      }
     } else {
       // New user from Google Login
       profName.value = currentUser.displayName || '';
     }
+
+    profEmail.value = displayEmail;
   } catch (error) {
     console.error("Error fetching profile:", error);
   }

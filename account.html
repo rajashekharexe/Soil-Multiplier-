@@ -126,20 +126,22 @@
           <!-- 1. Profile Tab -->
           <div class="tab-pane active" id="tab-profile">
             <h2>Personal Information</h2>
+            <p id="profile-message" style="color: var(--text-muted); margin-bottom: 1.5rem;">Please complete your profile details to continue.</p>
+            <div id="profile-error" style="display:none; color:#ff4d4f; background:rgba(255,77,79,0.1); padding:10px; border-radius:8px; margin-bottom:1rem; font-size:0.9rem;"></div>
             <form id="profile-form" class="account-form">
               <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" id="prof-name" placeholder="John Doe" required />
+                <label>Full Name <span style="color: #ff4d4f;">*</span></label>
+                <input type="text" id="prof-name" placeholder="Enter your full name" required />
               </div>
               <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" id="prof-email" placeholder="john@example.com" required />
+                <input type="email" id="prof-email" placeholder="Your email address" disabled style="opacity: 0.7; cursor: not-allowed;" />
               </div>
               <div class="form-group">
-                <label>Phone Number</label>
-                <input type="tel" id="prof-phone" placeholder="+91 9876543210" required />
+                <label>Phone Number <span style="color: #ff4d4f;">*</span></label>
+                <input type="tel" id="prof-phone" placeholder="10-digit mobile number" required />
               </div>
-              <button type="submit" class="btn-primary">Save Changes</button>
+              <button type="submit" class="btn-primary" id="save-profile-btn">Save Changes</button>
             </form>
           </div>
 

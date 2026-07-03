@@ -1,10 +1,24 @@
-// account.js - Account Dashboard Logic with Mock Backend
+// account.js - Account Dashboard Logic with Firebase Backend
 
 import './lenis-init.js';
+import { auth, db } from './firebase.js';
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
+
+let currentUser = null;
+
 document.addEventListener('DOMContentLoaded', () => {
   initTabs();
-  initMockBackend();
-  loadData();
+  
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUser = user;
+      await loadData();
+    } else {
+      // Redirect to login if not authenticated
+      window.location.href = 'login.html';
+    }
+  });
 });
 
 // --- Tab Switching Logic ---
@@ -28,175 +42,165 @@ function initTabs() {
   const sidebarLogoutBtn = document.getElementById('sidebar-logout-btn');
   if (sidebarLogoutBtn) {
     sidebarLogoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('isLoggedIn');
-      window.location.href = 'index.html';
+      auth.signOut().then(() => {
+        localStorage.removeItem('isLoggedIn');
+        window.location.href = 'index.html';
+      });
     });
   }
 }
 
-// --- Mock Backend Setup ---
-// These functions return Promises to simulate a real backend fetch/API call.
-const api = {
-  getUser: async () => {
-    return JSON.parse(localStorage.getItem('kadUser'));
-  },
-  saveUser: async (userObj) => {
-    localStorage.setItem('kadUser', JSON.stringify(userObj));
-    return true;
-  },
-  getFarmProfile: async () => {
-    return JSON.parse(localStorage.getItem('kadFarm'));
-  },
-  saveFarmProfile: async (farmObj) => {
-    localStorage.setItem('kadFarm', JSON.stringify(farmObj));
-    return true;
-  },
-  getAddresses: async () => {
-    return JSON.parse(localStorage.getItem('kadAddresses')) || [];
-  },
-  saveAddresses: async (addresses) => {
-    localStorage.setItem('kadAddresses', JSON.stringify(addresses));
-    return true;
-  },
-  getOrders: async () => {
-    return JSON.parse(localStorage.getItem('kadOrders')) || [];
-  }
-};
-
-function initMockBackend() {
-  // Populate initial mock data if nothing exists
-  if (!localStorage.getItem('kadUser')) {
-    localStorage.setItem('kadUser', JSON.stringify({
-      name: 'Ramesh Patel',
-      email: 'ramesh.farmer@example.com',
-      phone: '+91 9876543210'
-    }));
-  }
-  if (!localStorage.getItem('kadFarm')) {
-    localStorage.setItem('kadFarm', JSON.stringify({
-      acres: 12,
-      soil: 'Loamy',
-      crops: 'Sugarcane, Wheat',
-      irrigation: 'Drip'
-    }));
-  }
-  if (!localStorage.getItem('kadAddresses')) {
-    localStorage.setItem('kadAddresses', JSON.stringify([
-      {
-        id: 'addr_1',
-        label: 'Main Farm',
-        street: 'Survey No 42, Village Road, Near Old Banyan Tree',
-        city: 'Nashik',
-        pin: '422003',
-        isDefault: true
-      }
-    ]));
-  }
-  if (!localStorage.getItem('kadOrders')) {
-    localStorage.setItem('kadOrders', JSON.stringify([
-      {
-        id: 'ORD-2026-8891',
-        date: 'May 28, 2026',
-        total: '₹5,495',
-        status: 'Delivered',
-        items: '5x 1Kg KAD Multiplier'
-      },
-      {
-        id: 'ORD-2026-9012',
-        date: 'June 5, 2026',
-        total: '₹10,499',
-        status: 'Processing',
-        items: '1x 10Kg KAD Multiplier'
-      }
-    ]));
-  }
-}
 
 // --- Data Loading & Rendering ---
 async function loadData() {
-  const user = await api.getUser();
-  if (user) {
-    document.getElementById('prof-name').value = user.name || '';
-    document.getElementById('prof-email').value = user.email || '';
-    document.getElementById('prof-phone').value = user.phone || '';
+  if (!currentUser) return;
+  
+  // 1. Fetch User Profile
+  const profName = document.getElementById('prof-name');
+  const profEmail = document.getElementById('prof-email');
+  const profPhone = document.getElementById('prof-phone');
+  
+  try {
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    
+    // Set Email (read-only)
+    if (currentUser.email) {
+      // If it's a fake email from phone auth, extract the phone and leave email blank
+      if (currentUser.email.endsWith('@kad-multiplier.com')) {
+        profEmail.value = "";
+      } else {
+        profEmail.value = currentUser.email; // From Google Login
+      }
+    }
+
+    if (userDoc.exists()) {
+      const data = userDoc.data();
+      profName.value = data.name || currentUser.displayName || '';
+      
+      let phone = data.phone || '';
+      if (phone.startsWith('+91')) phone = phone.substring(3);
+      profPhone.value = phone;
+    } else {
+      // New user from Google Login
+      profName.value = currentUser.displayName || '';
+    }
+  } catch (error) {
+    console.error("Error fetching profile:", error);
   }
 
-
-
-  renderAddresses();
-  renderOrders();
+  renderAddresses(); // Currently mock
+  renderOrders();    // Real Firebase Orders
 }
 
 // Profile Save Event
 document.getElementById('profile-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const btn = e.target.querySelector('button');
+  const btn = document.getElementById('save-profile-btn');
+  const errorBox = document.getElementById('profile-error');
+  const nameVal = document.getElementById('prof-name').value.trim();
+  const phoneVal = document.getElementById('prof-phone').value.trim();
+  
+  errorBox.style.display = 'none';
+
+  if (nameVal.length < 2 || phoneVal.length < 10) {
+    errorBox.textContent = "Please fill out both your Full Name and a valid Phone Number.";
+    errorBox.style.display = 'block';
+    return;
+  }
+
   btn.textContent = 'Saving...';
   
-  await api.saveUser({
-    name: document.getElementById('prof-name').value,
-    email: document.getElementById('prof-email').value,
-    phone: document.getElementById('prof-phone').value
-  });
+  try {
+    await setDoc(doc(db, "users", currentUser.uid), {
+      name: nameVal,
+      phone: "+91" + phoneVal,
+      email: currentUser.email && !currentUser.email.endsWith('@kad-multiplier.com') ? currentUser.email : "",
+      updatedAt: new Date().toISOString()
+    }, { merge: true });
 
-  setTimeout(() => {
-    btn.textContent = 'Saved!';
-    setTimeout(() => btn.textContent = 'Save Changes', 2000);
-  }, 500);
+    setTimeout(() => {
+      btn.style.background = '#10b981';
+      btn.textContent = 'Saved!';
+      setTimeout(() => {
+        btn.textContent = 'Save Changes';
+        btn.style.background = '';
+      }, 2000);
+    }, 500);
+  } catch (error) {
+    console.error("Error saving profile:", error);
+    errorBox.textContent = "Error saving profile. Please try again.";
+    errorBox.style.display = 'block';
+    btn.textContent = 'Save Changes';
+  }
 });
 
 
-
-// --- Address Logic ---
+// --- Address Logic (MOCK - Keep as is for UI testing until backend address support) ---
 const addressFormContainer = document.getElementById('address-form-container');
 const btnAddAddress = document.getElementById('btn-add-address');
 const btnCancelAddress = document.getElementById('btn-cancel-address');
 const addressForm = document.getElementById('address-form');
 
-btnAddAddress.addEventListener('click', () => {
-  addressFormContainer.style.display = 'block';
-  btnAddAddress.style.display = 'none';
-});
+if (btnAddAddress && btnCancelAddress && addressForm) {
+  btnAddAddress.addEventListener('click', () => {
+    addressFormContainer.style.display = 'block';
+    btnAddAddress.style.display = 'none';
+  });
 
-btnCancelAddress.addEventListener('click', () => {
-  addressFormContainer.style.display = 'none';
-  btnAddAddress.style.display = 'block';
-  addressForm.reset();
-});
+  btnCancelAddress.addEventListener('click', () => {
+    addressFormContainer.style.display = 'none';
+    btnAddAddress.style.display = 'block';
+    addressForm.reset();
+  });
 
-addressForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const addresses = await api.getAddresses();
-  
-  const newAddress = {
-    id: 'addr_' + Date.now(),
-    name: document.getElementById('addr-name').value,
-    phone: document.getElementById('addr-phone').value,
-    house: document.getElementById('addr-house').value,
-    area: document.getElementById('addr-area').value,
-    city: document.getElementById('addr-city').value,
-    state: document.getElementById('addr-state').value,
-    pin: document.getElementById('addr-pin').value,
-    label: document.getElementById('addr-label').value,
-    isDefault: document.getElementById('addr-default').checked
-  };
+  addressForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    let addresses = JSON.parse(localStorage.getItem('kadAddresses')) || [];
+    
+    const newAddress = {
+      id: 'addr_' + Date.now(),
+      name: document.getElementById('addr-name').value,
+      phone: document.getElementById('addr-phone').value,
+      house: document.getElementById('addr-house').value,
+      area: document.getElementById('addr-area').value,
+      city: document.getElementById('addr-city').value,
+      state: document.getElementById('addr-state').value,
+      pin: document.getElementById('addr-pin').value,
+      label: document.getElementById('addr-label').value,
+      isDefault: document.getElementById('addr-default').checked
+    };
 
-  if (newAddress.isDefault) {
-    addresses.forEach(a => a.isDefault = false); // Unset others
-  }
-  
-  addresses.push(newAddress);
-  await api.saveAddresses(addresses);
-  
-  addressForm.reset();
-  addressFormContainer.style.display = 'none';
-  btnAddAddress.style.display = 'block';
-  renderAddresses();
-});
+    if (newAddress.isDefault) {
+      addresses.forEach(a => a.isDefault = false);
+    }
 
-async function renderAddresses() {
+    addresses.push(newAddress);
+    localStorage.setItem('kadAddresses', JSON.stringify(addresses));
+    
+    addressFormContainer.style.display = 'none';
+    btnAddAddress.style.display = 'block';
+    addressForm.reset();
+    renderAddresses();
+  });
+}
+
+function renderAddresses() {
   const list = document.getElementById('address-list');
-  const addresses = await api.getAddresses();
+  if (!list) return;
+  
+  let addresses = JSON.parse(localStorage.getItem('kadAddresses')) || [];
+  if (addresses.length === 0) {
+    addresses = [{
+      id: 'addr_1',
+      label: 'Main Farm',
+      street: 'Survey No 42, Village Road, Near Old Banyan Tree',
+      city: 'Nashik',
+      pin: '422003',
+      isDefault: true
+    }];
+    localStorage.setItem('kadAddresses', JSON.stringify(addresses));
+  }
+
   list.innerHTML = '';
   
   addresses.forEach(addr => {
@@ -219,73 +223,90 @@ async function renderAddresses() {
   });
 }
 
-// Expose delete to window so inline onclick works
-window.deleteAddress = async (id) => {
+window.deleteAddress = (id) => {
   if(!confirm('Are you sure you want to delete this address?')) return;
-  let addresses = await api.getAddresses();
+  let addresses = JSON.parse(localStorage.getItem('kadAddresses')) || [];
   addresses = addresses.filter(a => a.id !== id);
-  await api.saveAddresses(addresses);
+  localStorage.setItem('kadAddresses', JSON.stringify(addresses));
   renderAddresses();
 };
 
-// --- Orders Logic ---
+
+// --- Orders Logic (REAL FIREBASE DATA) ---
 async function renderOrders() {
   const list = document.getElementById('orders-list');
-  const orders = await api.getOrders();
-  list.innerHTML = '';
+  if (!list) return;
+  
+  list.innerHTML = '<p style="padding: 2rem; text-align: center; color: var(--text-muted);">Loading orders...</p>';
+  
+  if (!currentUser) return;
+  
+  try {
+    const q = query(collection(db, "orders"), where("uid", "==", currentUser.uid));
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      list.innerHTML = '<p style="padding: 2rem; text-align: center; color: var(--text-muted);">You have no past orders.</p>';
+      return;
+    }
 
-  orders.forEach(ord => {
-    let statusClass = 'processing';
-    if(ord.status === 'Delivered') statusClass = 'delivered';
-    if(ord.status === 'Cancelled') statusClass = 'cancelled';
+    list.innerHTML = '';
+    // sort locally by date
+    const orders = [];
+    querySnapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
+    orders.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-    const card = document.createElement('div');
-    card.className = 'order-card';
-    card.innerHTML = `
-      <div class="order-header">
-        <div class="order-meta">
-          <div class="meta-block">
-            <p>Order Placed</p>
-            <span>${ord.date}</span>
+    orders.forEach(ord => {
+      let statusClass = 'processing';
+      if(ord.status === 'Completed') statusClass = 'delivered';
+      if(ord.status === 'Cancelled') statusClass = 'cancelled';
+
+      const dateStr = new Date(ord.createdAt).toLocaleDateString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric'
+      });
+      
+      let itemsStr = '';
+      if (ord.items && Array.isArray(ord.items)) {
+         itemsStr = ord.items.map(i => `${i.qty}x ${i.title}`).join(', ');
+      }
+
+      const card = document.createElement('div');
+      card.className = 'order-card';
+      card.innerHTML = `
+        <div class="order-header">
+          <div class="order-meta">
+            <div class="meta-block">
+              <p>Order Placed</p>
+              <span>${dateStr}</span>
+            </div>
+            <div class="meta-block">
+              <p>Total</p>
+              <span>₹${ord.total.toLocaleString('en-IN')}</span>
+            </div>
+            <div class="meta-block">
+              <p>Order ID</p>
+              <span>${ord.id.slice(-6).toUpperCase()}</span>
+            </div>
           </div>
-          <div class="meta-block">
-            <p>Total</p>
-            <span>${ord.total}</span>
+          <div class="order-status status ${statusClass}">${ord.status || 'Processing'}</div>
+        </div>
+        <div class="order-body">
+          <div class="order-items">
+            <p>${itemsStr}</p>
           </div>
-          <div class="meta-block">
-            <p>Order ID</p>
-            <span>${ord.id}</span>
+          <div class="order-actions">
+            <button class="btn-outline">Track</button>
+            <button class="btn-outline">Invoice</button>
           </div>
         </div>
-        <div class="order-status status ${statusClass}">${ord.status}</div>
-      </div>
-      <div class="order-body">
-        <div class="order-items">
-          <p>${ord.items}</p>
-        </div>
-        <div class="order-actions">
-          <button class="btn-outline">Track</button>
-          <button class="btn-outline">Invoice</button>
-          ${ord.status !== 'Cancelled' && ord.status !== 'Delivered' ? `<button class="btn-outline danger" onclick="cancelOrder('${ord.id}')">Cancel</button>` : ''}
-          ${ord.status === 'Delivered' ? `<button class="btn-outline">Request Return</button>` : ''}
-        </div>
-      </div>
-    `;
-    list.appendChild(card);
-  });
-}
-
-window.cancelOrder = async (id) => {
-  if(!confirm('Are you sure you want to cancel this order?')) return;
-  let orders = await api.getOrders();
-  let order = orders.find(o => o.id === id);
-  if(order) {
-    order.status = 'Cancelled';
-    await api.saveOrders?.(orders); // Optional save if we had it, but we can just set item
-    localStorage.setItem('kadOrders', JSON.stringify(orders));
-    renderOrders();
+      `;
+      list.appendChild(card);
+    });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    list.innerHTML = '<p style="padding: 2rem; text-align: center; color: #ff4d4f;">Error loading orders.</p>';
   }
-};
+}
 
 // --- Payment Preference Logic ---
 const paymentRadios = document.querySelectorAll('input[name="payment-pref"]');
@@ -302,4 +323,3 @@ paymentRadios.forEach(radio => {
     }
   });
 });
-

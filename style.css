@@ -2854,20 +2854,18 @@ body.dark-mode #navbar.scrolled {
   }
 }
 
- . a u t h - e r r o r   { 
-     c o l o r :   # f f 4 d 4 f ; 
-     b a c k g r o u n d - c o l o r :   r g b a ( 2 5 5 ,   7 7 ,   7 9 ,   0 . 1 ) ; 
-     p a d d i n g :   1 0 p x ; 
-     b o r d e r - r a d i u s :   8 p x ; 
-     d i s p l a y :   f l e x ; 
-     a l i g n - i t e m s :   c e n t e r ; 
-     g a p :   8 p x ; 
-     f o n t - s i z e :   0 . 9 r e m ; 
-     f o n t - w e i g h t :   5 0 0 ; 
-     m a r g i n - b o t t o m :   1 r e m ; 
- } 
- . a u t h - e r r o r   s v g   { 
-     f l e x - s h r i n k :   0 ; 
- } 
-  
- 
+.auth-error {
+  color: #ff4d4f;
+  background-color: rgba(255, 77, 79, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+.auth-error svg {
+  flex-shrink: 0;
+}

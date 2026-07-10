@@ -9,7 +9,7 @@ const lenis = new Lenis({
   wheelMultiplier: 0.7, // Slower scrolling speed for a premium feel
   smoothWheel: true,
   smoothTouch: false, // Native mobile touch is already perfectly hardware accelerated
-  syncTouch: true // Syncs touch scroll with JS to prevent desync on mobile
+  syncTouch: false // Fixed: Set to false to allow native mobile momentum scrolling
 });
 
 lenis.on('scroll', ScrollTrigger.update);

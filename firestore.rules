@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Check if the user is the admin
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'kadmultiplier@admin.com';
+    }
+
+    // Orders Collection
+    match /orders/{orderId} {
+      // Anyone can create an order
+      allow create: if true;
+      // Users can read their own orders. Admin can read all.
+      // (Since guests don't have auth, they can't read. Logged-in users can read theirs).
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.userId);
+      // Only admin can update/delete
+      allow update, delete: if isAdmin();
+    }
+
+    // Products Collection (Prices/Stock)
+    match /products/{productId} {
+      // Anyone can read prices
+      allow read: if true;
+      // Only admin can edit prices and stock
+      allow write: if isAdmin();
+    }
+
+    // Leads Collection (Contact forms)
+    match /leads/{leadId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Users Collection (Profile data)
+    match /users/{userId} {
+      // Users can only read/write their own profile
+      allow read, write: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+    }
+  }
+}

@@ -1,79 +1,139 @@
 import './lenis-init.js';
 import { auth, db } from './firebase.js';
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
 document.addEventListener('DOMContentLoaded', () => {
   let currentUser = null;
 
-  // Protect the checkout page
-  onAuthStateChanged(auth, (user) => {
+  // Protect checkout - redirect to login, remembering to come back
+  onAuthStateChanged(auth, async (user) => {
     if (user) {
       currentUser = user;
-      const chkPhone = document.getElementById('chk-phone');
-      // Extract phone from fake email (e.g. +919876543210@kad-multiplier.com)
-      if (chkPhone && user.email) {
-        let phone = user.email.split('@')[0];
-        if (phone.startsWith('+91')) {
-          phone = phone.substring(3); // Remove +91 for the input field
-        }
-        chkPhone.value = phone;
-      }
+      await prefillUserData(user);
     } else {
-      // Redirect to login if they try to checkout without an account
+      sessionStorage.setItem('loginReturnTo', 'checkout.html');
       window.location.href = 'login.html';
     }
   });
 
-  const methodOnline = document.getElementById('method-online');
-  const methodCod = document.getElementById('method-cod');
-  
-  const radioOnline = document.getElementById('pay-online');
-  const radioCod = document.getElementById('pay-cod');
-  
-  const contentOnline = methodOnline.querySelector('.method-content');
-  const contentCod = methodCod.querySelector('.method-content');
+  // ---- Pre-fill user data from Firebase ----
+  async function prefillUserData(user) {
+    const chkPhone = document.getElementById('chk-phone');
+    const chkEmail = document.getElementById('chk-email');
+    const chkFname = document.getElementById('chk-fname');
+    const chkLname = document.getElementById('chk-lname');
 
-  function updatePaymentMethods() {
-    if (radioOnline.checked) {
-      methodOnline.classList.add('active');
-      methodCod.classList.remove('active');
-      contentOnline.style.display = 'block';
-      contentCod.style.display = 'none';
-    } else {
-      methodCod.classList.add('active');
-      methodOnline.classList.remove('active');
-      contentCod.style.display = 'block';
-      contentOnline.style.display = 'none';
+    // Pre-fill email from Google Auth
+    if (user.email && !user.email.endsWith('@kad-multiplier.com')) {
+      chkEmail.value = user.email;
+    }
+
+    // Pre-fill phone from fake email
+    if (user.email && user.email.endsWith('@kad-multiplier.com')) {
+      chkPhone.value = user.email.split('@')[0];
+    }
+
+    // Get richer data from Firestore
+    try {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        if (data.name) {
+          const parts = data.name.split(' ');
+          chkFname.value = parts[0] || '';
+          chkLname.value = parts.slice(1).join(' ') || '';
+        }
+        if (data.phone) {
+          let p = data.phone.startsWith('+91') ? data.phone.substring(3) : data.phone;
+          chkPhone.value = p;
+        }
+      }
+    } catch (err) {
+      console.error("Error prefilling from Firestore:", err);
+    }
+
+    // Load saved addresses for selection
+    await loadSavedAddresses(user);
+  }
+
+  // ---- Load saved addresses dropdown ----
+  async function loadSavedAddresses(user) {
+    try {
+      const q = query(collection(db, "addresses"), where("uid", "==", user.uid));
+      const snap = await getDocs(q);
+      if (snap.empty) return;
+
+      const addresses = [];
+      snap.forEach(d => addresses.push({ id: d.id, ...d.data() }));
+
+      // Insert address selector above the address fields
+      const addrGroup = document.getElementById('chk-address').closest('.form-group');
+      if (!addrGroup) return;
+
+      const selector = document.createElement('div');
+      selector.className = 'form-group full-width';
+      selector.style.marginBottom = '1rem';
+      selector.innerHTML = `
+        <label style="font-weight:600; font-size:0.9rem; color:#444; margin-bottom:0.5rem; display:block;">Use Saved Address</label>
+        <select id="saved-addr-select" style="width:100%;padding:0.75rem;border:1px solid #e2e8f0;border-radius:8px;font-size:0.95rem;background:#fff;">
+          <option value="">— Enter address manually —</option>
+          ${addresses.map(a => `<option value="${a.id}">${a.label}: ${a.house}, ${a.city}</option>`).join('')}
+        </select>
+      `;
+      addrGroup.parentElement.insertBefore(selector, addrGroup);
+
+      document.getElementById('saved-addr-select').addEventListener('change', async (e) => {
+        if (!e.target.value) return;
+        const chosen = addresses.find(a => a.id === e.target.value);
+        if (!chosen) return;
+        document.getElementById('chk-address').value = `${chosen.house}, ${chosen.area}`;
+        document.getElementById('chk-city').value = chosen.city || '';
+        document.getElementById('chk-state').value = chosen.state || '';
+        document.getElementById('chk-pin').value = chosen.pin || '';
+        if (chosen.phone) document.getElementById('chk-phone').value = chosen.phone;
+      });
+
+      // Auto-fill default address
+      const def = addresses.find(a => a.isDefault);
+      if (def) {
+        document.getElementById('saved-addr-select').value = def.id;
+        document.getElementById('chk-address').value = `${def.house}, ${def.area}`;
+        document.getElementById('chk-city').value = def.city || '';
+        document.getElementById('chk-state').value = def.state || '';
+        document.getElementById('chk-pin').value = def.pin || '';
+        if (def.phone) document.getElementById('chk-phone').value = def.phone;
+      }
+    } catch (err) {
+      console.error("Error loading saved addresses:", err);
     }
   }
 
-  // Click on the box to select
-  if (methodOnline) {
-    methodOnline.addEventListener('click', (e) => {
-      if (e.target.tagName !== 'INPUT') radioOnline.checked = true;
-      updatePaymentMethods();
-    });
+  // ---- Payment Method Toggle ----
+  const methodOnline = document.getElementById('method-online');
+  const methodCod = document.getElementById('method-cod');
+  const radioOnline = document.getElementById('pay-online');
+  const radioCod = document.getElementById('pay-cod');
+  const contentOnline = methodOnline?.querySelector('.method-content');
+  const contentCod = methodCod?.querySelector('.method-content');
+
+  function updatePaymentMethods() {
+    if (radioOnline.checked) {
+      methodOnline.classList.add('active'); methodCod.classList.remove('active');
+      contentOnline.style.display = 'block'; contentCod.style.display = 'none';
+    } else {
+      methodCod.classList.add('active'); methodOnline.classList.remove('active');
+      contentCod.style.display = 'block'; contentOnline.style.display = 'none';
+    }
   }
 
-  if (methodCod) {
-    methodCod.addEventListener('click', (e) => {
-      if (e.target.tagName !== 'INPUT') radioCod.checked = true;
-      updatePaymentMethods();
-    });
-  }
-  
+  if (methodOnline) methodOnline.addEventListener('click', (e) => { if (e.target.tagName !== 'INPUT') radioOnline.checked = true; updatePaymentMethods(); });
+  if (methodCod) methodCod.addEventListener('click', (e) => { if (e.target.tagName !== 'INPUT') radioCod.checked = true; updatePaymentMethods(); });
   if (radioOnline && radioCod) updatePaymentMethods();
 
-  // --- Cart Summary Rendering ---
-  function getCart() {
-    const cart = localStorage.getItem('kadCart');
-    return cart ? JSON.parse(cart) : [];
-  }
-
-  function formatCurrency(num) {
-    return new Intl.NumberFormat('en-IN').format(num);
-  }
+  // ---- Cart Summary ----
+  function getCart() { return JSON.parse(localStorage.getItem('kadCart') || '[]'); }
+  function formatCurrency(num) { return new Intl.NumberFormat('en-IN').format(num); }
 
   const checkoutItemsContainer = document.getElementById('checkout-items-container');
   const checkoutSubtotalEl = document.getElementById('checkout-subtotal');
@@ -84,24 +144,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!checkoutItemsContainer) return;
     const cart = getCart();
     checkoutItemsContainer.innerHTML = '';
-    
-    let subtotal = 0;
-    let totalWeight = 0;
-    
+    let subtotal = 0, totalWeight = 0;
+
     if (cart.length === 0) {
-      checkoutItemsContainer.innerHTML = '<p style="padding: 1rem 0; color: #666;">Your cart is empty.</p>';
+      alert("Your cart is empty! Please add products before checking out.");
+      window.location.href = "index.html";
+      return;
     }
-    
+
     cart.forEach((item) => {
       const itemTotal = item.price * item.qty;
       subtotal += itemTotal;
       totalWeight += (item.weight * item.qty);
-      
-      const itemHtml = `
+      checkoutItemsContainer.insertAdjacentHTML('beforeend', `
         <div class="summary-item">
           <div class="item-img-wrapper">
-            <div class="item-img" style="background: #f4f6f8; display: flex; align-items: center; justify-content: center;">
-              <img src="/kad-multiplier-cropped.png" alt="KAD Multiplier" style="width: 80%; height: 80%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));" />
+            <div class="item-img" style="background:#f4f6f8;display:flex;align-items:center;justify-content:center;">
+              <img src="/kad-multiplier-cropped.png" alt="KAD Multiplier" style="width:80%;height:80%;object-fit:contain;" />
             </div>
             <span class="item-badge">${item.qty}</span>
           </div>
@@ -110,14 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="item-variant">${item.title} ${item.sub}</span>
           </div>
           <div class="item-price">₹ ${formatCurrency(itemTotal)}</div>
-        </div>
-      `;
-      checkoutItemsContainer.insertAdjacentHTML('beforeend', itemHtml);
+        </div>`);
     });
-    
+
     const shipping = totalWeight > 0 ? Math.ceil(totalWeight / 5) * 100 : 0;
     const grandTotal = subtotal + shipping;
-    
     checkoutSubtotalEl.innerHTML = '₹ ' + formatCurrency(subtotal);
     checkoutShippingEl.innerHTML = shipping > 0 ? '₹ ' + formatCurrency(shipping) : 'Free';
     checkoutTotalEl.innerHTML = '₹ ' + formatCurrency(grandTotal);
@@ -125,20 +181,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderCheckoutSummary();
 
-  // --- Form Submission & Validation ---
+  // ---- Form Validation Helpers ----
+  function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+  function isValidPhone(phone) { return /^[6-9]\d{9}$/.test(phone); }
+  function isValidPin(pin) { return /^\d{6}$/.test(pin); }
+  function isValidUTR(utr) { return utr && utr.trim().length >= 12; }
+
+  // ---- Form Submission ----
   const checkoutForm = document.querySelector('.checkout-form');
   const chkUtr = document.getElementById('chk-utr');
   const successModal = document.getElementById('success-modal');
   const submitBtn = document.querySelector('.checkout-submit-btn');
 
-  // Check empty cart on load
-  if (getCart().length === 0) {
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.style.opacity = '0.5';
-      submitBtn.style.cursor = 'not-allowed';
-      submitBtn.innerText = 'Cart is Empty';
-    }
+  if (getCart().length === 0 && submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.5';
+    submitBtn.style.cursor = 'not-allowed';
+    submitBtn.innerText = 'Cart is Empty';
   }
 
   if (checkoutForm) {
@@ -146,21 +205,37 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
 
       if (!currentUser) {
-        alert("Please log in to complete your order.");
+        sessionStorage.setItem('loginReturnTo', 'checkout.html');
         window.location.href = 'login.html';
         return;
       }
 
       const cart = getCart();
-      if (cart.length === 0) {
-        window.location.href = 'index.html';
-        return;
-      }
+      if (cart.length === 0) { window.location.href = 'index.html'; return; }
+
+      // Validate all fields
+      const emailVal = document.getElementById('chk-email').value.trim();
+      const phoneVal = document.getElementById('chk-phone').value.trim();
+      const fnameVal = document.getElementById('chk-fname').value.trim();
+      const lnameVal = document.getElementById('chk-lname').value.trim();
+      const addressVal = document.getElementById('chk-address').value.trim();
+      const cityVal = document.getElementById('chk-city').value.trim();
+      const stateVal = document.getElementById('chk-state').value.trim();
+      const pinVal = document.getElementById('chk-pin').value.trim();
+
+      if (!isValidEmail(emailVal)) { alert("Please enter a valid email address."); document.getElementById('chk-email').focus(); return; }
+      if (!isValidPhone(phoneVal)) { alert("Please enter a valid 10-digit mobile number starting with 6–9."); document.getElementById('chk-phone').focus(); return; }
+      if (!fnameVal) { alert("Please enter your first name."); document.getElementById('chk-fname').focus(); return; }
+      if (!lnameVal) { alert("Please enter your last name."); document.getElementById('chk-lname').focus(); return; }
+      if (!addressVal) { alert("Please enter your address."); document.getElementById('chk-address').focus(); return; }
+      if (!cityVal) { alert("Please enter your city."); document.getElementById('chk-city').focus(); return; }
+      if (!stateVal) { alert("Please enter your state."); document.getElementById('chk-state').focus(); return; }
+      if (!isValidPin(pinVal)) { alert("Please enter a valid 6-digit PIN code."); document.getElementById('chk-pin').focus(); return; }
 
       if (radioOnline.checked) {
-        if (!chkUtr.value || chkUtr.value.trim().length < 8) {
-          alert("Please enter your valid UTR or Transaction ID to confirm payment.");
-          chkUtr.focus();
+        if (!isValidUTR(chkUtr?.value)) {
+          alert("Please enter a valid UTR / Transaction ID (at least 12 characters) to confirm your payment.");
+          chkUtr?.focus();
           return;
         }
       }
@@ -169,64 +244,78 @@ document.addEventListener('DOMContentLoaded', () => {
       submitBtn.disabled = true;
       submitBtn.style.opacity = '0.7';
 
-      // Recalculate totals securely
-      let subtotal = 0;
-      let totalWeight = 0;
-      cart.forEach(item => {
-        subtotal += (item.price * item.qty);
-        totalWeight += (item.weight * item.qty);
-      });
+      let subtotal = 0, totalWeight = 0;
+      cart.forEach(item => { subtotal += (item.price * item.qty); totalWeight += (item.weight * item.qty); });
       const shipping = totalWeight > 0 ? Math.ceil(totalWeight / 5) * 100 : 0;
       const grandTotal = subtotal + shipping;
 
+      const notesVal = document.getElementById('chk-notes')?.value.trim() || '';
+
       const orderData = {
         uid: currentUser.uid,
-        customerAuthPhone: currentUser.email ? currentUser.email.split('@')[0] : null,
-        contactEmail: document.getElementById('chk-email').value.trim(),
-        contactPhone: document.getElementById('chk-phone').value.trim(),
+        contactEmail: emailVal,
+        contactPhone: phoneVal,
         shippingAddress: {
-          firstName: document.getElementById('chk-fname').value.trim(),
-          lastName: document.getElementById('chk-lname').value.trim(),
-          address: document.getElementById('chk-address').value.trim(),
-          city: document.getElementById('chk-city').value.trim(),
-          state: document.getElementById('chk-state').value.trim(),
-          pin: document.getElementById('chk-pin').value.trim(),
+          firstName: fnameVal,
+          lastName: lnameVal,
+          address: addressVal,
+          city: cityVal,
+          state: stateVal,
+          pin: pinVal,
         },
         paymentMethod: radioOnline.checked ? 'QR_CODE' : 'COD',
         utr: radioOnline.checked ? chkUtr.value.trim() : null,
+        orderNotes: notesVal,
         items: cart,
-        subtotal: subtotal,
-        shipping: shipping,
+        subtotal,
+        shipping,
         total: grandTotal,
         status: 'Pending',
         createdAt: new Date().toISOString()
       };
 
       try {
-        await addDoc(collection(db, "orders"), orderData);
-        
-        // Show success modal
+        const orderRef = await addDoc(collection(db, "orders"), orderData);
+
+        // Save new address to Firebase if no saved address was selected
+        const savedSelect = document.getElementById('saved-addr-select');
+        if (!savedSelect || !savedSelect.value) {
+          try {
+            await addDoc(collection(db, "addresses"), {
+              uid: currentUser.uid,
+              name: `${fnameVal} ${lnameVal}`,
+              phone: phoneVal,
+              house: addressVal,
+              area: '',
+              city: cityVal,
+              state: stateVal,
+              pin: pinVal,
+              label: 'Delivery Address',
+              isDefault: true,
+              createdAt: new Date().toISOString()
+            });
+          } catch (addrErr) {
+            console.warn("Could not auto-save address:", addrErr);
+          }
+        }
+
         successModal.classList.add('show');
         localStorage.removeItem('kadCart');
       } catch (error) {
-        console.error("Error creating order: ", error);
-        alert("There was an error processing your order. Please try again.");
-        submitBtn.innerText = 'Confirm & Pay';
+        console.error("Error creating order:", error);
+        alert("There was a network error processing your order. Please check your connection and try again.");
+        submitBtn.innerText = 'Complete Order';
         submitBtn.disabled = false;
         submitBtn.style.opacity = '1';
       }
     });
   }
 
-  // --- QR Zoom Logic ---
+  // QR Zoom
   const qrImg = document.getElementById('qr-img');
   const qrZoomModal = document.getElementById('qr-zoom-modal');
   if (qrImg && qrZoomModal) {
-    qrImg.addEventListener('click', () => {
-      qrZoomModal.classList.add('show');
-    });
-    qrZoomModal.addEventListener('click', () => {
-      qrZoomModal.classList.remove('show');
-    });
+    qrImg.addEventListener('click', () => qrZoomModal.classList.add('show'));
+    qrZoomModal.addEventListener('click', () => qrZoomModal.classList.remove('show'));
   }
 });

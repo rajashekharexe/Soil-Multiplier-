@@ -134,17 +134,106 @@
       font-weight: 600;
       cursor: pointer;
     }
+    
+    /* Tabs & Dashboard CSS */
+    .admin-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .admin-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+    }
+    .admin-tab-btn.active {
+      color: var(--text);
+    }
+    .admin-tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--primary);
+    }
+    .admin-tab-content {
+      display: none;
+    }
+    .admin-tab-content.active {
+      display: block;
+    }
+    
+    /* Analytics Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      border-radius: 8px;
+    }
+    .stat-card h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      margin: 0;
+    }
+    
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .toolbar input, .toolbar select {
+      padding: 0.6rem 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+    }
+    .btn-export {
+      padding: 0.6rem 1rem;
+      background: var(--primary);
+      color: var(--bg);
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: auto;
+    }
   </style>
 </head>
 <body>
 
   <div id="admin-login-overlay">
     <div class="admin-login-box">
-      <h2 style="font-family: 'Outfit'; margin-top: 0;">Admin Access</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Enter the master password to view orders.</p>
+      <h2 style="font-family: 'Outfit'; margin-top: 0;">🔐 Admin Access</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Sign in with your admin Firebase account to view orders.</p>
+      <input type="email" id="admin-email" class="admin-input" placeholder="Admin Email">
       <input type="password" id="admin-pass" class="admin-input" placeholder="Password">
-      <button id="admin-submit" class="admin-btn">Unlock Dashboard</button>
-      <p id="admin-error" style="color: #ff6b6b; font-size: 0.85rem; margin-top: 1rem; display: none;">Incorrect password.</p>
+      <button id="admin-submit" class="admin-btn">Sign In</button>
+      <p id="admin-error" style="color: #ff6b6b; font-size: 0.85rem; margin-top: 1rem; display: none;">Incorrect credentials.</p>
     </div>
   </div>
 
@@ -156,29 +245,118 @@
   </div>
 
   <div class="container">
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Customer</th>
-            <th>Payment & UTR</th>
-            <th>Order Details</th>
-            <th>Total</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="orders-tbody">
-          <tr>
-            <td colspan="6">
-              <div class="loading">Loading orders from Firebase...</div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="admin-tabs">
+      <button class="admin-tab-btn active" data-target="tab-dashboard">Dashboard</button>
+      <button class="admin-tab-btn" data-target="tab-orders">Orders</button>
+      <button class="admin-tab-btn" data-target="tab-leads">Leads</button>
+      <button class="admin-tab-btn" data-target="tab-products">Products</button>
     </div>
+
+    <!-- DASHBOARD TAB -->
+    <div id="tab-dashboard" class="admin-tab-content active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Total Revenue</h3>
+          <p class="value" id="stat-revenue">₹0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Orders</h3>
+          <p class="value" id="stat-orders">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Conversion Rate (est.)</h3>
+          <p class="value" id="stat-conversion">0%</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <h3>Sales Over Time</h3>
+        <canvas id="salesChart" height="100"></canvas>
+      </div>
+    </div>
+
+    <!-- ORDERS TAB -->
+    <div id="tab-orders" class="admin-tab-content">
+      <div class="toolbar">
+        <input type="text" id="order-search" placeholder="Search phone number...">
+        <select id="order-filter">
+          <option value="all">All Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Shipped">Shipped</option>
+          <option value="Delivered">Delivered</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+        <button id="export-csv" class="btn-export">⬇ Download CSV</button>
+      </div>
+      
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Payment & UTR</th>
+              <th>Order Details</th>
+              <th>Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody">
+            <tr>
+              <td colspan="6">
+                <div class="loading">Loading orders from Firebase...</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LEADS TAB -->
+    <div id="tab-leads" class="admin-tab-content">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Phone Number</th>
+            </tr>
+          </thead>
+          <tbody id="leads-tbody">
+            <tr>
+              <td colspan="3"><div class="loading">Loading leads...</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PRODUCTS TAB (Dynamic Products) -->
+    <div id="tab-products" class="admin-tab-content">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Variant ID</th>
+              <th>Title</th>
+              <th>MRP</th>
+              <th>Selling Price</th>
+              <th>In Stock</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody">
+            <tr>
+              <td colspan="5"><div class="loading">Loading products...</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script type="module" src="/admin.js"></script>
 </body>
 </html>

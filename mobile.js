@@ -1,3 +1,6 @@
+import { db } from './firebase.js';
+import { collection, addDoc } from 'firebase/firestore';
+
 document.addEventListener('DOMContentLoaded', () => {
   if (window.innerWidth >= 768) return; // Only run on mobile
 
@@ -7,19 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const qtyMinus = document.querySelector('.mp-qty-btn.minus');
   const qtyPlus = document.querySelector('.mp-qty-btn.plus');
   const qtyVal = document.querySelector('.mp-qty-val');
-  
-  // Sticky bar elements
+
+  // Sticky bar elements — use IDs set in HTML
   const stickyBar = document.querySelector('.mobile-sticky-bar');
-  const stickyPrice = document.querySelector('.msb-price');
-  const stickyMrp = document.querySelector('.msb-mrp');
+  const stickyPrice = document.getElementById('msb-price-display');
+  const stickyMrp = document.getElementById('msb-mrp-display');
   const stickyWeight = document.querySelector('.msb-weight');
+  const stickyDiscount = document.getElementById('msb-discount-display');
   
   let currentQty = 1;
   let currentPrice = 1099;
   let currentMrp = 1099;
 
   const mpDiscount = document.querySelector('.mp-discount');
-  const stickyDiscount = document.querySelector('.msb-discount');
 
   function updatePrices() {
     const formattedPrice = '₹' + (currentPrice * currentQty).toLocaleString('en-IN');
@@ -148,6 +151,46 @@ document.addEventListener('DOMContentLoaded', () => {
   if (headerCartBtn) {
     headerCartBtn.addEventListener('click', () => {
       window.location.href = 'checkout.html';
+    });
+  }
+
+  // ---- Lead Form → Firebase ----
+  const leadForm = document.getElementById('mobile-lead-form');
+  if (leadForm) {
+    leadForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nameVal = document.getElementById('lead-name').value.trim();
+      const phoneVal = document.getElementById('lead-phone').value.trim();
+      const cropVal = document.getElementById('lead-crop').value.trim();
+      const errEl = document.getElementById('lead-error');
+      const successEl = document.getElementById('lead-success');
+      const submitBtn = document.getElementById('lead-submit-btn');
+
+      errEl.style.display = 'none';
+      if (!nameVal || nameVal.length < 2) { errEl.textContent = 'Please enter your name.'; errEl.style.display = 'block'; return; }
+      if (!/^[6-9]\d{9}$/.test(phoneVal)) { errEl.textContent = 'Please enter a valid 10-digit mobile number.'; errEl.style.display = 'block'; return; }
+
+      submitBtn.textContent = 'Sending...';
+      submitBtn.disabled = true;
+
+      try {
+        await addDoc(collection(db, 'leads'), {
+          name: nameVal,
+          phone: phoneVal,
+          crop: cropVal || 'Not specified',
+          source: 'mobile_lead_form',
+          createdAt: new Date().toISOString()
+        });
+        successEl.style.display = 'block';
+        leadForm.reset();
+        submitBtn.textContent = 'Submitted ✓';
+      } catch (err) {
+        errEl.textContent = 'Failed to submit. Please call us at +91 8088775223.';
+        errEl.style.display = 'block';
+        submitBtn.textContent = 'Request Free Consultation';
+        submitBtn.disabled = false;
+        console.error(err);
+      }
     });
   }
 

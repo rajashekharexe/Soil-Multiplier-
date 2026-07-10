@@ -5,6 +5,10 @@
     <link rel="icon" type="image/png" href="/kad-multiplier-cropped.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Account | Kad Multiplier</title>
+    <meta name="description" content="Manage your KAD Multiplier account, view orders, and update your profile.">
+    <meta property="og:title" content="My Account - KAD Multiplier">
+    <meta property="og:description" content="Manage your KAD Multiplier account and track your orders.">
+    <meta property="og:type" content="website">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,16 +80,24 @@
       </div>
     </nav>
 
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
     <!-- Account Dashboard -->
     <div class="account-container">
       <div class="account-header">
         <h1>My Account</h1>
-        <p>Manage your farm details, orders, and subscriptions.</p>
+        <p>Manage your farm details, orders, and support.</p>
       </div>
 
       <div class="dashboard">
         <!-- Sidebar Navigation -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="account-sidebar">
+          <!-- Drawer Header (mobile only) -->
+          <div class="drawer-header">
+            <h3>My Account</h3>
+            <button class="drawer-close-btn" id="sidebar-close-btn" aria-label="Close menu">&times;</button>
+          </div>
           <ul class="nav-tabs">
             <li class="tab-item active" data-target="tab-profile">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
@@ -104,10 +116,6 @@
             <li class="tab-item" data-target="tab-payments">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
               Payment Methods
-            </li>
-            <li class="tab-item" data-target="tab-notifications">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-              Notifications
             </li>
             <li class="tab-item" data-target="tab-support">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -218,22 +226,7 @@
             </div>
           </div>
 
-          <!-- 5. Subscriptions Tab -->
-          <div class="tab-pane" id="tab-subscriptions">
-            <h2>Active Subscriptions</h2>
-            <div class="subscription-card">
-              <div class="sub-header">
-                <h3>5Kg KAD Multiplier (Auto-Delivery)</h3>
-                <span class="status active">Active</span>
-              </div>
-              <p>Frequency: Every 3 Months</p>
-              <p>Next Delivery: Oct 15, 2026</p>
-              <div class="sub-actions">
-                <button class="btn-outline">Pause</button>
-                <button class="btn-outline danger">Cancel</button>
-              </div>
-            </div>
-          </div>
+
 
           <!-- 6. Payments Tab -->
           <div class="tab-pane" id="tab-payments">
@@ -263,55 +256,28 @@
             </div>
           </div>
 
-          <!-- 7. Notifications Tab -->
-          <div class="tab-pane" id="tab-notifications">
-            <h2>Notification Preferences</h2>
-            <div class="toggle-list">
-              <div class="toggle-item">
-                <div class="toggle-text">
-                  <h4>Order Updates</h4>
-                  <p>SMS and Email alerts for tracking your packages.</p>
-                </div>
-                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-              </div>
-              <div class="toggle-item">
-                <div class="toggle-text">
-                  <h4>Agronomy Tips</h4>
-                  <p>Weekly tips from experts on crop management.</p>
-                </div>
-                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-              </div>
-              <div class="toggle-item">
-                <div class="toggle-text">
-                  <h4>Promotional Offers</h4>
-                  <p>Get notified about discounts and new products.</p>
-                </div>
-                <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-              </div>
-            </div>
           </div>
 
           <!-- 8. Support Tab -->
           <div class="tab-pane" id="tab-support">
             <div class="pane-header">
-              <h2>Help Center & Support</h2>
-              <button class="btn-primary">Open New Ticket</button>
+              <h2>Help Center &amp; Support</h2>
             </div>
-            
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Need help? Reach out to us directly — we're happy to assist you with your orders, agronomist advice, or any other queries.</p>
             <div class="support-grid">
               <div class="support-card">
-                <h3>📞 Call Agronomist</h3>
+                <h3>📞 Call Us</h3>
                 <p>+91 8088775223</p>
+                <a href="tel:+918088775223" class="btn-primary" style="display:inline-block; margin-top:0.75rem; text-decoration:none; padding: 0.5rem 1.2rem; border-radius:8px; font-size:0.9rem;">Call Now</a>
               </div>
               <div class="support-card">
-                <h3>💬 WhatsApp Support</h3>
+                <h3>💬 WhatsApp</h3>
                 <p>+91 8088055223</p>
+                <a href="https://wa.me/918088055223?text=Hi%2C%20I%20need%20help%20with%20my%20KAD%20Multiplier%20order." target="_blank" class="btn-primary" style="display:inline-block; margin-top:0.75rem; text-decoration:none; padding: 0.5rem 1.2rem; border-radius:8px; font-size:0.9rem; background:#25D366;">Chat on WhatsApp</a>
               </div>
             </div>
-
-            <h3 style="margin-top: 2rem;">Recent Tickets</h3>
-            <div class="ticket-list" id="ticket-list">
-              <p style="color: var(--text-muted); padding: 0.5rem 0;">No support tickets yet. Use the contact options above to reach us.</p>
+            <div style="margin-top:2rem; padding:1.2rem; background:#f8fdf8; border-radius:12px; border:1px solid #d1fae5;">
+              <p style="margin:0; font-size:0.95rem; color:#065f46;">🕐 <strong>Support Hours:</strong> Monday – Saturday, 9:00 AM – 6:00 PM IST</p>
             </div>
           </div>
 

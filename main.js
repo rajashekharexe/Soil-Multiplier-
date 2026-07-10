@@ -3,6 +3,8 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import SplitType from 'split-type'
 import lenis from './lenis-init.js'
+import { db } from './firebase.js';
+import { collection, getDocs } from 'firebase/firestore';
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -398,6 +400,57 @@ let activeBtn = document.querySelector('.weight-btn.active');
 function formatCurrency(num) {
   return new Intl.NumberFormat('en-IN').format(num);
 }
+
+// Map DOM buttons to Firestore document IDs
+const variantMap = [
+  'variant-1kg',
+  'variant-5kg',
+  'variant-10kg',
+  'variant-10kg-1kg-packs'
+];
+
+async function fetchDynamicPrices() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "products"));
+    const products = {};
+    querySnapshot.forEach(doc => {
+      products[doc.id] = doc.data();
+    });
+
+    weightBtns.forEach((btn, index) => {
+      const pId = variantMap[index];
+      if (products[pId]) {
+        const { mrp, price, inStock } = products[pId];
+        const discount = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
+        
+        btn.dataset.mrp = mrp;
+        btn.dataset.price = price;
+        btn.dataset.discount = discount;
+
+        // Update the price tag inside the button
+        const priceTag = btn.querySelector('.wb-price-tag');
+        if (priceTag) priceTag.textContent = '₹' + formatCurrency(price);
+        
+        if (inStock === false) {
+          btn.classList.add('out-of-stock');
+          if (priceTag) priceTag.textContent = 'Out of Stock';
+          btn.style.pointerEvents = 'none';
+          btn.style.opacity = '0.5';
+          btn.style.filter = 'grayscale(100%)';
+        } else {
+          btn.classList.remove('out-of-stock');
+          btn.style.pointerEvents = 'auto';
+          btn.style.opacity = '1';
+          btn.style.filter = 'none';
+        }
+      }
+    });
+    updatePrice();
+  } catch (error) {
+    console.error("Error fetching dynamic prices:", error);
+  }
+}
+fetchDynamicPrices();
 
 function updatePrice() {
   if (!activeBtn) return;

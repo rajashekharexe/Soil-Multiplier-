@@ -150,7 +150,7 @@
         
         <div class="mh-content">
           <div class="mh-rating">
-            <span class="mh-rating-score">4.9</span>
+            <span class="mh-rating-score">4.3</span>
             <div class="mh-stars">★★★★★</div>
             <span class="mh-rating-count">(2,340+ Farmers)</span>
           </div>
@@ -227,7 +227,7 @@
 
         <!-- Shipping Badges -->
         <div class="mp-shipping-badges">
-          <span class="mp-sb"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> 5-7 Days Delivery</span>
+          <span class="mp-sb"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> 5-8 Days Delivery</span>
           <span class="mp-sb"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Secure Payment</span>
         </div>
 
@@ -349,17 +349,21 @@
           <h3 class="mform-title">Get Expert Advice</h3>
           <p class="mform-sub">Speak directly with our agricultural experts about your specific crop needs.</p>
           
-          <form onsubmit="event.preventDefault(); alert('Lead Captured!');">
+          <form id="mobile-lead-form">
             <div class="mform-group">
-              <input type="text" class="mform-input" placeholder="Your Name" required>
+              <input type="text" id="lead-name" class="mform-input" placeholder="Your Name" required>
             </div>
             <div class="mform-group">
-              <input type="tel" class="mform-input" placeholder="Mobile Number" required>
+              <input type="tel" id="lead-phone" class="mform-input" placeholder="Mobile Number (10 digits)" pattern="[6-9][0-9]{9}" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" maxlength="10" required>
             </div>
             <div class="mform-group">
-              <input type="text" class="mform-input" placeholder="Which crop do you grow?">
+              <input type="text" id="lead-crop" class="mform-input" placeholder="Which crop do you grow?">
             </div>
-            <button type="submit" class="mform-btn">
+            <div id="lead-success" style="display:none; background:#f0fdf4; border:1px solid #22c55e; border-radius:8px; padding:0.75rem 1rem; color:#166534; font-size:0.9rem; margin-bottom:0.75rem; text-align:center;">
+              ✅ Thank you! Our expert will contact you within 24 hours.
+            </div>
+            <div id="lead-error" style="display:none; color:#ef4444; font-size:0.85rem; margin-bottom:0.5rem; text-align:center;"></div>
+            <button type="submit" id="lead-submit-btn" class="mform-btn">
               Request Free Consultation
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </button>
@@ -374,9 +378,9 @@
           <div class="msb-text">
             <span class="msb-title">KAD Multiplier (<span class="msb-weight">1kg</span>)</span>
             <div class="msb-price-row">
-              <span class="msb-price">₹1,099</span>
-              <span class="msb-mrp">₹1,499</span>
-              <span class="msb-discount">Save 26%</span>
+              <span class="msb-price" id="msb-price-display">₹1,099</span>
+              <span class="msb-mrp" id="msb-mrp-display" style="display:none;"></span>
+              <span class="msb-discount" id="msb-discount-display" style="display:none;"></span>
             </div>
           </div>
         </div>
@@ -684,7 +688,7 @@
                 <circle cx="5.5" cy="18.5" r="2.5"></circle>
                 <circle cx="18.5" cy="18.5" r="2.5"></circle>
               </svg>
-              Estimated Delivery: 5-7 days
+              Estimated Delivery: 5-8 days
             </div>
               
               <!-- Animated Video Button -->
@@ -876,9 +880,9 @@
             <div class="spec-detail fade-up">
               <h3 style="color: #ffffff; font-size: 1.5rem; margin-bottom: 1.5rem; font-family: var(--font-display);">Customer Care</h3>
               <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
-                <li style="margin-bottom: 1rem;"><a href="#" style="color: #ffffff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s;">Shipping & Delivery</a></li>
-                <li style="margin-bottom: 1rem;"><a href="#" style="color: #ffffff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s;">Return Policy</a></li>
-                <li style="margin-bottom: 1rem;"><a href="#" style="color: #ffffff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s;">FAQ</a></li>
+                <li style="margin-bottom: 1rem;"><a href="/shipping.html" style="color: #ffffff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s;">Shipping & Delivery</a></li>
+                <li style="margin-bottom: 1rem;"><a href="/returns.html" style="color: #ffffff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s;">Return Policy</a></li>
+                <li style="margin-bottom: 1rem;"><a href="/faq.html" style="color: #ffffff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s;">FAQ</a></li>
               </ul>
 
               <!-- Social Links -->

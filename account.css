@@ -44,6 +44,11 @@ body.account-body {
   box-shadow: 0 4px 20px rgba(0,0,0,0.03);
 }
 
+/* Drawer header only visible on mobile */
+.drawer-header {
+  display: none;
+}
+
 .nav-tabs {
   list-style: none;
   padding: 0;
@@ -446,28 +451,97 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 @media (max-width: 768px) {
   .dashboard {
-    grid-template-columns: 1fr;
+    display: block;
   }
+
+  .content-area {
+    width: 100%;
+  }
+
+  /* Sidebar becomes a slide-in drawer from left */
   .sidebar {
-    overflow-x: auto;
-    white-space: nowrap;
-    padding: 0.5rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 280px;
+    z-index: 1000;
+    border-radius: 0;
+    padding: 1rem 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.15);
   }
-  .nav-tabs {
+
+  .sidebar.drawer-open {
+    transform: translateX(0);
+  }
+
+  /* Dark overlay behind drawer */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+  }
+
+  /* Drawer header with close button */
+  .drawer-header {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 0.5rem;
   }
+
+  .drawer-header h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.1rem;
+    color: #1a3c1a;
+    margin: 0;
+  }
+
+  .drawer-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    color: #555;
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .nav-tabs {
+    display: block;
+  }
+
   .tab-item {
     border-left: none;
-    border-bottom: 3px solid transparent;
+    border-bottom: none;
+    border-left: 3px solid transparent;
+    padding: 0.9rem 1.5rem;
   }
+
   .tab-item.active {
-    border-left: none;
-    border-bottom-color: var(--color-primary);
+    border-left-color: var(--color-primary);
+    border-bottom-color: transparent;
   }
+
   .order-meta {
     flex-direction: column;
     gap: 0.5rem;
   }
+
   .order-body {
     flex-direction: column;
     align-items: flex-start;

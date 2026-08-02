@@ -34,7 +34,8 @@
     <!-- Toast Notification -->
     <div id="toast" class="toast">
       <div class="toast-icon">✓</div>
-      <div class="toast-msg">Added to your cart!</div>
+      <div class="toast-msg" style="flex: 1;">Added to your cart!</div>
+      <a href="checkout.html" class="toast-btn" style="background: white; color: #16a34a; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 0.8rem; margin-left: 10px; white-space: nowrap;">Go to Checkout</a>
     </div>
     
 
@@ -149,11 +150,6 @@
         </div>
         
         <div class="mh-content">
-          <div class="mh-rating">
-            <span class="mh-rating-score">4.3</span>
-            <div class="mh-stars">★★★★★</div>
-            <span class="mh-rating-count">(2,340+ Farmers)</span>
-          </div>
           <h2 class="mh-product-title">KAD <br><span class="highlight">Multiplier</span></h2>
           <span class="mh-product-subtitle">PREMIUM BIO-STIMULANT</span>
           <p class="mh-product-desc">47 Beneficial Microbes for Healthier Soil & Higher Yield</p>
@@ -190,7 +186,7 @@
       <section class="mobile-purchase">
         <div class="mp-price-row">
           <div class="mp-price-main">
-            <span class="mp-current-price">₹1,099</span>
+            <span class="mp-current-price" id="hero-price">₹1,099</span>
             <span class="mp-mrp" style="display: none;">₹1,099</span>
             <span class="mp-discount" style="display: none;">Save 0%</span>
           </div>
@@ -206,19 +202,23 @@
         <div class="mp-variants">
           <span class="mp-label">Select Size</span>
           <div class="mp-variant-grid" style="grid-template-columns: repeat(2, 1fr);">
-            <button class="mp-variant-btn active" data-price="1099" data-mrp="1099" data-weight="1" data-title="1 Kg" data-subtitle="">
+            <button class="mp-variant-btn active" data-price="1099" data-mrp="1099" data-weight="1" data-title="1 Kg" data-subtitle="" style="position: relative;">
+              <span class="wishlist-heart" data-variant-id="variant-1kg" style="position: absolute; top: 5px; right: 8px; z-index: 10;">♡</span>
               <span class="mp-v-title">1 Kg</span>
               <span class="mp-v-price">₹1,099</span>
             </button>
-            <button class="mp-variant-btn" data-price="4099" data-mrp="6099" data-weight="5" data-title="5 Kg" data-subtitle="(20 × 250g)">
+            <button class="mp-variant-btn" data-price="4099" data-mrp="6099" data-weight="5" data-title="5 Kg" data-subtitle="(20 × 250g)" style="position: relative;">
+              <span class="wishlist-heart" data-variant-id="variant-5kg" style="position: absolute; top: 5px; right: 8px; z-index: 10;">♡</span>
               <span class="mp-v-title">5 Kg</span>
               <span class="mp-v-price" style="font-size: 0.7rem;">(20x250g) ₹4,099</span>
             </button>
-            <button class="mp-variant-btn" data-price="7799" data-mrp="12199" data-weight="10" data-title="10 Kg" data-subtitle="(40 × 250g)">
+            <button class="mp-variant-btn" data-price="7799" data-mrp="12199" data-weight="10" data-title="10 Kg" data-subtitle="(40 × 250g)" style="position: relative;">
+              <span class="wishlist-heart" data-variant-id="variant-10kg" style="position: absolute; top: 5px; right: 8px; z-index: 10;">♡</span>
               <span class="mp-v-title">10 Kg</span>
               <span class="mp-v-price" style="font-size: 0.7rem;">(40x250g) ₹7,799</span>
             </button>
-            <button class="mp-variant-btn" data-price="7499" data-mrp="10999" data-weight="10" data-title="10 Kg" data-subtitle="(10 × 1 Kg)">
+            <button class="mp-variant-btn" data-price="7499" data-mrp="10999" data-weight="10" data-title="10 Kg" data-subtitle="(10 × 1 Kg)" style="position: relative;">
+              <span class="wishlist-heart" data-variant-id="variant-10kg-1kg-packs" style="position: absolute; top: 5px; right: 8px; z-index: 10;">♡</span>
               <span class="mp-v-title">10 Kg</span>
               <span class="mp-v-price" style="font-size: 0.7rem;">(10x1Kg) ₹7,499</span>
             </button>
@@ -585,7 +585,8 @@
               <div class="selector-group">
                 <span class="selector-label">Select Package Size</span>
                 <div class="weight-selectors">
-                  <button class="weight-btn active" data-mrp="1099" data-price="1099" data-discount="0" data-weight="1" data-image="/kad-multiplier-cropped.png">
+                  <button class="weight-btn active" data-mrp="1099" data-price="1099" data-discount="0" data-weight="1" data-image="/kad-multiplier-cropped.png" style="position: relative;">
+                    <span class="wishlist-heart" data-variant-id="variant-1kg" style="position: absolute; top: 10px; right: 10px; z-index: 10;">♡</span>
                     <div class="wb-desktop-content">
                       <span class="wb-title">1 Kg</span>
                     </div>
@@ -600,7 +601,8 @@
                       <div class="wb-price-tag">₹1,099</div>
                     </div>
                   </button>
-                  <button class="weight-btn" data-mrp="6099" data-price="4099" data-discount="33" data-weight="5" data-image="/5kg-20x250.png">
+                  <button class="weight-btn" data-mrp="6099" data-price="4099" data-discount="33" data-weight="5" data-image="/5kg-20x250.png" style="position: relative;">
+                    <span class="wishlist-heart" data-variant-id="variant-5kg" style="position: absolute; top: 10px; right: 10px; z-index: 10;">♡</span>
                     <div class="wb-desktop-content">
                       <span class="wb-title">5 Kg</span>
                       <span class="wb-sub">(20 × 250g)</span>
@@ -616,7 +618,8 @@
                       <div class="wb-price-tag">₹4,099</div>
                     </div>
                   </button>
-                  <button class="weight-btn" data-mrp="12199" data-price="7799" data-discount="36" data-weight="10" data-image="/10kg-40x250.png">
+                  <button class="weight-btn" data-mrp="12199" data-price="7799" data-discount="36" data-weight="10" data-image="/10kg-40x250.png" style="position: relative;">
+                    <span class="wishlist-heart" data-variant-id="variant-10kg" style="position: absolute; top: 10px; right: 10px; z-index: 10;">♡</span>
                     <div class="wb-desktop-content">
                       <span class="wb-title">10 Kg</span>
                       <span class="wb-sub">(40 × 250g)</span>
@@ -632,7 +635,8 @@
                       <div class="wb-price-tag">₹7,799</div>
                     </div>
                   </button>
-                  <button class="weight-btn" data-mrp="10999" data-price="7499" data-discount="32" data-weight="10" data-image="/10kg-10x1.png">
+                  <button class="weight-btn" data-mrp="10999" data-price="7499" data-discount="32" data-weight="10" data-image="/10kg-10x1.png" style="position: relative;">
+                    <span class="wishlist-heart" data-variant-id="variant-10kg-1kg-packs" style="position: absolute; top: 10px; right: 10px; z-index: 10;">♡</span>
                     <div class="wb-desktop-content">
                       <span class="wb-title">10 Kg</span>
                       <span class="wb-sub">(10 × 1 Kg)</span>

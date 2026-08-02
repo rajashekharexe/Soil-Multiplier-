@@ -119,19 +119,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // -----------------------------------------
   // Action Buttons (Cart, Buy Now)
   // -----------------------------------------
-  const addToCartBtns = document.querySelectorAll('.mp-add-cart-btn, .msb-add-btn, .mp-buy-now-btn');
+  const addToCartBtns = document.querySelectorAll('.mp-add-cart-btn, .msb-add-btn');
+  const buyNowBtns = document.querySelectorAll('.mp-buy-now-btn');
   const headerCartBtn = document.querySelector('.mh-cart-btn');
 
-  function proceedToCheckout() {
-    // Save current selection to localStorage
+  function getCartItem() {
+    const activeVariant = document.querySelector('.mp-variant-btn.active');
     const stickyWeightText = stickyWeight.textContent || '1 Kg';
     let parsedWeight = 1;
     if (stickyWeightText.includes('5')) parsedWeight = 5;
     if (stickyWeightText.includes('10')) parsedWeight = 10;
     
-    const cartData = {
-      title: stickyWeightText, // using the title we track for the sticky bar
-      sub: '',
+    const subtitle = activeVariant && activeVariant.dataset.subtitle ? activeVariant.dataset.subtitle : '';
+    
+    return {
+      title: stickyWeightText,
+      sub: subtitle,
       price: currentPrice,
       mrp: currentMrp,
       qty: currentQty,
@@ -139,13 +142,39 @@ document.addEventListener('DOMContentLoaded', () => {
       total: currentPrice * currentQty,
       image: 'kad-multiplier-cropped.png'
     };
+  }
+
+  function addToCart(redirect = false) {
+    const cartData = getCartItem();
+    let currentCart = JSON.parse(localStorage.getItem('kadCart') || '[]');
+    const existingIndex = currentCart.findIndex(item => item.title === cartData.title && item.sub === cartData.sub);
     
-    localStorage.setItem('kadCart', JSON.stringify([cartData]));
-    window.location.href = 'checkout.html';
+    if (existingIndex >= 0) {
+      currentCart[existingIndex].qty += cartData.qty;
+      currentCart[existingIndex].total = currentCart[existingIndex].qty * currentCart[existingIndex].price;
+    } else {
+      currentCart.push(cartData);
+    }
+    
+    localStorage.setItem('kadCart', JSON.stringify(currentCart));
+    
+    if (redirect) {
+      window.location.href = 'checkout.html';
+    } else {
+      const toast = document.getElementById('toast');
+      if (toast) {
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      }
+    }
   }
 
   addToCartBtns.forEach(btn => {
-    btn.addEventListener('click', proceedToCheckout);
+    btn.addEventListener('click', () => addToCart(false));
+  });
+
+  buyNowBtns.forEach(btn => {
+    btn.addEventListener('click', () => addToCart(true));
   });
 
   if (headerCartBtn) {

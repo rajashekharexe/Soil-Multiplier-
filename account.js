@@ -1,8 +1,17 @@
 import { auth, db } from './firebase.js';
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc, setDoc, collection, addDoc, getDocs, deleteDoc, updateDoc, query, where } from "firebase/firestore";
+import { showToast } from './toast.js';
 
 let currentUser = null;
+
+// XSS escape helper
+function escapeHTML(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[&<>'"]/g, tag => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[tag] || tag));
+}
 
 // --- Auth State ---
 onAuthStateChanged(auth, (user) => {
@@ -67,7 +76,7 @@ function setupTabs() {
         localStorage.removeItem('isLoggedIn');
         window.location.href = 'index.html';
       } catch (error) {
-        alert('Logout failed. Please try again.');
+        showToast('Logout failed. Please try again.', 'error');
         console.error('Logout error:', error);
       }
     });
@@ -109,6 +118,7 @@ async function loadData() {
 
   renderAddresses();
   renderOrders();
+  loadWishlist();
 }
 
 // --- Profile Save ---
@@ -226,14 +236,14 @@ if (addressForm) {
     const isDefault = document.getElementById('addr-default').checked;
 
     // Validation
-    if (!nameVal || nameVal.length < 2) { alert('Please enter a valid receiver name.'); return; }
-    if (!/^[6-9]\d{9}$/.test(phoneVal)) { alert('Please enter a valid 10-digit mobile number starting with 6-9.'); return; }
-    if (!houseVal) { alert('Please enter house/building name.'); return; }
-    if (!areaVal) { alert('Please enter area/road/colony.'); return; }
-    if (!cityVal) { alert('Please enter city.'); return; }
-    if (!stateVal) { alert('Please enter state.'); return; }
-    if (!/^\d{6}$/.test(pinVal)) { alert('Please enter a valid 6-digit PIN code.'); return; }
-    if (!labelVal) { alert('Please enter an address label (e.g. Farm, Home).'); return; }
+    if (!nameVal || nameVal.length < 2) { showToast('Please enter a valid receiver name.', 'error'); return; }
+    if (!/^[6-9]\d{9}$/.test(phoneVal)) { showToast('Please enter a valid 10-digit mobile number starting with 6-9.', 'error'); return; }
+    if (!houseVal) { showToast('Please enter house/building name.', 'error'); return; }
+    if (!areaVal) { showToast('Please enter area/road/colony.', 'error'); return; }
+    if (!cityVal) { showToast('Please enter city.', 'error'); return; }
+    if (!stateVal) { showToast('Please enter state.', 'error'); return; }
+    if (!/^\d{6}$/.test(pinVal)) { showToast('Please enter a valid 6-digit PIN code.', 'error'); return; }
+    if (!labelVal) { showToast('Please enter an address label (e.g. Farm, Home).', 'error'); return; }
 
     btn.textContent = 'Saving...';
 
@@ -251,7 +261,7 @@ if (addressForm) {
       } else {
         const currentAddresses = await getAddresses();
         if (currentAddresses.length >= 2) {
-          alert("You can only save up to 2 addresses. Please delete an existing address to add a new one.");
+          showToast('You can save up to 2 addresses. Delete one to add a new one.', 'warning');
           btn.textContent = 'Save Address';
           return;
         }
@@ -267,8 +277,9 @@ if (addressForm) {
       addressForm.reset();
       document.getElementById('address-form-container').classList.add('hidden-panel');
       renderAddresses();
+      showToast('Address saved successfully!', 'success');
     } catch (err) {
-      alert('Failed to save address. Please try again.');
+      showToast('Failed to save address. Please try again.', 'error');
       console.error(err);
     } finally {
       btn.textContent = 'Save Address';
@@ -281,8 +292,9 @@ window.deleteAddress = async (id) => {
   try {
     await deleteDoc(doc(db, "addresses", id));
     renderAddresses();
+    showToast('Address deleted successfully.', 'success');
   } catch (err) {
-    alert('Failed to delete address.');
+    showToast('Failed to delete address.', 'error');
     console.error(err);
   }
 };
@@ -308,7 +320,7 @@ window.editAddress = async (id) => {
     document.getElementById('address-form').dataset.editId = id;
     document.querySelector('#address-form button[type="submit"]').textContent = 'Update Address';
   } catch (err) {
-    alert('Failed to load address for editing.');
+    showToast('Failed to load address for editing.', 'error');
     console.error(err);
   }
 };
@@ -321,8 +333,9 @@ window.setDefaultAddress = async (id) => {
     );
     await Promise.all(batch);
     renderAddresses();
+    showToast('Default address updated.', 'success');
   } catch (err) {
-    alert('Failed to set default address.');
+    showToast('Failed to set default address.', 'error');
     console.error(err);
   }
 };
@@ -438,7 +451,7 @@ window.showInvoice = (ord) => {
       subtotal += lineTotal;
       itemsHtml += `
         <tr>
-          <td style="padding:0.75rem;border-bottom:1px solid #e2e8f0;">${item.title}${item.sub ? ' ' + item.sub : ''}</td>
+          <td style="padding:0.75rem;border-bottom:1px solid #e2e8f0;">${escapeHTML(item.title)}${item.sub ? ' ' + escapeHTML(item.sub) : ''}</td>
           <td style="padding:0.75rem;border-bottom:1px solid #e2e8f0;text-align:center;">${item.qty}</td>
           <td style="padding:0.75rem;border-bottom:1px solid #e2e8f0;text-align:right;">₹${(item.price || 0).toLocaleString('en-IN')}</td>
           <td style="padding:0.75rem;border-bottom:1px solid #e2e8f0;text-align:right;">₹${lineTotal.toLocaleString('en-IN')}</td>
@@ -450,7 +463,7 @@ window.showInvoice = (ord) => {
   const total = ord.total || subtotal + shipping;
 
   const addr = ord.shippingAddress;
-  const addrStr = addr ? `${addr.firstName || ''} ${addr.lastName || ''}<br>${addr.address || ''}, ${addr.city || ''}, ${addr.state || ''} - ${addr.pin || ''}` : '—';
+  const addrStr = addr ? `${escapeHTML(addr.firstName || '')} ${escapeHTML(addr.lastName || '')}<br>${escapeHTML(addr.address || '')}, ${escapeHTML(addr.city || '')}, ${escapeHTML(addr.state || '')} - ${escapeHTML(addr.pin || '')}` : '—';
 
   const win = window.open('', '_blank');
   win.document.write(`<!DOCTYPE html><html><head><title>Invoice #${orderId} - KAD Multiplier</title>
@@ -502,3 +515,71 @@ paymentRadios.forEach(radio => {
     }
   });
 });
+
+// ==========================================
+// WISHLIST (Firebase)
+// ==========================================
+async function loadWishlist() {
+  const panel = document.getElementById('wishlist-panel');
+  if (!panel || !currentUser) return;
+  panel.innerHTML = '<p style="color:var(--text-muted);">Loading wishlist...</p>';
+  try {
+    const q = query(collection(db, "wishlist"), where("uid", "==", currentUser.uid));
+    const snap = await getDocs(q);
+    if (snap.empty) {
+      panel.innerHTML = '<p style="color: var(--text-muted); padding: 1rem 0;">Your wishlist is empty.</p>';
+      return;
+    }
+    panel.innerHTML = '';
+    snap.forEach(d => {
+      const item = { id: d.id, ...d.data() };
+      const card = document.createElement('div');
+      card.className = 'card-box';
+      card.innerHTML = `
+        <h3 style="margin: 0 0 0.5rem 0;">${escapeHTML(item.title)} ${item.sub ? escapeHTML(item.sub) : ''}</h3>
+        <p style="font-weight: 600; margin-bottom: 1rem; color: var(--color-primary);">₹${item.price.toLocaleString('en-IN')}</p>
+        <div class="card-actions" style="margin-top: auto; display: flex; gap: 0.5rem;">
+          <button class="btn-primary" style="flex: 1; padding: 0.5rem;" onclick='addToCartFromWishlist(${JSON.stringify(item).replace(/"/g, '&quot;')})'>Add to Cart</button>
+          <button class="btn-outline danger" style="padding: 0.5rem; display: flex; align-items: center; justify-content: center;" onclick="removeFromWishlist('${item.id}')" aria-label="Remove">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+        </div>
+      `;
+      panel.appendChild(card);
+    });
+  } catch (err) {
+    console.error("Error loading wishlist:", err);
+    panel.innerHTML = '<p style="color: #ff4d4f;">Failed to load wishlist.</p>';
+  }
+}
+
+window.removeFromWishlist = async (docId) => {
+  if (!confirm('Remove from wishlist?')) return;
+  try {
+    await deleteDoc(doc(db, "wishlist", docId));
+    loadWishlist();
+    showToast('Removed from wishlist.', 'success');
+  } catch (err) {
+    console.error(err);
+    showToast('Failed to remove item.', 'error');
+  }
+};
+
+window.addToCartFromWishlist = (item) => {
+  let cart = JSON.parse(localStorage.getItem('kadCart') || '[]');
+  const existing = cart.find(c => c.id === item.variantId);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({
+      id: item.variantId,
+      title: item.title,
+      sub: item.sub || '',
+      price: item.price,
+      weight: item.weight || 0,
+      qty: 1
+    });
+  }
+  localStorage.setItem('kadCart', JSON.stringify(cart));
+  showToast('Added to cart!', 'success');
+};

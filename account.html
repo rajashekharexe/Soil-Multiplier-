@@ -112,6 +112,10 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
               Orders & Returns
             </li>
+            <li class="tab-item" data-target="tab-wishlist">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              Wishlist
+            </li>
 
             <li class="tab-item" data-target="tab-payments">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
@@ -226,6 +230,14 @@
             </div>
           </div>
 
+          <!-- 5. Wishlist Tab -->
+          <div class="tab-pane" id="tab-wishlist">
+            <h2>My Wishlist</h2>
+            <div class="wishlist-grid" id="wishlist-panel">
+              <!-- Wishlist items injected by JS -->
+            </div>
+          </div>
+
 
 
           <!-- 6. Payments Tab -->
@@ -284,6 +296,16 @@
         </main>
       </div>
     </div>
+
+    <footer style="background: #0a0a0a; border-top: 1px solid rgba(255,255,255,0.1); padding: 2rem; text-align: center; color: #666; font-size: 0.85rem;">
+      <p>&copy; 2026 KAD Multiplier. All rights reserved.</p>
+      <div style="margin-top: 0.5rem; display: flex; gap: 1.5rem; justify-content: center;">
+        <a href="/privacy.html" style="color: #888; text-decoration: none;">Privacy Policy</a>
+        <a href="/terms.html" style="color: #888; text-decoration: none;">Terms of Service</a>
+        <a href="/faq.html" style="color: #888; text-decoration: none;">FAQ</a>
+        <a href="/shipping.html" style="color: #888; text-decoration: none;">Shipping</a>
+      </div>
+    </footer>
 
     <!-- Scripts -->
     <script type="module" src="/nav.js"></script>

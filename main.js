@@ -3,8 +3,10 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import SplitType from 'split-type'
 import lenis from './lenis-init.js'
-import { db } from './firebase.js';
-import { collection, getDocs } from 'firebase/firestore';
+import { db, auth } from './firebase.js';
+import { collection, getDocs, addDoc, deleteDoc, query, where, doc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { showToast } from './toast.js';
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -446,8 +448,12 @@ async function fetchDynamicPrices() {
       }
     });
     updatePrice();
+    const price1kg = products['variant-1kg']?.price;
+    const heroPrice = document.getElementById('hero-price');
+    if (heroPrice && price1kg) heroPrice.textContent = '₹' + formatCurrency(price1kg);
   } catch (error) {
     console.error("Error fetching dynamic prices:", error);
+    showToast('Could not load latest prices. Showing default prices.', 'warning');
   }
 }
 fetchDynamicPrices();
@@ -593,7 +599,11 @@ function getCart() {
 }
 
 function saveCart(cart) {
-  localStorage.setItem('kadCart', JSON.stringify(cart));
+  try {
+    localStorage.setItem('kadCart', JSON.stringify(cart));
+  } catch (e) {
+    showToast('Could not save cart. Storage may be full.', 'warning');
+  }
 }
 
 const bottomCartBtn = document.getElementById('bottom-cart-btn');
@@ -926,3 +936,83 @@ if (logoutBtn) {
     updateAuthUI();
   });
 }
+
+// --- 13. Wishlist Logic ---
+let currentUser = null;
+
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  if (user) {
+    try {
+      const q = query(collection(db, "wishlist"), where("uid", "==", user.uid));
+      const querySnapshot = await getDocs(q);
+      const wishlistVariants = new Set();
+      querySnapshot.forEach(docSnap => {
+        wishlistVariants.add(docSnap.data().variantId);
+      });
+      document.querySelectorAll('.wishlist-heart').forEach(heart => {
+        if (wishlistVariants.has(heart.dataset.variantId)) {
+          heart.textContent = '♥';
+          heart.classList.add('active');
+        }
+      });
+    } catch (e) {
+      console.error("Error fetching wishlist:", e);
+    }
+  } else {
+    document.querySelectorAll('.wishlist-heart').forEach(heart => {
+      heart.textContent = '♡';
+      heart.classList.remove('active');
+    });
+  }
+});
+
+document.querySelectorAll('.wishlist-heart').forEach(heart => {
+  heart.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (!currentUser) {
+      showToast('Please log in to use wishlist');
+      return;
+    }
+    
+    const variantId = heart.dataset.variantId;
+    const isActive = heart.classList.contains('active');
+    const btn = heart.closest('button');
+    const title = btn.dataset.title || btn.querySelector('.mp-v-title, .wb-title')?.innerText || '';
+    const sub = btn.dataset.subtitle || btn.querySelector('.wb-sub')?.innerText || '';
+    const price = btn.dataset.price || 0;
+    const weight = btn.dataset.weight || 0;
+    
+    if (isActive) {
+      heart.textContent = '♡';
+      heart.classList.remove('active');
+      try {
+        const q = query(collection(db, "wishlist"), where("uid", "==", currentUser.uid), where("variantId", "==", variantId));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach(async (docSnap) => {
+          await deleteDoc(doc(db, "wishlist", docSnap.id));
+        });
+        showToast('Removed from wishlist');
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      heart.textContent = '♥';
+      heart.classList.add('active');
+      try {
+        await addDoc(collection(db, "wishlist"), {
+          uid: currentUser.uid,
+          variantId: variantId,
+          title: title,
+          sub: sub,
+          price: parseInt(price),
+          weight: parseInt(weight),
+          addedAt: new Date().toISOString()
+        });
+        showToast('Added to wishlist');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  });
+});

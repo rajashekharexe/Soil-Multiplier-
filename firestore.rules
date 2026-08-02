@@ -10,12 +10,25 @@ service cloud.firestore {
     // Orders Collection
     match /orders/{orderId} {
       // Anyone can create an order
-      allow create: if true;
+      allow create: if true && request.resource.data.keys().hasAll(['items', 'total']);
       // Users can read their own orders. Admin can read all.
       // (Since guests don't have auth, they can't read. Logged-in users can read theirs).
-      allow read: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.userId);
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.uid);
       // Only admin can update/delete
       allow update, delete: if isAdmin();
+    }
+
+    // Addresses Collection
+    match /addresses/{addressId} {
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.uid);
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.uid;
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+    }
+
+    // Wishlist Collection
+    match /wishlist/{wishlistId} {
+      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.uid;
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
     }
 
     // Products Collection (Prices/Stock)

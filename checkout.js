@@ -1,5 +1,6 @@
 import './lenis-init.js';
 import { auth, db } from './firebase.js';
+import { showToast } from './toast.js';
 import { collection, addDoc, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -147,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let subtotal = 0, totalWeight = 0;
 
     if (cart.length === 0) {
-      alert("Your cart is empty! Please add products before checking out.");
+      showToast('Your cart is empty! Please add products before checking out.', 'warning');
       window.location.href = "index.html";
       return;
     }
@@ -223,18 +224,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const stateVal = document.getElementById('chk-state').value.trim();
       const pinVal = document.getElementById('chk-pin').value.trim();
 
-      if (!isValidEmail(emailVal)) { alert("Please enter a valid email address."); document.getElementById('chk-email').focus(); return; }
-      if (!isValidPhone(phoneVal)) { alert("Please enter a valid 10-digit mobile number starting with 6–9."); document.getElementById('chk-phone').focus(); return; }
-      if (!fnameVal) { alert("Please enter your first name."); document.getElementById('chk-fname').focus(); return; }
-      if (!lnameVal) { alert("Please enter your last name."); document.getElementById('chk-lname').focus(); return; }
-      if (!addressVal) { alert("Please enter your address."); document.getElementById('chk-address').focus(); return; }
-      if (!cityVal) { alert("Please enter your city."); document.getElementById('chk-city').focus(); return; }
-      if (!stateVal) { alert("Please enter your state."); document.getElementById('chk-state').focus(); return; }
-      if (!isValidPin(pinVal)) { alert("Please enter a valid 6-digit PIN code."); document.getElementById('chk-pin').focus(); return; }
+      if (!isValidEmail(emailVal)) { showToast('Please enter a valid email address.', 'error'); document.getElementById('chk-email').focus(); return; }
+      if (!isValidPhone(phoneVal)) { showToast('Please enter a valid 10-digit phone number starting with 6–9.', 'error'); document.getElementById('chk-phone').focus(); return; }
+      if (!fnameVal) { showToast('Please enter your first name.', 'error'); document.getElementById('chk-fname').focus(); return; }
+      if (!lnameVal) { showToast('Please enter your last name.', 'error'); document.getElementById('chk-lname').focus(); return; }
+      if (!addressVal) { showToast('Please enter your delivery address.', 'error'); document.getElementById('chk-address').focus(); return; }
+      if (!cityVal) { showToast('Please enter your city.', 'error'); document.getElementById('chk-city').focus(); return; }
+      if (!stateVal) { showToast('Please enter your state.', 'error'); document.getElementById('chk-state').focus(); return; }
+      if (!isValidPin(pinVal)) { showToast('Please enter a valid 6-digit PIN code.', 'error'); document.getElementById('chk-pin').focus(); return; }
 
       if (radioOnline.checked) {
         if (!isValidUTR(chkUtr?.value)) {
-          alert("Please enter a valid UTR / Transaction ID (at least 12 characters) to confirm your payment.");
+          showToast('Please enter a valid UTR / Transaction ID (at least 12 characters).', 'error');
           chkUtr?.focus();
           return;
         }
@@ -244,37 +245,59 @@ document.addEventListener('DOMContentLoaded', () => {
       submitBtn.disabled = true;
       submitBtn.style.opacity = '0.7';
 
-      let subtotal = 0, totalWeight = 0;
-      cart.forEach(item => { subtotal += (item.price * item.qty); totalWeight += (item.weight * item.qty); });
-      const shipping = totalWeight > 0 ? Math.ceil(totalWeight / 5) * 100 : 0;
-      const grandTotal = subtotal + shipping;
-
-      const notesVal = document.getElementById('chk-notes')?.value.trim() || '';
-
-      const orderData = {
-        uid: currentUser.uid,
-        contactEmail: emailVal,
-        contactPhone: phoneVal,
-        shippingAddress: {
-          firstName: fnameVal,
-          lastName: lnameVal,
-          address: addressVal,
-          city: cityVal,
-          state: stateVal,
-          pin: pinVal,
-        },
-        paymentMethod: radioOnline.checked ? 'QR_CODE' : 'COD',
-        utr: radioOnline.checked ? chkUtr.value.trim() : null,
-        orderNotes: notesVal,
-        items: cart,
-        subtotal,
-        shipping,
-        total: grandTotal,
-        status: 'Pending',
-        createdAt: new Date().toISOString()
-      };
-
       try {
+        // Fetch real prices from Firestore
+        const productsSnap = await getDocs(collection(db, 'products'));
+        const priceMap = {};
+        productsSnap.forEach(doc => {
+          if (doc.data().price) {
+            priceMap[doc.id] = doc.data().price;
+          }
+        });
+
+        let subtotal = 0, totalWeight = 0;
+        cart.forEach(item => {
+          let realPrice = item.price;
+          if (item.variantId && priceMap[item.variantId]) {
+            realPrice = priceMap[item.variantId];
+          } else if (item.weight) {
+            const fallbackId = `variant-${item.weight}kg`;
+            if (priceMap[fallbackId]) {
+              realPrice = priceMap[fallbackId];
+            }
+          }
+          item.price = realPrice;
+          subtotal += (realPrice * item.qty);
+          totalWeight += (item.weight * item.qty);
+        });
+        const shipping = totalWeight > 0 ? Math.ceil(totalWeight / 5) * 100 : 0;
+        const grandTotal = subtotal + shipping;
+
+        const notesVal = document.getElementById('chk-notes')?.value.trim() || '';
+
+        const orderData = {
+          uid: currentUser.uid,
+          contactEmail: emailVal,
+          contactPhone: phoneVal,
+          shippingAddress: {
+            firstName: fnameVal,
+            lastName: lnameVal,
+            address: addressVal,
+            city: cityVal,
+            state: stateVal,
+            pin: pinVal,
+          },
+          paymentMethod: radioOnline.checked ? 'QR_CODE' : 'COD',
+          utr: radioOnline.checked ? chkUtr.value.trim() : null,
+          orderNotes: notesVal,
+          items: cart,
+          subtotal,
+          shipping,
+          total: grandTotal,
+          status: 'Pending',
+          createdAt: new Date().toISOString()
+        };
+
         const orderRef = await addDoc(collection(db, "orders"), orderData);
 
         // Save new address to Firebase if no saved address was selected
@@ -303,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('kadCart');
       } catch (error) {
         console.error("Error creating order:", error);
-        alert("There was a network error processing your order. Please check your connection and try again.");
+        showToast('Network error. Please check your connection and try again.', 'error');
         submitBtn.innerText = 'Complete Order';
         submitBtn.disabled = false;
         submitBtn.style.opacity = '1';

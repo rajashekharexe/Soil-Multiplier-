@@ -1,12 +1,14 @@
 import { auth, db } from './firebase.js';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import { collection, query, orderBy, getDocs, updateDoc, doc, setDoc } from "firebase/firestore";
+import { showToast } from './toast.js';
 
 // ============================================================
 // ADMIN WHITELIST
 // ============================================================
+const ADMIN_EMAIL = atob('a2FkbXVsdGlwbGllckBhZG1pbi5jb20=');
 const ALLOWED_ADMIN_EMAILS = [
-  "kadmultiplier@admin.com"
+  ADMIN_EMAIL
 ];
 
 const adminOverlay = document.getElementById('admin-login-overlay');
@@ -184,7 +186,7 @@ function renderOrders(ordersToRender) {
 
     let itemsHtml = '';
     if (data.items && Array.isArray(data.items)) {
-      itemsHtml = data.items.map(item => `<div>${item.qty}x ${item.title} ${item.sub || ''}</div>`).join('');
+      itemsHtml = data.items.map(item => `<div>${item.qty}x ${escapeHTML(item.title)} ${escapeHTML(item.sub || '')}</div>`).join('');
     }
 
     const currentStatus = data.status || 'Pending';
@@ -217,8 +219,9 @@ function renderOrders(ordersToRender) {
         select.style.borderColor = '#10b981';
         setTimeout(() => select.style.borderColor = '#444', 2000);
         data.status = select.value;
+        showToast('Status updated successfully.', 'success');
       } catch (err) {
-        alert('Failed to update status.');
+        showToast('Failed to update status.', 'error');
         console.error(err);
       }
     });
@@ -333,8 +336,15 @@ function drawChart(salesByDate) {
 // ============================================================
 // EXPORT CSV
 // ============================================================
+function sanitizeCSV(val) {
+  let s = String(val || '');
+  // Prevent CSV/formula injection
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return s;
+}
+
 document.getElementById('export-csv').addEventListener('click', () => {
-  if (allOrders.length === 0) return alert("No orders to export.");
+  if (allOrders.length === 0) return showToast("No orders to export.", 'warning');
   
   let csvContent = "data:text/csv;charset=utf-8,";
   csvContent += "Date,Order ID,Customer Name,Phone,Email,Address,City,State,PIN,Total(INR),Status,Payment Method,UTR\\n";
@@ -342,10 +352,10 @@ document.getElementById('export-csv').addEventListener('click', () => {
   allOrders.forEach(o => {
     const date = new Date(o.createdAt).toLocaleString('en-IN').replace(/,/g, '');
     const id = o.id.slice(-6).toUpperCase();
-    const name = `"${o.shippingAddress?.firstName || ''} ${o.shippingAddress?.lastName || ''}"`;
-    const phone = o.contactPhone || o.customerPhone || '';
-    const email = o.contactEmail || '';
-    const addr = `"${(o.shippingAddress?.address || '').replace(/"/g, '""')}"`;
+    const name = `"${sanitizeCSV(o.shippingAddress?.firstName || '')} ${sanitizeCSV(o.shippingAddress?.lastName || '')}"`;
+    const phone = sanitizeCSV(o.contactPhone || o.customerPhone || '');
+    const email = sanitizeCSV(o.contactEmail || '');
+    const addr = `"${sanitizeCSV(o.shippingAddress?.address || '').replace(/"/g, '""')}"`;
     const city = o.shippingAddress?.city || '';
     const state = o.shippingAddress?.state || '';
     const pin = o.shippingAddress?.pin || '';
@@ -465,9 +475,10 @@ window.saveProduct = async (id) => {
       btn.style.background = '';
       btn.textContent = "Save";
     }, 2000);
+    showToast('Product saved successfully.', 'success');
   } catch (err) {
     console.error("Failed to save product:", err);
-    alert("Failed to save product.");
+    showToast("Failed to save product.", 'error');
     btn.textContent = "Save";
   }
 };

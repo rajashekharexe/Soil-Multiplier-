@@ -46,7 +46,7 @@ if (registerForm) {
     const fakeEmail = `${phoneVal}@kad-multiplier.com`;
 
     // Extra security: block any admin-domain email from being registered
-    if (fakeEmail.includes('@admin.com') || fakeEmail.includes('kadmultiplier')) {
+    if (fakeEmail.includes('@admin.com') || fakeEmail.includes('kad-multiplier')) {
       showError("Registration blocked. Please contact support.");
       btn.textContent = 'Sign Up';
       btn.style.opacity = '1';

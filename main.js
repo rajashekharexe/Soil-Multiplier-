@@ -618,14 +618,17 @@ if (bottomCartBtn) {
     const basePrice = parseInt(activeBtn.dataset.price);
     const weight = parseInt(activeBtn.dataset.weight);
     
+    const variantId = activeBtn.dataset.variantId;
+    const image = activeBtn.dataset.image || '/kad-multiplier-cropped.png';
+    
     const cart = getCart();
     
     // Check if item already exists in cart to update qty, else push new
-    const existingIndex = cart.findIndex(item => item.title === title && item.sub === sub);
+    const existingIndex = cart.findIndex(item => item.variantId === variantId);
     if (existingIndex > -1) {
       cart[existingIndex].qty += currentQty;
     } else {
-      cart.push({ title, sub, price: basePrice, weight, qty: currentQty });
+      cart.push({ variantId, title, sub, price: basePrice, weight, qty: currentQty, image });
     }
     
     saveCart(cart);
@@ -660,7 +663,7 @@ function renderCart() {
     const itemHtml = `
       <div class="fpc-item">
         <div class="fpc-item-img" style="background: #f4f6f8; display: flex; align-items: center; justify-content: center;">
-          <img src="/kad-multiplier-cropped.png" alt="KAD Multiplier" style="width: 80%; height: 80%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));" />
+          <img src="${item.image || '/kad-multiplier-cropped.png'}" alt="KAD Multiplier" style="width: 80%; height: 80%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));" />
         </div>
         <div class="fpc-item-details">
           <h4>KAD Multiplier</h4>
@@ -717,9 +720,11 @@ function renderCart() {
       const idx = e.currentTarget.dataset.index;
       if (cart[idx].qty > 1) {
         cart[idx].qty--;
-        saveCart(cart);
-        renderCart();
+      } else {
+        cart.splice(idx, 1);
       }
+      saveCart(cart);
+      renderCart();
     });
   });
   document.querySelectorAll('.cart-plus').forEach(btn => {
@@ -1015,4 +1020,69 @@ document.querySelectorAll('.wishlist-heart').forEach(heart => {
       }
     }
   });
+});
+
+// ---- Desktop Lead Form → Firebase ----
+const dLeadForm = document.getElementById('desktop-lead-form');
+if (dLeadForm) {
+  dLeadForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nameVal = document.getElementById('desktop-lead-name').value.trim();
+    const phoneVal = document.getElementById('desktop-lead-phone').value.trim();
+    const cropVal = document.getElementById('desktop-lead-crop').value.trim();
+    const errEl = document.getElementById('desktop-lead-error');
+    const successEl = document.getElementById('desktop-lead-success');
+    const submitBtn = document.getElementById('desktop-lead-submit-btn');
+
+    errEl.style.display = 'none';
+    if (!nameVal || nameVal.length < 2) { errEl.textContent = 'Please enter your name.'; errEl.style.display = 'block'; return; }
+    if (!/^[6-9]\d{9}$/.test(phoneVal)) { errEl.textContent = 'Please enter a valid 10-digit mobile number.'; errEl.style.display = 'block'; return; }
+
+    submitBtn.textContent = 'Sending...';
+    submitBtn.disabled = true;
+
+    try {
+      await addDoc(collection(db, 'leads'), {
+        name: nameVal,
+        phone: phoneVal,
+        crop: cropVal || 'Not specified',
+        source: 'desktop_lead_form',
+        createdAt: new Date().toISOString()
+      });
+      successEl.style.display = 'block';
+      dLeadForm.reset();
+      submitBtn.textContent = 'Submitted ✓';
+    } catch (err) {
+      errEl.textContent = 'Failed to submit. Please call us at +91 8088775223.';
+      errEl.style.display = 'block';
+      submitBtn.textContent = 'Request Free Consultation';
+      submitBtn.disabled = false;
+      console.error(err);
+    }
+  });
+}
+
+// ---- Cart Price Sync ----
+document.addEventListener('DOMContentLoaded', async () => {
+  const cart = getCart();
+  if (cart.length > 0) {
+    try {
+      const snap = await getDocs(collection(db, 'products'));
+      const priceMap = {};
+      snap.forEach(d => { if (d.data().price) priceMap[d.id] = d.data().price; });
+      let updated = false;
+      cart.forEach(item => {
+        if (item.variantId && priceMap[item.variantId] && item.price !== priceMap[item.variantId]) {
+          item.price = priceMap[item.variantId];
+          updated = true;
+        }
+      });
+      if (updated) {
+        saveCart(cart);
+        renderCart();
+      }
+    } catch(err) {
+      console.error("Failed to sync cart prices", err);
+    }
+  }
 });

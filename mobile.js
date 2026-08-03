@@ -4,6 +4,31 @@ import { collection, addDoc } from 'firebase/firestore';
 document.addEventListener('DOMContentLoaded', () => {
   if (window.innerWidth >= 768) return; // Only run on mobile
 
+  // Mobile Navigation Drawer Logic
+  const hamburgerBtn = document.getElementById('mobile-hamburger-btn');
+  const navOverlay = document.getElementById('mobile-nav-overlay');
+  const navDrawer = document.getElementById('mobile-nav-drawer');
+  const navCloseBtn = document.getElementById('mobile-nav-close');
+  const navLinks = document.querySelectorAll('.mob-nav-link');
+
+  function openMobNav() {
+    if(navOverlay) { navOverlay.style.display = 'block'; setTimeout(() => navOverlay.style.opacity = '1', 10); }
+    if(navDrawer) navDrawer.style.left = '0';
+  }
+
+  function closeMobNav() {
+    if(navDrawer) navDrawer.style.left = '-300px';
+    if(navOverlay) {
+      navOverlay.style.opacity = '0';
+      setTimeout(() => navOverlay.style.display = 'none', 300);
+    }
+  }
+
+  if (hamburgerBtn) hamburgerBtn.addEventListener('click', openMobNav);
+  if (navCloseBtn) navCloseBtn.addEventListener('click', closeMobNav);
+  if (navOverlay) navOverlay.addEventListener('click', closeMobNav);
+  navLinks.forEach(link => link.addEventListener('click', closeMobNav));
+
   const variants = document.querySelectorAll('.mp-variant-btn');
   const priceMain = document.querySelector('.mp-current-price');
   const mrpMain = document.querySelector('.mp-mrp');

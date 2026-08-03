@@ -126,7 +126,16 @@
     <div id="mobile-view" class="mobile-only">
       <!-- Mobile Header -->
       <header class="mobile-header">
-        <div class="logo" style="font-size: 1.2rem; margin: 0; color: #0f172a !important;">KAD Multiplier</div>
+        <div style="display:flex; align-items:center; gap: 8px;">
+          <button id="mobile-hamburger-btn" style="background: none; border: none; color: #1e293b; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0;">
+            <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="logo" style="font-size: 1.2rem; margin: 0; color: #0f172a !important;">KAD Multiplier</div>
+        </div>
         <div class="mh-actions">
           <a href="login.html" class="mh-profile-btn" style="background: none; border: none; color: #1e293b; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%;">
             <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -140,6 +149,25 @@
           </button>
         </div>
       </header>
+
+      <!-- Mobile Navigation Drawer -->
+      <div id="mobile-nav-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:998; backdrop-filter:blur(4px); transition:opacity 0.3s;"></div>
+      <div id="mobile-nav-drawer" style="position:fixed; top:0; left:-300px; width:280px; height:100%; background:#fff; z-index:999; transition:left 0.3s ease; box-shadow: 2px 0 10px rgba(0,0,0,0.1); display:flex; flex-direction:column;">
+        <div style="padding: 20px; border-bottom: 1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+          <h3 style="margin:0; font-family:'Outfit',sans-serif; color:#1a3c1a;">Menu</h3>
+          <button id="mobile-nav-close" style="background:none; border:none; font-size:24px; color:#64748b; cursor:pointer;">&times;</button>
+        </div>
+        <div style="padding: 20px; display:flex; flex-direction:column; gap:15px; font-weight:600;">
+          <a href="#mh-features" class="mob-nav-link" style="color:#1e293b; text-decoration:none;">Features</a>
+          <a href="#mh-benefits" class="mob-nav-link" style="color:#1e293b; text-decoration:none;">Benefits</a>
+          <a href="/product-info.html" class="mob-nav-link" style="color:#1e293b; text-decoration:none;">Details</a>
+          <a href="/faq.html" class="mob-nav-link" style="color:#1e293b; text-decoration:none;">FAQ</a>
+          <a href="/shipping.html" class="mob-nav-link" style="color:#1e293b; text-decoration:none;">Shipping</a>
+        </div>
+        <div style="margin-top:auto; padding: 20px; border-top: 1px solid #e2e8f0;">
+          <a href="login.html" style="display:block; text-align:center; background:#16a34a; color:white; padding:12px; border-radius:8px; text-decoration:none; font-weight:600;">Login / Sign Up</a>
+        </div>
+      </div>
 
       <!-- Mobile Hero -->
       <section class="mobile-hero">
@@ -585,7 +613,7 @@
               <div class="selector-group">
                 <span class="selector-label">Select Package Size</span>
                 <div class="weight-selectors">
-                  <button class="weight-btn active" data-mrp="1099" data-price="1099" data-discount="0" data-weight="1" data-image="/kad-multiplier-cropped.png" style="position: relative;">
+                  <button class="weight-btn active" data-variant-id="variant-1kg" data-mrp="1099" data-price="1099" data-discount="0" data-weight="1" data-image="/kad-multiplier-cropped.png" style="position: relative;">
                     <span class="wishlist-heart" data-variant-id="variant-1kg" style="position: absolute; top: 10px; right: 10px; z-index: 10;">♡</span>
                     <div class="wb-desktop-content">
                       <span class="wb-title">1 Kg</span>
@@ -601,7 +629,7 @@
                       <div class="wb-price-tag">₹1,099</div>
                     </div>
                   </button>
-                  <button class="weight-btn" data-mrp="6099" data-price="4099" data-discount="33" data-weight="5" data-image="/5kg-20x250.png" style="position: relative;">
+                  <button class="weight-btn" data-variant-id="variant-5kg" data-mrp="6099" data-price="4099" data-discount="33" data-weight="5" data-image="/5kg-20x250.png" style="position: relative;">
                     <span class="wishlist-heart" data-variant-id="variant-5kg" style="position: absolute; top: 10px; right: 10px; z-index: 10;">♡</span>
                     <div class="wb-desktop-content">
                       <span class="wb-title">5 Kg</span>
@@ -618,7 +646,7 @@
                       <div class="wb-price-tag">₹4,099</div>
                     </div>
                   </button>
-                  <button class="weight-btn" data-mrp="12199" data-price="7799" data-discount="36" data-weight="10" data-image="/10kg-40x250.png" style="position: relative;">
+                  <button class="weight-btn" data-variant-id="variant-10kg" data-mrp="12199" data-price="7799" data-discount="36" data-weight="10" data-image="/10kg-40x250.png" style="position: relative;">
                     <span class="wishlist-heart" data-variant-id="variant-10kg" style="position: absolute; top: 10px; right: 10px; z-index: 10;">♡</span>
                     <div class="wb-desktop-content">
                       <span class="wb-title">10 Kg</span>
@@ -635,7 +663,7 @@
                       <div class="wb-price-tag">₹7,799</div>
                     </div>
                   </button>
-                  <button class="weight-btn" data-mrp="10999" data-price="7499" data-discount="32" data-weight="10" data-image="/10kg-10x1.png" style="position: relative;">
+                  <button class="weight-btn" data-variant-id="variant-10kg-1kg-packs" data-mrp="10999" data-price="7499" data-discount="32" data-weight="10" data-image="/10kg-10x1.png" style="position: relative;">
                     <span class="wishlist-heart" data-variant-id="variant-10kg-1kg-packs" style="position: absolute; top: 10px; right: 10px; z-index: 10;">♡</span>
                     <div class="wb-desktop-content">
                       <span class="wb-title">10 Kg</span>
@@ -809,6 +837,28 @@
 
       </div>
     </div>
+
+    <!-- Desktop Lead Form -->
+    <section class="desktop-contact-section desktop-only" style="padding: 4rem 2rem; background: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center;">
+      <div style="max-width: 600px; margin: 0 auto; background: white; padding: 3rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        <h3 style="font-family: 'Outfit', sans-serif; font-size: 2rem; color: #1a3c1a; margin-bottom: 0.5rem;">Get Expert Advice</h3>
+        <p style="color: #64748b; margin-bottom: 2rem;">Speak directly with our agricultural experts about your specific crop needs.</p>
+        
+        <form id="desktop-lead-form" style="display: flex; flex-direction: column; gap: 1rem;">
+          <input type="text" id="desktop-lead-name" placeholder="Your Name" required style="padding: 1rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; width: 100%; font-family: inherit;">
+          <input type="tel" id="desktop-lead-phone" placeholder="Mobile Number (10 digits)" pattern="[6-9][0-9]{9}" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')" maxlength="10" required style="padding: 1rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; width: 100%; font-family: inherit;">
+          <input type="text" id="desktop-lead-crop" placeholder="Which crop do you grow?" style="padding: 1rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; width: 100%; font-family: inherit;">
+          
+          <div id="desktop-lead-success" style="display:none; background:#f0fdf4; border:1px solid #22c55e; border-radius:8px; padding:1rem; color:#166534; margin-bottom:1rem;">✅ Thank you! Our expert will contact you within 24 hours.</div>
+          <div id="desktop-lead-error" style="display:none; color:#ef4444; margin-bottom:1rem;"></div>
+          
+          <button type="submit" id="desktop-lead-submit-btn" style="background: #16a34a; color: white; border: none; padding: 1rem; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: background 0.3s;">
+            Request Free Consultation
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </form>
+      </div>
+    </section>
 
     <!-- Professional Footer -->
     <footer class="site-footer" style="position: relative; z-index: 2; padding: 10vh 2%; min-height: 100vh; display: flex; align-items: center; background-color: transparent;">

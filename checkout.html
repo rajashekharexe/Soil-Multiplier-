@@ -47,7 +47,7 @@
               <label for="chk-email" class="form-label">Email Address <span style="color:#ff4d4f;">*</span></label>
             </div>
             <div class="form-group full-width">
-              <input type="tel" id="chk-phone" class="form-input" placeholder=" " required>
+              <input type="tel" id="chk-phone" class="form-input" placeholder=" " pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" required>
               <label for="chk-phone" class="form-label">Phone Number <span style="color:#ff4d4f;">*</span></label>
             </div>
           </div>
@@ -78,7 +78,7 @@
               <label for="chk-state" class="form-label">State <span style="color:#ff4d4f;">*</span></label>
             </div>
             <div class="form-group">
-              <input type="text" id="chk-pin" class="form-input" placeholder=" " required>
+              <input type="text" id="chk-pin" class="form-input" placeholder=" " pattern="[0-9]{6}" maxlength="6" inputmode="numeric" required>
               <label for="chk-pin" class="form-label">PIN Code <span style="color:#ff4d4f;">*</span></label>
             </div>
           </div>

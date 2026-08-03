@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="summary-item">
           <div class="item-img-wrapper">
             <div class="item-img" style="background:#f4f6f8;display:flex;align-items:center;justify-content:center;">
-              <img src="/kad-multiplier-cropped.png" alt="KAD Multiplier" style="width:80%;height:80%;object-fit:contain;" />
+              <img src="${item.image || '/kad-multiplier-cropped.png'}" alt="KAD Multiplier" style="width:80%;height:80%;object-fit:contain;" />
             </div>
             <span class="item-badge">${item.qty}</span>
           </div>

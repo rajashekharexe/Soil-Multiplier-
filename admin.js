@@ -1,6 +1,6 @@
 import { auth, db } from './firebase.js';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-import { collection, query, orderBy, getDocs, updateDoc, doc, setDoc } from "firebase/firestore";
+import { collection, query, orderBy, getDocs, updateDoc, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { showToast } from './toast.js';
 
 // ============================================================
@@ -205,10 +205,11 @@ function renderOrders(ordersToRender) {
         ${notesHtml}
       </td>
       <td style="font-weight:600; font-size:1.1rem; color:#10b981;">₹ ${data.total?.toLocaleString('en-IN') || 0}</td>
-      <td>
+      <td style="display:flex; flex-direction:column; gap:8px;">
         <select class="status-select" data-id="${data.id}" style="padding:0.4rem 0.6rem;border-radius:8px;border:1px solid #444;background:#1e293b;color:#fff;cursor:pointer;">
           ${statusOptions}
         </select>
+        <button class="delete-order-btn" data-id="${data.id}" style="padding:0.4rem 0.6rem;border-radius:8px;border:1px solid #ef4444;background:transparent;color:#ef4444;cursor:pointer;font-size:0.85rem;">Delete</button>
       </td>
     `;
 
@@ -223,6 +224,22 @@ function renderOrders(ordersToRender) {
       } catch (err) {
         showToast('Failed to update status.', 'error');
         console.error(err);
+      }
+    });
+
+    const delBtn = tr.querySelector('.delete-order-btn');
+    delBtn.addEventListener('click', async () => {
+      if(confirm('Are you sure you want to delete this order? This cannot be undone.')) {
+        try {
+          await deleteDoc(doc(db, "orders", data.id));
+          tr.remove();
+          allOrders = allOrders.filter(o => o.id !== data.id);
+          document.getElementById('order-count').innerText = allOrders.length;
+          showToast('Order deleted successfully.', 'success');
+        } catch(err) {
+          showToast('Failed to delete order.', 'error');
+          console.error(err);
+        }
       }
     });
 

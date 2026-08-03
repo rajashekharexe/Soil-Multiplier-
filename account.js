@@ -1,5 +1,5 @@
 import { auth, db } from './firebase.js';
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
 import { doc, getDoc, setDoc, collection, addDoc, getDocs, deleteDoc, updateDoc, query, where } from "firebase/firestore";
 import { showToast } from './toast.js';
 
@@ -166,6 +166,64 @@ document.getElementById('profile-form').addEventListener('submit', async (e) => 
   }
 });
 
+// --- Password Change ---
+const passwordForm = document.getElementById('password-form');
+if (passwordForm) {
+  passwordForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('save-password-btn');
+    const errorBox = document.getElementById('password-error');
+    const successBox = document.getElementById('password-success');
+    
+    const currentPass = document.getElementById('prof-current-pass').value;
+    const newPass = document.getElementById('prof-new-pass').value;
+    const confirmPass = document.getElementById('prof-confirm-pass').value;
+
+    errorBox.style.display = 'none';
+    successBox.style.display = 'none';
+
+    if (newPass !== confirmPass) {
+      errorBox.textContent = "New passwords do not match.";
+      errorBox.style.display = 'block';
+      return;
+    }
+    
+    if (newPass.length < 8) {
+      errorBox.textContent = "New password must be at least 8 characters long.";
+      errorBox.style.display = 'block';
+      return;
+    }
+
+    if (!currentUser || currentUser.providerData.some(p => p.providerId === 'google.com')) {
+      errorBox.textContent = "You logged in with Google. Passwords cannot be changed here.";
+      errorBox.style.display = 'block';
+      return;
+    }
+
+    btn.textContent = 'Updating...';
+    btn.disabled = true;
+
+    try {
+      const credential = EmailAuthProvider.credential(currentUser.email, currentPass);
+      await reauthenticateWithCredential(currentUser, credential);
+      await updatePassword(currentUser, newPass);
+      
+      successBox.style.display = 'block';
+      passwordForm.reset();
+      btn.textContent = 'Update Password';
+      btn.disabled = false;
+    } catch (err) {
+      console.error(err);
+      errorBox.textContent = err.code === 'auth/invalid-credential' 
+        ? "Incorrect current password." 
+        : "Failed to update password. Please try logging out and back in.";
+      errorBox.style.display = 'block';
+      btn.textContent = 'Update Password';
+      btn.disabled = false;
+    }
+  });
+}
+
 // ==========================================
 // ADDRESSES (Firebase)
 // ==========================================
@@ -191,7 +249,14 @@ async function renderAddresses() {
   const addresses = await getAddresses();
 
   if (addresses.length === 0) {
-    list.innerHTML = '<p style="color: var(--text-muted); padding: 1rem 0;">No saved addresses yet. Add one below.</p>';
+    list.innerHTML = `
+      <div style="text-align:center; padding: 3rem 1rem; background: var(--card-bg); border-radius: 12px; border: 1px dashed var(--border);">
+        <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">📍</div>
+        <h3 style="margin-bottom: 0.5rem;">No saved addresses</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">You haven't added any delivery addresses yet.</p>
+        <button class="btn-primary" onclick="document.getElementById('btn-add-address').click()">Add New Address</button>
+      </div>
+    `;
     return;
   }
 
@@ -353,10 +418,17 @@ async function renderOrders() {
 
   try {
     const q = query(collection(db, "orders"), where("uid", "==", currentUser.uid));
-    const querySnapshot = await getDocs(q);
+    const snap = await getDocs(q);
 
-    if (querySnapshot.empty) {
-      list.innerHTML = '<p style="padding: 2rem; text-align: center; color: var(--text-muted);">You have no past orders yet.</p>';
+    if (snap.empty) {
+      list.innerHTML = `
+        <div style="text-align:center; padding: 4rem 1rem; background: var(--card-bg); border-radius: 12px; border: 1px dashed var(--border);">
+          <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">📦</div>
+          <h3 style="margin-bottom: 0.5rem;">No orders found</h3>
+          <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Looks like you haven't placed any orders yet.</p>
+          <a href="index.html#purchase" class="btn-primary" style="display:inline-block; text-decoration:none;">Start Shopping</a>
+        </div>
+      `;
       return;
     }
 
@@ -527,7 +599,14 @@ async function loadWishlist() {
     const q = query(collection(db, "wishlist"), where("uid", "==", currentUser.uid));
     const snap = await getDocs(q);
     if (snap.empty) {
-      panel.innerHTML = '<p style="color: var(--text-muted); padding: 1rem 0;">Your wishlist is empty.</p>';
+      panel.innerHTML = `
+        <div style="text-align:center; padding: 4rem 1rem; background: var(--card-bg); border-radius: 12px; border: 1px dashed var(--border);">
+          <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">🤍</div>
+          <h3 style="margin-bottom: 0.5rem;">Your wishlist is empty</h3>
+          <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Save items you love here to easily find them later.</p>
+          <a href="index.html#purchase" class="btn-primary" style="display:inline-block; text-decoration:none;">Explore Products</a>
+        </div>
+      `;
       return;
     }
     panel.innerHTML = '';
@@ -565,21 +644,31 @@ window.removeFromWishlist = async (docId) => {
   }
 };
 
-window.addToCartFromWishlist = (item) => {
+window.addToCartFromWishlist = async (item) => {
   let cart = JSON.parse(localStorage.getItem('kadCart') || '[]');
-  const existing = cart.find(c => c.id === item.variantId);
+  const existing = cart.find(c => c.variantId === item.variantId);
   if (existing) {
     existing.qty += 1;
   } else {
     cart.push({
-      id: item.variantId,
+      variantId: item.variantId,
       title: item.title,
       sub: item.sub || '',
       price: item.price,
       weight: item.weight || 0,
-      qty: 1
+      qty: 1,
+      image: item.weight === 5 ? '/5kg-20x250.png' : item.weight === 10 ? '/10kg-40x250.png' : '/kad-multiplier-cropped.png'
     });
   }
   localStorage.setItem('kadCart', JSON.stringify(cart));
+  
+  // Remove from wishlist automatically
+  try {
+    await deleteDoc(doc(db, "wishlist", item.id));
+    loadWishlist();
+  } catch(err) {
+    console.error("Failed to remove from wishlist after adding to cart", err);
+  }
+  
   showToast('Added to cart!', 'success');
 };

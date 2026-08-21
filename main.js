@@ -927,15 +927,27 @@ ScrollTrigger.create({
   pinSpacing: true
 });
 
-// --- Smooth Native Navbar Glass State ---
+// --- Fluid Glass Interactive Pointer Spotlight (React Bits effect) ---
 const mainNav = document.querySelector('.navbar');
 if (mainNav) {
+  mainNav.addEventListener('mousemove', (e) => {
+    const rect = mainNav.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    mainNav.style.setProperty('--mouse-x', `${x}px`);
+    mainNav.style.setProperty('--mouse-y', `${y}px`);
+  });
+}
+
+// --- Smooth Native Navbar Glass State ---
+const mainNavGlass = document.querySelector('.navbar');
+if (mainNavGlass) {
   let navTicking = false;
   const updateNavGlass = () => {
     if (window.scrollY > 40) {
-      mainNav.classList.add('scrolled');
+      mainNavGlass.classList.add('scrolled');
     } else {
-      mainNav.classList.remove('scrolled');
+      mainNavGlass.classList.remove('scrolled');
     }
     navTicking = false;
   };

@@ -46,4 +46,16 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  // Fluid Glass Interactive Pointer Lens Spotlight (React Bits effect)
+  const navbars = document.querySelectorAll('.navbar');
+  navbars.forEach((nav) => {
+    nav.addEventListener('mousemove', (e) => {
+      const rect = nav.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      nav.style.setProperty('--mouse-x', `${x}px`);
+      nav.style.setProperty('--mouse-y', `${y}px`);
+    });
+  });
 });

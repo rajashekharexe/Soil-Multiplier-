@@ -125,7 +125,7 @@ html.lenis {
 
 
 /* ==========================================================================
-   REACT BITS "FLUID GLASS" INTERACTIVE FLOATING NAVBAR
+   REACT BITS "FLUID GLASS" CRYSTAL-CLEAR OPTICAL REFRACTION LENS
    ========================================================================== */
 .navbar {
   position: fixed;
@@ -143,36 +143,37 @@ html.lenis {
   border-radius: 9999px;
   overflow: hidden;
   
-  /* Fluid Glass Optical Chromatic Refraction */
-  background: radial-gradient(130% 130% at 50% 0%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.12) 100%), rgba(255, 255, 255, 0.2);
-  -webkit-backdrop-filter: url(#fluid-glass-disp) blur(20px) saturate(220%) contrast(108%);
-  backdrop-filter: url(#fluid-glass-disp) blur(20px) saturate(220%) contrast(108%);
+  /* 100% Crystal-Clear Glass (Zero milky opacity) */
+  background: rgba(255, 255, 255, 0.02) !important;
+  -webkit-backdrop-filter: url(#fluid-glass-disp) blur(0.5px) saturate(180%) contrast(110%) !important;
+  backdrop-filter: url(#fluid-glass-disp) blur(0.5px) saturate(180%) contrast(110%) !important;
   
-  /* Prismatic Chromatic Dispersion Ring (Cyan-Magenta Dispersion from React Bits Demo) */
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  /* Prismatic Chromatic Dispersion Ring & Physical Glass Bevel */
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
   box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 30px -5px rgba(56, 189, 248, 0.35),
-    0 0 30px -5px rgba(217, 70, 239, 0.3),
-    inset 0 2px 3px rgba(255, 255, 255, 0.95),
-    inset 0 -2px 3px rgba(0, 0, 0, 0.12),
-    inset 2px 0 4px rgba(56, 189, 248, 0.45),
-    inset -2px 0 4px rgba(217, 70, 239, 0.45);
+    0 25px 50px -12px rgba(0, 0, 0, 0.35),
+    0 0 35px -5px rgba(56, 189, 248, 0.4),
+    0 0 35px -5px rgba(217, 70, 239, 0.35),
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1.5px 1px 0 rgba(255, 255, 255, 0.35),
+    inset 2.5px 0 5px rgba(56, 189, 248, 0.5),
+    inset -2.5px 0 5px rgba(217, 70, 239, 0.5) !important;
   
-  color: #0f172a;
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Chromatic Refraction Sheen & Interactive Pointer Lens */
+/* Crystal Optical Lens Internal Refraction Sheen */
 .navbar::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
   background: 
-    radial-gradient(140px circle at var(--mouse-x, 30%) var(--mouse-y, 20%), rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.1) 50%, transparent 80%),
-    radial-gradient(80% 100% at 90% 90%, rgba(56, 189, 248, 0.3) 0%, transparent 60%),
-    radial-gradient(80% 100% at 10% 90%, rgba(217, 70, 239, 0.25) 0%, transparent 60%);
+    radial-gradient(150px circle at var(--mouse-x, 30%) var(--mouse-y, 20%), rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.05) 50%, transparent 80%),
+    radial-gradient(90% 120% at 85% 95%, rgba(56, 189, 248, 0.3) 0%, transparent 60%),
+    radial-gradient(90% 120% at 15% 95%, rgba(217, 70, 239, 0.25) 0%, transparent 60%);
   pointer-events: none;
   mix-blend-mode: screen;
   z-index: 1;
@@ -188,9 +189,9 @@ html.lenis {
   background: linear-gradient(
     135deg,
     rgba(255, 255, 255, 0.95) 0%,
-    rgba(56, 189, 248, 0.6) 25%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(217, 70, 239, 0.6) 75%,
+    rgba(56, 189, 248, 0.65) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(217, 70, 239, 0.65) 75%,
     rgba(255, 255, 255, 0.95) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -205,7 +206,7 @@ html.lenis {
   font-weight: 800;
   font-size: 1.22rem;
   letter-spacing: -0.02em;
-  color: #0f172a !important;
+  color: #ffffff !important;
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -223,7 +224,7 @@ html.lenis {
 }
 
 .nav-links a {
-  color: #334155 !important;
+  color: rgba(255, 255, 255, 0.9) !important;
   text-decoration: none;
   margin: 0;
   font-size: 0.88rem;
@@ -237,9 +238,9 @@ html.lenis {
 }
 
 .nav-links a:hover {
-  color: #0f172a !important;
-  background: rgba(255, 255, 255, 0.65);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 2px 8px rgba(0, 0, 0, 0.04);
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Radiant Emerald Fluid Gem CTA Button */
@@ -277,7 +278,7 @@ html.lenis {
 }
 
 .nav-login-link {
-  color: #334155 !important;
+  color: rgba(255, 255, 255, 0.9) !important;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.88rem;
@@ -287,8 +288,8 @@ html.lenis {
 }
 
 .nav-login-link:hover {
-  color: #0f172a !important;
-  background: rgba(255, 255, 255, 0.65);
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .nav-signup-btn {
@@ -320,15 +321,15 @@ html.lenis {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0f172a;
+  color: #ffffff;
   cursor: pointer;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 2px 8px rgba(0, 0, 0, 0.05);
-  backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 2px 8px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
   transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   mix-blend-mode: normal;
   padding: 0;
@@ -336,9 +337,9 @@ html.lenis {
 
 .profile-btn:hover {
   transform: translateY(-2px) scale(1.06);
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: inset 0 1px 1px #fff, 0 6px 16px rgba(0, 0, 0, 0.1);
-  color: #0f172a;
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 1px 1.5px #fff, 0 6px 16px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
 }
 
 .profile-dropdown {
@@ -445,22 +446,19 @@ html.lenis {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  color: inherit;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 2px 8px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(8px);
   mix-blend-mode: normal;
-}
-
-.navbar.scrolled .nav-video-cart,
-.navbar.nav-dark .nav-video-cart {
-  background: rgba(255, 255, 255, 0.8) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  color: #1e293b !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .nav-video-cart:hover {
-  transform: translateY(-1px) scale(1.04);
+  transform: translateY(-2px) scale(1.06);
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 1px 1.5px #fff, 0 6px 16px rgba(0, 0, 0, 0.3);
 }
 
 .nav-video-cart.has-items {

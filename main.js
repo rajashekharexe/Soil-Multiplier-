@@ -927,13 +927,25 @@ ScrollTrigger.create({
   pinSpacing: true
 });
 
-// --- Navbar Color Toggle for Purchase Section ---
+// --- Navbar Color Toggle for Light Sections ---
+// 1. Benefits section (light section in story)
 ScrollTrigger.create({
-  trigger: ".purchase-section",
-  start: "top 5%", // Switch to black when the purchase section reaches the navbar
-  end: "bottom 5%", // Switch back to white when leaving the purchase section
-  toggleClass: {targets: ".navbar", className: "nav-dark"}
+  trigger: "#benefits",
+  start: "top 70px",
+  end: "bottom 70px",
+  toggleClass: { targets: ".navbar", className: "nav-dark" }
 });
+
+// 2. All light content sections from Calculator down to the bottom of the page
+const lightContentStart = document.getElementById("dosage-calculator") || document.querySelector(".purchase-section");
+if (lightContentStart) {
+  ScrollTrigger.create({
+    trigger: lightContentStart,
+    start: "top 70px",
+    end: "max",
+    toggleClass: { targets: ".navbar", className: "nav-dark" }
+  });
+}
 
 // --- Mobile Hamburger Menu Logic ---
 const mobileMenuBtn = document.getElementById("mobile-menu-btn");

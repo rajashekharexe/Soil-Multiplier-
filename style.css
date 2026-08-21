@@ -131,57 +131,87 @@ html.lenis {
   left: 0;
   width: 100%;
   box-sizing: border-box;
-  padding: 0.65rem 2.5rem;
-  min-height: 52px;
+  padding: 0.95rem 3rem;
+  min-height: 64px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   z-index: 100;
   color: #fff;
-  transition: all 0.3s ease;
-  filter: drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.4)); /* Ensures solid white text pops across all sections */
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
 }
 
 /* Dynamic Dark Navbar for White Sections */
+.navbar.nav-dark {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
 .navbar.nav-dark,
 .navbar.nav-dark a,
 .navbar.nav-dark .logo,
-.navbar.nav-dark .nav-links a,
-.navbar.nav-dark button {
-  color: #1a202c;
-  filter: none;
+.navbar.nav-dark .nav-links a {
+  color: #0f172a !important;
 }
-.navbar.nav-dark {
-  background-color: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  text-shadow: none;
+
+.navbar.nav-dark .nav-links a:hover {
+  color: #16a34a !important;
+  opacity: 1 !important;
+}
+
+.navbar.nav-dark .profile-btn {
+  background: #f8fafc;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+}
+
+.navbar.nav-dark .nav-video-cart {
+  background: #f8fafc;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
 }
 
 .logo {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.25rem;
+  font-weight: 800;
+  font-size: 1.35rem;
   letter-spacing: -0.02em;
-}
-.nav-links {
-  /* mix-blend removed */
 }
 
 .nav-links a {
   color: inherit;
   text-decoration: none;
-  margin-left: 1.5rem;
-  font-size: 0.85rem;
-  font-weight: 500;
+  margin-left: 2rem;
+  font-size: 0.92rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  transition: opacity 0.3s;
+  transition: color 0.25s ease, opacity 0.25s ease;
 }
 .nav-links a:hover {
-  opacity: 0.7;
+  opacity: 0.8;
+}
+
+.nav-buy-btn {
+  background: #16a34a !important;
+  color: #ffffff !important;
+  padding: 0.45rem 1.1rem;
+  border-radius: 50px;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+  transition: transform 0.2s ease, background 0.2s ease !important;
+}
+.nav-buy-btn:hover {
+  background: #15803d !important;
+  transform: translateY(-1px);
+  opacity: 1 !important;
 }
 
 /* Nav Actions */
@@ -191,7 +221,7 @@ html.lenis {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .nav-login-link {
@@ -229,17 +259,17 @@ html.lenis {
 }
 
 .profile-btn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: white;
-  border: 1px solid rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #333;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   mix-blend-mode: normal;
   padding: 0;
@@ -346,13 +376,13 @@ html.lenis {
 }
 
 .nav-video-cart {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   /* Cancel mix-blend mode for the button so it stays white */
   mix-blend-mode: normal;
 }
 .nav-video-cart.has-items {
-  width: 90px;
+  width: 100px;
 }
 
 .vcb-icon {
@@ -365,7 +395,7 @@ html.lenis {
 }
 
 .nav-video-cart .vcb-icon {
-  left: 9px;
+  left: 11px;
 }
 
 .vcb-icon svg {

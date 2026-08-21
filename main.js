@@ -927,6 +927,27 @@ ScrollTrigger.create({
   pinSpacing: true
 });
 
+// --- Smooth Native Navbar Glass State ---
+const mainNav = document.querySelector('.navbar');
+if (mainNav) {
+  let navTicking = false;
+  const updateNavGlass = () => {
+    if (window.scrollY > 40) {
+      mainNav.classList.add('scrolled');
+    } else {
+      mainNav.classList.remove('scrolled');
+    }
+    navTicking = false;
+  };
+  window.addEventListener('scroll', () => {
+    if (!navTicking) {
+      window.requestAnimationFrame(updateNavGlass);
+      navTicking = true;
+    }
+  }, { passive: true });
+  updateNavGlass(); // Initial state
+}
+
 // --- Mobile Hamburger Menu Logic ---
 const mobileMenuBtn = document.getElementById("mobile-menu-btn");
 const navLinksContainer = document.querySelector(".nav-links");

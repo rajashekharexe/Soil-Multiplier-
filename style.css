@@ -125,91 +125,130 @@ html.lenis {
 
 
 /* ==========================================================================
-   APPLE-GRADE FROSTED GLASS ISLAND NAVBAR
+   AWWWARDS / VISION-OS SPECULAR GLASSMORPHISM FLOATING NAVBAR
    ========================================================================== */
 .navbar {
   position: fixed;
-  top: 14px;
+  top: 16px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 48px);
-  max-width: 1200px;
+  width: min(1180px, calc(100% - 32px));
   box-sizing: border-box;
-  padding: 0.65rem 1.6rem;
-  min-height: 58px;
+  padding: 0.55rem 1.25rem 0.55rem 1.6rem;
+  min-height: 56px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 999;
-  border-radius: 50px;
+  z-index: 9999;
+  border-radius: 9999px;
   
-  /* Apple Glassmorphism Holy Trinity */
-  background: rgba(255, 255, 255, 0.88) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-  backdrop-filter: blur(24px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.7) !important;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04) !important;
+  /* Luminous Dark Specular Glass (Hero / Video Canvas) */
+  background: rgba(15, 23, 42, 0.52);
+  -webkit-backdrop-filter: blur(28px) saturate(210%) contrast(105%);
+  backdrop-filter: blur(28px) saturate(210%) contrast(105%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 
+    0 20px 40px -15px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.25);
   
-  color: #0f172a !important;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #ffffff;
+  transition: 
+    background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.3s ease;
 }
 
-.navbar a,
-.navbar .logo,
-.navbar .nav-links a {
+/* Luminous Pearl Specular Glass (Scrolled or Light Pages) */
+.navbar.scrolled,
+.navbar.nav-dark,
+body:not(.dark-mode) .navbar.scrolled {
+  background: rgba(255, 255, 255, 0.62) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(210%) contrast(105%) !important;
+  backdrop-filter: blur(28px) saturate(210%) contrast(105%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 
+    0 20px 45px -10px rgba(0, 0, 0, 0.08),
+    0 8px 16px -6px rgba(0, 0, 0, 0.04),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.04) !important;
   color: #0f172a !important;
 }
 
 .logo {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.25rem;
+  font-size: 1.22rem;
   letter-spacing: -0.02em;
-  color: #0f172a !important;
+  color: inherit;
   text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  transition: color 0.3s ease;
+}
+
+.navbar.scrolled .logo,
+.navbar.nav-dark .logo {
+  color: #0f172a !important;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
 }
 
 .nav-links a {
-  color: #334155 !important;
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   margin: 0;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 600;
-  padding: 0.45rem 0.9rem;
-  border-radius: 50px;
+  padding: 0.45rem 0.95rem;
+  border-radius: 9999px;
   letter-spacing: 0.01em;
   text-transform: capitalize;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navbar.scrolled .nav-links a,
+.navbar.nav-dark .nav-links a {
+  color: #334155 !important;
 }
 
 .nav-links a:hover {
-  color: #0f172a !important;
-  background: rgba(0, 0, 0, 0.06);
-  opacity: 1 !important;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
 }
 
+.navbar.scrolled .nav-links a:hover,
+.navbar.nav-dark .nav-links a:hover {
+  color: #0f172a !important;
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Specular Emerald Buy Button */
 .nav-buy-btn {
-  background: #16a34a !important;
+  background: linear-gradient(135deg, #22c55e, #16a34a) !important;
   color: #ffffff !important;
-  padding: 0.45rem 1.2rem !important;
-  border-radius: 50px;
+  padding: 0.45rem 1.25rem !important;
+  border-radius: 9999px;
   font-weight: 700 !important;
-  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.28) !important;
-  transition: all 0.2s ease !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 
+    0 4px 15px rgba(22, 163, 74, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 .nav-buy-btn:hover {
-  background: #15803d !important;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.38) !important;
+  background: linear-gradient(135deg, #16a34a, #15803d) !important;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 
+    0 8px 20px rgba(22, 163, 74, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
   opacity: 1 !important;
 }
 
@@ -220,20 +259,31 @@ html.lenis {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
 .nav-login-link {
-  color: #334155 !important;
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   padding: 0.45rem 0.85rem;
-  border-radius: 50px;
+  border-radius: 9999px;
   transition: all 0.2s ease;
 }
 
+.navbar.scrolled .nav-login-link,
+.navbar.nav-dark .nav-login-link {
+  color: #334155 !important;
+}
+
 .nav-login-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.navbar.scrolled .nav-login-link:hover,
+.navbar.nav-dark .nav-login-link:hover {
   color: #0f172a !important;
   background: rgba(0, 0, 0, 0.06);
 }
@@ -241,12 +291,13 @@ html.lenis {
 .nav-signup-btn {
   background: #0f172a;
   color: white !important;
-  padding: 0.5rem 1.15rem;
-  border-radius: 50px;
+  padding: 0.48rem 1.15rem;
+  border-radius: 9999px;
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.9rem;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+  font-size: 0.88rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
   transition: all 0.2s ease;
 }
 
@@ -266,35 +317,50 @@ html.lenis {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1e293b;
+  color: inherit;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   mix-blend-mode: normal;
   padding: 0;
+  backdrop-filter: blur(8px);
+}
+
+.navbar.scrolled .profile-btn,
+.navbar.nav-dark .profile-btn {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #1e293b !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
 
 .profile-btn:hover {
-  transform: translateY(-1px);
-  background: #f8fafc;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  color: #0f172a;
+  transform: translateY(-1px) scale(1.04);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.navbar.scrolled .profile-btn:hover,
+.navbar.nav-dark .profile-btn:hover {
+  background: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
 .profile-dropdown {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  background: #ffffff;
-  border-radius: 14px;
-  min-width: 190px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 16px;
+  min-width: 195px;
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   padding: 0.5rem 0;
   opacity: 0;
   visibility: hidden;
@@ -383,13 +449,32 @@ html.lenis {
 }
 
 .nav-video-cart {
-  width: 40px;
-  height: 40px;
-  /* Cancel mix-blend mode for the button so it stays white */
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: inherit;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
   mix-blend-mode: normal;
 }
+
+.navbar.scrolled .nav-video-cart,
+.navbar.nav-dark .nav-video-cart {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #1e293b !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+.nav-video-cart:hover {
+  transform: translateY(-1px) scale(1.04);
+}
+
 .nav-video-cart.has-items {
-  width: 100px;
+  width: 95px;
+  border-radius: 9999px;
 }
 
 .vcb-icon {
@@ -398,11 +483,11 @@ html.lenis {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #333;
+  color: inherit;
 }
 
 .nav-video-cart .vcb-icon {
-  left: 11px;
+  left: 10px;
 }
 
 .vcb-icon svg {

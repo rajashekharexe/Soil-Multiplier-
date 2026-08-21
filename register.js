@@ -1,6 +1,6 @@
 import { auth, db } from './firebase.js';
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, deleteUser } from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const nameInput = document.getElementById('name');
 const phoneInput = document.getElementById('phone');
@@ -30,8 +30,21 @@ if (registerForm) {
     const passVal = passInput.value;
     const confirmVal = confirmPassInput.value;
 
+    // Security Check: Anti-Bot Honeypot Trap
+    const hpVal = document.getElementById('reg-hp')?.value;
+    if (hpVal) {
+      // Bot detected! Abort silently and pretend to load
+      return;
+    }
+
     if (nameVal.length < 2) { showError("Please enter your full name (at least 2 characters)."); return; }
     if (!/^[6-9]\d{9}$/.test(phoneVal)) { showError("Please enter a valid 10-digit Indian mobile number starting with 6–9."); return; }
+
+    const lastReg = localStorage.getItem('lastRegistrationTime');
+    if (lastReg && (Date.now() - parseInt(lastReg)) < 60000) {
+      showError("Please wait a minute before creating another account.");
+      return;
+    }
 
     const passError = validatePassword(passVal);
     if (passError) { showError(passError); return; }
@@ -65,11 +78,18 @@ if (registerForm) {
           });
         } catch (dbError) {
           console.error("Error saving user profile:", dbError);
+          await deleteUser(user);
+          showError("Database error during registration. Please try again.");
+          btn.textContent = 'Sign Up';
+          btn.style.opacity = '1';
+          btn.disabled = false;
+          return;
         }
 
         btn.style.background = '#10b981';
         btn.textContent = 'Success!';
         localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('lastRegistrationTime', Date.now().toString());
 
         if (window.gsap) {
           window.gsap.to('.blob-character', {
@@ -109,13 +129,29 @@ if (googleBtn) {
       .then(async (result) => {
         const user = result.user;
         try {
-          await setDoc(doc(db, "users", user.uid), {
-            name: user.displayName || "",
-            email: user.email || "",
-            createdAt: new Date().toISOString()
-          }, { merge: true });
+          const userRef = doc(db, "users", user.uid);
+          const docSnap = await getDoc(userRef);
+          if (!docSnap.exists()) {
+            await setDoc(userRef, {
+              name: user.displayName || "",
+              email: user.email || "",
+              phone: "",
+              createdAt: new Date().toISOString()
+            });
+          } else {
+            await setDoc(userRef, {
+              name: user.displayName || "",
+              email: user.email || ""
+            }, { merge: true });
+          }
         } catch (dbError) {
           console.error("Error saving user profile:", dbError);
+          await deleteUser(user);
+          showError("Database error during Google login. Please try again.");
+          googleBtn.textContent = 'Sign Up with Google';
+          googleBtn.style.opacity = '1';
+          googleBtn.disabled = false;
+          return;
         }
         googleBtn.textContent = 'Success!';
         localStorage.setItem('isLoggedIn', 'true');

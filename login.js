@@ -1,5 +1,6 @@
-import { auth } from './firebase.js';
+import { auth, db } from './firebase.js';
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const phoneInput = document.getElementById('phone');
 const passInput = document.getElementById('password');
@@ -14,6 +15,13 @@ const loginForm = document.querySelector('.login-form');
 if (loginForm) {
   loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
+
+    // Security Check: Anti-Bot Honeypot Trap
+    const hpVal = document.getElementById('login-hp')?.value;
+    if (hpVal) {
+      // Bot detected! Abort silently
+      return;
+    }
 
     const phoneVal = phoneInput.value.trim();
     const passVal = passInput.value;
@@ -81,7 +89,29 @@ if (googleBtn) {
     googleBtn.disabled = true;
 
     signInWithPopup(auth, provider)
-      .then(() => {
+      .then(async (result) => {
+        const user = result.user;
+        try {
+          const userDocRef = doc(db, "users", user.uid);
+          const userDoc = await getDoc(userDocRef);
+          if (!userDoc.exists()) {
+            await setDoc(userDocRef, {
+              name: user.displayName || "",
+              email: user.email || "",
+              phone: "",
+              createdAt: new Date().toISOString()
+            });
+          } else {
+            await setDoc(userDocRef, {
+              name: user.displayName || "",
+              email: user.email || "",
+              phone: userDoc.data().phone || ""
+            }, { merge: true });
+          }
+        } catch (dbError) {
+          console.error("Error saving user profile:", dbError);
+        }
+
         googleBtn.textContent = 'Success!';
         localStorage.setItem('isLoggedIn', 'true');
         const returnTo = sessionStorage.getItem('loginReturnTo') || 'account.html';

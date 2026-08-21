@@ -6,6 +6,13 @@ import { showToast } from './toast.js';
 // ============================================================
 // ADMIN WHITELIST
 // ============================================================
+const escapeHTML = (str) => {
+  if (!str) return '';
+  return str.toString().replace(/[&<>'"]/g, tag => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[tag] || tag));
+};
+
 const ADMIN_EMAIL = atob('a2FkbXVsdGlwbGllckBhZG1pbi5jb20=');
 const ALLOWED_ADMIN_EMAILS = [
   ADMIN_EMAIL
@@ -23,17 +30,41 @@ let allProducts = [];
 let chartInstance = null;
 
 // ============================================================
-// AUTHENTICATION
+// AUTHENTICATION & INACTIVITY AUTO-LOCK
 // ============================================================
+const ADMIN_SESSION_TIMEOUT_MS = 2 * 60 * 60 * 1000; // 2 Hours
+
+function resetAdminInactivityTimer() {
+  localStorage.setItem('adminLastActivity', String(Date.now()));
+}
+
+['click', 'mousemove', 'keydown', 'scroll'].forEach(evt => {
+  window.addEventListener(evt, resetAdminInactivityTimer, { passive: true });
+});
+
 onAuthStateChanged(auth, (user) => {
-  if (user && sessionStorage.getItem('adminVerified') === user.uid) {
+  if (user && localStorage.getItem('adminVerified') === user.uid) {
+    const lastActive = parseInt(localStorage.getItem('adminLastActivity') || '0', 10);
+    if (Date.now() - lastActive > ADMIN_SESSION_TIMEOUT_MS) {
+      // Inactivity timeout reached! Lock admin panel
+      signOut(auth);
+      localStorage.removeItem('adminVerified');
+      localStorage.removeItem('adminLastActivity');
+      adminOverlay.style.display = 'flex';
+      adminError.textContent = 'Session expired due to inactivity. Please log in again.';
+      adminError.style.display = 'block';
+      return;
+    }
+
     const email = user.email?.toLowerCase() || '';
     if (ALLOWED_ADMIN_EMAILS.map(e => e.toLowerCase()).includes(email)) {
+      resetAdminInactivityTimer();
       adminOverlay.style.display = 'none';
       initDashboard();
     } else {
       signOut(auth);
-      sessionStorage.removeItem('adminVerified');
+      localStorage.removeItem('adminVerified');
+      localStorage.removeItem('adminLastActivity');
     }
   }
 });
@@ -63,7 +94,7 @@ adminSubmit.addEventListener('click', async () => {
       return;
     }
 
-    sessionStorage.setItem('adminVerified', cred.user.uid);
+    localStorage.setItem('adminVerified', cred.user.uid);
     adminOverlay.style.display = 'none';
     initDashboard();
   } catch (err) {
@@ -92,6 +123,7 @@ function initDashboard() {
   fetchOrders();
   fetchLeads();
   fetchProducts();
+  fetchUsers();
 
   // Tab Switching
   const tabBtns = document.querySelectorAll('.admin-tab-btn');
@@ -150,13 +182,6 @@ function renderOrders(ordersToRender) {
     });
 
     // Security: Escape user inputs to prevent XSS (Cross-Site Scripting) attacks
-    const escapeHTML = (str) => {
-      if (!str) return '';
-      return str.replace(/[&<>'"]/g, tag => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-      }[tag] || tag));
-    };
-
     const customerHtml = `
       <strong>${escapeHTML(data.shippingAddress?.firstName)} ${escapeHTML(data.shippingAddress?.lastName)}</strong><br>
       <div style="margin-top:4px; font-size:0.85rem; color:#aaa;">
@@ -220,6 +245,7 @@ function renderOrders(ordersToRender) {
         select.style.borderColor = '#10b981';
         setTimeout(() => select.style.borderColor = '#444', 2000);
         data.status = select.value;
+        updateDashboardStats();
         showToast('Status updated successfully.', 'success');
       } catch (err) {
         showToast('Failed to update status.', 'error');
@@ -269,9 +295,9 @@ function filterOrders(searchTerm, statusFilter) {
   
   if (searchTerm) {
     filtered = filtered.filter(o => {
-      const phone = (o.contactPhone || o.customerPhone || '').toLowerCase();
-      const email = (o.contactEmail || '').toLowerCase();
-      const name = (o.shippingAddress?.firstName || '').toLowerCase();
+      const phone = String(o.contactPhone || o.customerPhone || '').toLowerCase();
+      const email = String(o.contactEmail || '').toLowerCase();
+      const name = String(o.shippingAddress?.firstName || '').toLowerCase();
       return phone.includes(searchTerm) || email.includes(searchTerm) || name.includes(searchTerm);
     });
   }
@@ -300,7 +326,8 @@ function updateDashboardStats() {
   document.getElementById('stat-revenue').textContent = `₹${totalRevenue.toLocaleString('en-IN')}`;
   document.getElementById('stat-orders').textContent = nonCancelledOrders;
   
-  const convRate = (nonCancelledOrders / 1000) * 100;
+  const totalLeads = allLeads.length || 1;
+  const convRate = (nonCancelledOrders / totalLeads) * 100;
   document.getElementById('stat-conversion').textContent = `${convRate.toFixed(1)}%`;
 
   drawChart(salesByDate);
@@ -354,44 +381,11 @@ function drawChart(salesByDate) {
 // EXPORT CSV
 // ============================================================
 function sanitizeCSV(val) {
-  let s = String(val || '');
+  let s = String(val || '').replace(/"/g, '""');
   // Prevent CSV/formula injection
   if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
   return s;
 }
-
-document.getElementById('export-csv').addEventListener('click', () => {
-  if (allOrders.length === 0) return showToast("No orders to export.", 'warning');
-  
-  let csvContent = "data:text/csv;charset=utf-8,";
-  csvContent += "Date,Order ID,Customer Name,Phone,Email,Address,City,State,PIN,Total(INR),Status,Payment Method,UTR\\n";
-  
-  allOrders.forEach(o => {
-    const date = new Date(o.createdAt).toLocaleString('en-IN').replace(/,/g, '');
-    const id = o.id.slice(-6).toUpperCase();
-    const name = `"${sanitizeCSV(o.shippingAddress?.firstName || '')} ${sanitizeCSV(o.shippingAddress?.lastName || '')}"`;
-    const phone = sanitizeCSV(o.contactPhone || o.customerPhone || '');
-    const email = sanitizeCSV(o.contactEmail || '');
-    const addr = `"${sanitizeCSV(o.shippingAddress?.address || '').replace(/"/g, '""')}"`;
-    const city = o.shippingAddress?.city || '';
-    const state = o.shippingAddress?.state || '';
-    const pin = o.shippingAddress?.pin || '';
-    const total = o.total || 0;
-    const status = o.status || 'Pending';
-    const pMethod = o.paymentMethod || '';
-    const utr = o.utr || '';
-
-    csvContent += `${date},${id},${name},${phone},${email},${addr},${city},${state},${pin},${total},${status},${pMethod},${utr}\\n`;
-  });
-
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", `kad_orders_${new Date().toLocaleDateString('en-IN')}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-});
 
 // ============================================================
 // LEADS TAB
@@ -402,28 +396,34 @@ async function fetchLeads() {
     const q = query(collection(db, "leads"), orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
     
+    allLeads = [];
     tbody.innerHTML = '';
     
     if (querySnapshot.empty) {
-      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#888;">No leads found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888;">No leads found.</td></tr>';
       return;
     }
 
     querySnapshot.forEach(docSnap => {
       const data = docSnap.data();
+      allLeads.push({ id: docSnap.id, ...data });
       const dateStr = data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-IN', {
         day: '2-digit', month: 'short', year: 'numeric',
         hour: '2-digit', minute: '2-digit'
       }) : 'N/A';
 
+      // Security: Escape user inputs to prevent XSS
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td style="color:#aaa;">${dateStr}</td>
-        <td style="font-weight:600;">${data.name || 'Unknown'}</td>
-        <td><a href="tel:${data.phone}" style="color:var(--primary); text-decoration:none;">📞 ${data.phone || 'N/A'}</a></td>
+        <td style="font-weight:600;">${escapeHTML(data.name) || 'Unknown'}</td>
+        <td><a href="tel:${escapeHTML(data.phone)}" style="color:var(--primary); text-decoration:none;">📞 ${escapeHTML(data.phone) || 'N/A'}</a></td>
+        <td>${escapeHTML(data.village) || 'Not Specified'}</td>
+        <td>${escapeHTML(data.crop) || 'Not Specified'}</td>
       `;
       tbody.appendChild(tr);
     });
+    updateDashboardStats();
   } catch (error) {
     console.error("Error fetching leads:", error);
     tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#ff6b6b;">Error loading leads.</td></tr>';
@@ -466,7 +466,7 @@ async function fetchProducts() {
         <td><input type="number" value="${data.mrp || 0}" id="prod-mrp-${id}" style="width:80px; padding:0.4rem; background:transparent; border:1px solid #444; color:#fff;"></td>
         <td><input type="number" value="${data.price || 0}" id="prod-price-${id}" style="width:80px; padding:0.4rem; background:transparent; border:1px solid #444; color:#fff;"></td>
         <td style="text-align: center;"><input type="checkbox" id="prod-stock-${id}" ${inStockChecked} style="width:18px; height:18px; cursor:pointer;"></td>
-        <td><button class="btn-primary" onclick="window.saveProduct('${id}')" style="padding:0.4rem 1rem; border-radius:4px; font-size:0.85rem;">Save</button></td>
+        <td><button class="btn-primary" onclick="window.saveProduct(event, '${id}')" style="padding:0.4rem 1rem; border-radius:4px; font-size:0.85rem;">Save</button></td>
       `;
       tbody.appendChild(tr);
     });
@@ -476,12 +476,17 @@ async function fetchProducts() {
   }
 }
 
-window.saveProduct = async (id) => {
-  const btn = event.target;
+window.saveProduct = async (e, id) => {
+  const btn = e.target;
   const title = document.getElementById(`prod-title-${id}`).value;
   const mrp = parseInt(document.getElementById(`prod-mrp-${id}`).value);
   const price = parseInt(document.getElementById(`prod-price-${id}`).value);
   const inStock = document.getElementById(`prod-stock-${id}`).checked;
+
+  if (isNaN(mrp) || isNaN(price) || mrp <= 0 || price <= 0 || price > mrp) {
+    showToast("Invalid price or MRP. Must be positive and price <= MRP.", "error");
+    return;
+  }
 
   btn.textContent = "Saving...";
   try {
@@ -499,3 +504,108 @@ window.saveProduct = async (id) => {
     btn.textContent = "Save";
   }
 };
+
+// ============================================================
+// USERS TAB
+// ============================================================
+async function fetchUsers() {
+  const tbody = document.getElementById("users-tbody");
+  if(!tbody) return;
+  try {
+    const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    
+    tbody.innerHTML = "";
+    if (querySnapshot.empty) {
+      tbody.innerHTML = "<tr><td colspan=\"5\" style=\"text-align:center; color:#888;\">No users found.</td></tr>";
+      return;
+    }
+
+    querySnapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      const dateStr = data.createdAt ? new Date(data.createdAt).toLocaleDateString("en-IN") : "N/A";
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td style=\"color:#aaa;\">${dateStr}</td>
+        <td style=\"font-weight:600;\">${escapeHTML(data.name) || "Unknown"}</td>
+        <td>${escapeHTML(data.email) || "N/A"}</td>
+        <td>${escapeHTML(data.phone) || "N/A"}</td>
+        <td><button class=\"btn-outline\" onclick=\"alert('User Details Coming Soon')\">View</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    tbody.innerHTML = "<tr><td colspan=\"5\" style=\"text-align:center; color:#ff6b6b;\">Error loading users.</td></tr>";
+  }
+}
+
+// ============================================================
+// EXPORT TO CSV
+// ============================================================
+function downloadCSV(csvContent, fileName) {
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", fileName);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+}
+
+document.getElementById("btn-export-orders")?.addEventListener("click", () => {
+  if (allOrders.length === 0) return showToast("No orders to export", "error");
+  let csv = "Order ID,Date,Customer Name,Phone,Village,Crop,Total,Status,Payment Method,UTR\\n";
+  allOrders.forEach(ord => {
+    const id = ord.id.slice(-6).toUpperCase();
+    const date = ord.createdAt ? new Date(ord.createdAt).toLocaleDateString("en-IN") : "";
+    const name = sanitizeCSV((ord.shippingAddress?.firstName || "") + " " + (ord.shippingAddress?.lastName || ""));
+    const phone = sanitizeCSV(ord.contactPhone || "");
+    const village = sanitizeCSV(ord.shippingAddress?.city || "");
+    const crop = sanitizeCSV(ord.orderNotes || "");
+    const total = ord.total || 0;
+    const status = sanitizeCSV(ord.status || "Processing");
+    const payment = sanitizeCSV(ord.paymentMethod || "N/A");
+    const utr = sanitizeCSV(ord.utr || "N/A");
+    csv += `${id},"${date}","${name}","${phone}","${village}","${crop}",${total},"${status}","${payment}","${utr}"\\n`;
+  });
+  downloadCSV(csv, "orders.csv");
+});
+
+document.getElementById("export-csv-leads")?.addEventListener("click", async () => {
+  try {
+    const q = query(collection(db, "leads"), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
+    if(snap.empty) return showToast("No leads to export", "error");
+    let csv = "Date,Name,Phone,Village,Crop\\n";
+    snap.forEach(d => {
+      const data = d.data();
+      const date = data.createdAt ? new Date(data.createdAt).toLocaleDateString("en-IN") : "";
+      csv += `"${date}","${sanitizeCSV(data.name)}","${sanitizeCSV(data.phone)}","${sanitizeCSV(data.village)}","${sanitizeCSV(data.crop)}"\\n`;
+    });
+    downloadCSV(csv, "leads.csv");
+  } catch(e) {
+    showToast("Export failed", "error");
+  }
+});
+
+document.getElementById("export-csv-users")?.addEventListener("click", async () => {
+  try {
+    const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
+    if(snap.empty) return showToast("No users to export", "error");
+    let csv = "Joined Date,Name,Email,Phone\\n";
+    snap.forEach(d => {
+      const data = d.data();
+      const date = data.createdAt ? new Date(data.createdAt).toLocaleDateString("en-IN") : "";
+      csv += `"${date}","${sanitizeCSV(data.name)}","${sanitizeCSV(data.email)}","${sanitizeCSV(data.phone)}"\\n`;
+    });
+    downloadCSV(csv, "users.csv");
+  } catch(e) {
+    showToast("Export failed", "error");
+  }
+});

@@ -2,32 +2,49 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Check if the user is the admin
+    // Check if the user is the admin (dual check: verified email and secret UID)
     function isAdmin() {
-      return request.auth != null && request.auth.token.email == 'kadmultiplier@admin.com';
+      return request.auth != null 
+        && request.auth.token.email == 'kadmultiplier@admin.com' 
+        && request.auth.uid == 'a2FkbXVsdGlwbGllckBhZG1pbi5jb20=';
     }
 
     // Orders Collection
     match /orders/{orderId} {
-      // Anyone can create an order
-      allow create: if true && request.resource.data.keys().hasAll(['items', 'total']);
-      // Users can read their own orders. Admin can read all.
-      // (Since guests don't have auth, they can't read. Logged-in users can read theirs).
+      // Require authenticated user creating their own order with valid schema
+      allow create: if request.auth != null 
+        && request.resource.data.uid == request.auth.uid 
+        && request.resource.data.keys().hasAll(['items', 'total', 'paymentMethod', 'shippingAddress', 'createdAt'])
+        && request.resource.data.items is list
+        && request.resource.data.items.size() > 0
+        && request.resource.data.items.size() <= 20
+        && request.resource.data.total is number
+        && request.resource.data.total > 0
+        && (request.resource.data.paymentMethod != 'QR_CODE' || (request.resource.data.keys().hasAll(['utr']) && request.resource.data.utr.size() >= 12));
+      
+      // Users can only read their own orders. Admin can read all.
       allow read: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.uid);
-      // Only admin can update/delete
+      
+      // Only admin can update or delete orders
       allow update, delete: if isAdmin();
     }
 
     // Addresses Collection
     match /addresses/{addressId} {
       allow read: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.uid);
-      allow update, delete: if request.auth != null && request.auth.uid == resource.data.uid;
+      allow update: if request.auth != null 
+        && request.auth.uid == resource.data.uid 
+        && request.resource.data.uid == request.auth.uid;
+      allow delete: if request.auth != null && request.auth.uid == resource.data.uid;
       allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
     }
 
     // Wishlist Collection
     match /wishlist/{wishlistId} {
-      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.uid;
+      allow read, delete: if request.auth != null && request.auth.uid == resource.data.uid;
+      allow update: if request.auth != null 
+        && request.auth.uid == resource.data.uid 
+        && request.resource.data.uid == request.auth.uid;
       allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
     }
 
@@ -39,9 +56,14 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Leads Collection (Contact forms)
+    // Leads Collection (Contact forms with strict anti-bot schema validation)
     match /leads/{leadId} {
-      allow create: if true;
+      allow create: if request.resource.data.keys().hasAll(['name', 'phone', 'createdAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.phone is string
+        && request.resource.data.phone.matches('^[6-9][0-9]{9}$');
       allow read, update, delete: if isAdmin();
     }
 

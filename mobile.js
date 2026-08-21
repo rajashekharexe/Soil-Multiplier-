@@ -186,13 +186,107 @@ document.addEventListener('DOMContentLoaded', () => {
     if (redirect) {
       window.location.href = 'checkout.html';
     } else {
-      const toast = document.getElementById('toast');
-      if (toast) {
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 3000);
+      renderCartPanel();
+      const cartPanel = document.getElementById('cart-panel');
+      const cartOverlay = document.getElementById('cart-overlay');
+      if (cartPanel && cartOverlay) {
+        cartPanel.classList.add('open');
+        cartOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
       }
     }
   }
+
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag));
+  }
+
+  function renderCartPanel() {
+    const cartPanel = document.getElementById('cart-panel');
+    if (!cartPanel) return;
+    
+    let currentCart = JSON.parse(localStorage.getItem('kadCart') || '[]');
+    
+    let html = `
+      <div class="cart-header" style="padding:15px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0;">Your Cart</h3>
+        <button id="cart-close-btn" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+      </div>
+      <div class="cart-items" style="padding:15px; max-height:calc(100vh - 140px); overflow-y:auto; padding-bottom:100px;">
+    `;
+    
+    if (currentCart.length === 0) {
+      html += `<p>Your cart is empty.</p>`;
+    } else {
+      currentCart.forEach((item, index) => {
+        html += `
+          <div class="cart-item" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:15px; border-bottom:1px solid #f5f5f5;">
+            <div>
+              <div style="font-weight:600;">${escapeHTML(item.title)} ${escapeHTML(item.sub)}</div>
+              <div style="color:#666; font-size:0.9rem;">Qty: ${escapeHTML(item.qty)} &times; ₹${item.price}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:600; margin-bottom:5px;">₹${item.total}</div>
+              <button class="cart-del-btn" data-index="${index}" style="background:#ff4d4f; color:#fff; border:none; border-radius:4px; padding:4px 8px; font-size:0.8rem; cursor:pointer;">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+    html += `</div>`;
+    
+    if (currentCart.length > 0) {
+      let subtotal = currentCart.reduce((sum, item) => sum + item.total, 0);
+      html += `
+        <div class="cart-footer" style="padding:15px; border-top:1px solid #eee; position:absolute; bottom:0; width:100%; background:#fff; box-sizing:border-box;">
+          <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:15px;">
+            <span>Subtotal:</span>
+            <span>₹${subtotal}</span>
+          </div>
+          <button id="cart-checkout-btn" style="width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; font-size:1rem; font-weight:bold; cursor:pointer;">Go to Checkout</button>
+        </div>
+      `;
+    }
+    
+    cartPanel.innerHTML = html;
+    
+    const closeBtn = document.getElementById('cart-close-btn');
+    if (closeBtn) closeBtn.addEventListener('click', closeCartPanel);
+    
+    const delBtns = document.querySelectorAll('.cart-del-btn');
+    delBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(e.target.dataset.index);
+        let cart = JSON.parse(localStorage.getItem('kadCart') || '[]');
+        cart.splice(idx, 1);
+        localStorage.setItem('kadCart', JSON.stringify(cart));
+        renderCartPanel();
+      });
+    });
+    
+    const checkoutBtn = document.getElementById('cart-checkout-btn');
+    if (checkoutBtn) checkoutBtn.addEventListener('click', () => {
+      window.location.href = 'checkout.html';
+    });
+  }
+  
+  function closeCartPanel() {
+    const cartPanel = document.getElementById('cart-panel');
+    const cartOverlay = document.getElementById('cart-overlay');
+    if (cartPanel) cartPanel.classList.remove('open');
+    if (cartOverlay) cartOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  const cartOverlayElem = document.getElementById('cart-overlay');
+  if (cartOverlayElem) cartOverlayElem.addEventListener('click', closeCartPanel);
 
   addToCartBtns.forEach(btn => {
     btn.addEventListener('click', () => addToCart(false));

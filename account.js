@@ -1,6 +1,6 @@
 import { auth, db } from './firebase.js';
 import { onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
-import { doc, getDoc, setDoc, collection, addDoc, getDocs, deleteDoc, updateDoc, query, where } from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, addDoc, getDocs, deleteDoc, updateDoc, query, where, onSnapshot } from "firebase/firestore";
 import { showToast } from './toast.js';
 
 let currentUser = null;
@@ -57,7 +57,8 @@ function setupTabs() {
   overlay?.addEventListener('click', closeDrawer);
 
   tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
+    tab.addEventListener('click', (e) => {
+      if (tab.id === 'sidebar-logout-btn') return;
       tabs.forEach(t => t.classList.remove('active'));
       panes.forEach(p => p.classList.remove('active'));
       tab.classList.add('active');
@@ -143,6 +144,7 @@ document.getElementById('profile-form').addEventListener('submit', async (e) => 
   }
 
   btn.textContent = 'Saving...';
+  btn.disabled = true;
 
   try {
     await setDoc(doc(db, "users", currentUser.uid), {
@@ -157,11 +159,13 @@ document.getElementById('profile-form').addEventListener('submit', async (e) => 
     setTimeout(() => {
       btn.textContent = 'Save Changes';
       btn.style.background = '';
+      btn.disabled = false;
     }, 2000);
   } catch (err) {
     errorBox.textContent = "Failed to save. Please check your connection and try again.";
     errorBox.style.display = 'block';
     btn.textContent = 'Save Changes';
+    btn.disabled = false;
     console.error(err);
   }
 });
@@ -224,6 +228,22 @@ if (passwordForm) {
   });
 }
 
+// Toggle password visibility in Account page
+document.querySelectorAll('.toggle-pass-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const targetId = btn.getAttribute('data-target');
+    const input = document.getElementById(targetId);
+    if (!input) return;
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+    } else {
+      input.type = 'password';
+      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+    }
+  });
+});
+
 // ==========================================
 // ADDRESSES (Firebase)
 // ==========================================
@@ -267,16 +287,16 @@ async function renderAddresses() {
     card.innerHTML = `
       ${addr.isDefault ? '<div class="card-badge">Default</div>' : ''}
       <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
-        <h3 style="margin: 0;">${addr.label || ''}</h3>
+        <h3 style="margin: 0;">${escapeHTML(addr.label || '')}</h3>
       </div>
-      ${addr.name ? `<p style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-color);">${addr.name}${addr.phone ? ' | ' + addr.phone : ''}</p>` : ''}
-      <p style="margin-bottom: 0.2rem; color: #718096; font-size: 0.95rem;">${addr.house || ''}, ${addr.area || ''}</p>
-      <p style="margin-bottom: 0.2rem; color: #718096; font-size: 0.95rem;">${addr.city || ''}, ${addr.state || ''}</p>
-      <p style="color: #718096; font-size: 0.95rem;">PIN: ${addr.pin || ''}</p>
+      ${addr.name ? `<p style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-color);">${escapeHTML(addr.name)}${addr.phone ? ' | ' + escapeHTML(addr.phone) : ''}</p>` : ''}
+      <p style="margin-bottom: 0.2rem; color: #718096; font-size: 0.95rem;">${escapeHTML(addr.house || '')}, ${escapeHTML(addr.area || '')}</p>
+      <p style="margin-bottom: 0.2rem; color: #718096; font-size: 0.95rem;">${escapeHTML(addr.city || '')}, ${escapeHTML(addr.state || '')}</p>
+      <p style="color: #718096; font-size: 0.95rem;">PIN: ${escapeHTML(addr.pin || '')}</p>
       <div class="card-actions">
-        <button class="btn-outline" onclick="editAddress('${addr.id}')">Edit</button>
-        <button class="btn-outline" onclick="deleteAddress('${addr.id}')">Delete</button>
-        ${!addr.isDefault ? `<button class="btn-outline" onclick="setDefaultAddress('${addr.id}')">Set Default</button>` : ''}
+        <button class="btn-outline" onclick="editAddress('${escapeHTML(addr.id)}')">Edit</button>
+        <button class="btn-outline" onclick="deleteAddress('${escapeHTML(addr.id)}')">Delete</button>
+        ${!addr.isDefault ? `<button class="btn-outline" onclick="setDefaultAddress('${escapeHTML(addr.id)}')">Set Default</button>` : ''}
       </div>
     `;
     list.appendChild(card);
@@ -284,6 +304,27 @@ async function renderAddresses() {
 }
 
 // Add Address
+const addressFormContainer = document.getElementById('address-form-container');
+const btnAddAddress = document.getElementById('btn-add-address');
+if (btnAddAddress) {
+  btnAddAddress.addEventListener('click', () => {
+    if (addressFormContainer) addressFormContainer.classList.remove('hidden-panel');
+  });
+}
+const btnCancelAddress = document.getElementById('btn-cancel-address');
+if (btnCancelAddress) {
+  btnCancelAddress.addEventListener('click', () => {
+    if (addressFormContainer) addressFormContainer.classList.add('hidden-panel');
+    const form = document.getElementById('address-form');
+    if (form) {
+      form.reset();
+      delete form.dataset.editId;
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.textContent = 'Save Address';
+    }
+  });
+}
+
 const addressForm = document.getElementById('address-form');
 if (addressForm) {
   addressForm.addEventListener('submit', async (e) => {
@@ -311,6 +352,7 @@ if (addressForm) {
     if (!labelVal) { showToast('Please enter an address label (e.g. Farm, Home).', 'error'); return; }
 
     btn.textContent = 'Saving...';
+    btn.disabled = true;
 
     try {
       const editId = addressForm.dataset.editId;
@@ -328,6 +370,7 @@ if (addressForm) {
         if (currentAddresses.length >= 2) {
           showToast('You can save up to 2 addresses. Delete one to add a new one.', 'warning');
           btn.textContent = 'Save Address';
+          btn.disabled = false;
           return;
         }
 
@@ -348,6 +391,7 @@ if (addressForm) {
       console.error(err);
     } finally {
       btn.textContent = 'Save Address';
+      btn.disabled = false;
     }
   });
 }
@@ -408,6 +452,7 @@ window.setDefaultAddress = async (id) => {
 // ==========================================
 // ORDERS (Firebase) + INVOICE
 // ==========================================
+let ordersUnsubscribe = null;
 async function renderOrders() {
   const list = document.getElementById('orders-list');
   if (!list) return;
@@ -418,72 +463,81 @@ async function renderOrders() {
 
   try {
     const q = query(collection(db, "orders"), where("uid", "==", currentUser.uid));
-    const snap = await getDocs(q);
-
-    if (snap.empty) {
-      list.innerHTML = `
-        <div style="text-align:center; padding: 4rem 1rem; background: var(--card-bg); border-radius: 12px; border: 1px dashed var(--border);">
-          <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">📦</div>
-          <h3 style="margin-bottom: 0.5rem;">No orders found</h3>
-          <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Looks like you haven't placed any orders yet.</p>
-          <a href="index.html#purchase" class="btn-primary" style="display:inline-block; text-decoration:none;">Start Shopping</a>
-        </div>
-      `;
-      return;
+    
+    if (ordersUnsubscribe) {
+      ordersUnsubscribe();
     }
-
-    list.innerHTML = '';
-    const orders = [];
-    querySnapshot.forEach(d => orders.push({ id: d.id, ...d.data() }));
-    orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-    orders.forEach(ord => {
-      let statusClass = 'processing';
-      if (ord.status === 'Delivered' || ord.status === 'Completed') statusClass = 'delivered';
-      if (ord.status === 'Cancelled') statusClass = 'cancelled';
-
-      const dateStr = new Date(ord.createdAt).toLocaleDateString('en-IN', {
-        day: '2-digit', month: 'short', year: 'numeric'
-      });
-
-      let itemsStr = '';
-      if (ord.items && Array.isArray(ord.items)) {
-        itemsStr = ord.items.map(i => `${i.qty}x ${i.title}`).join(', ');
+    
+    ordersUnsubscribe = onSnapshot(q, (snap) => {
+      if (snap.empty) {
+        list.innerHTML = `
+          <div style="text-align:center; padding: 4rem 1rem; background: var(--card-bg); border-radius: 12px; border: 1px dashed var(--border);">
+            <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">📦</div>
+            <h3 style="margin-bottom: 0.5rem;">No orders found</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Looks like you haven't placed any orders yet.</p>
+            <a href="index.html#purchase" class="btn-primary" style="display:inline-block; text-decoration:none;">Start Shopping</a>
+          </div>
+        `;
+        return;
       }
 
-      const orderId = ord.id.slice(-6).toUpperCase();
+      list.innerHTML = '';
+      const orders = [];
+      snap.forEach(d => orders.push({ id: d.id, ...d.data() }));
+      orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-      const card = document.createElement('div');
-      card.className = 'order-card';
-      card.innerHTML = `
-        <div class="order-header">
-          <div class="order-meta">
-            <div class="meta-block">
-              <p>Order Placed</p>
-              <span>${dateStr}</span>
+      orders.forEach(ord => {
+        let statusClass = 'processing';
+        if (ord.status === 'Delivered' || ord.status === 'Completed') statusClass = 'delivered';
+        if (ord.status === 'Cancelled') statusClass = 'cancelled';
+
+        const dateStr = new Date(ord.createdAt).toLocaleDateString('en-IN', {
+          day: '2-digit', month: 'short', year: 'numeric'
+        });
+
+        let itemsStr = '';
+        if (ord.items && Array.isArray(ord.items)) {
+          itemsStr = ord.items.map(i => `${escapeHTML(i.qty)}x ${escapeHTML(i.title)}${i.sub ? ' ' + escapeHTML(i.sub) : ''}`).join(', ');
+        }
+
+        const orderId = escapeHTML(ord.id.slice(-6).toUpperCase());
+        const safeStatus = escapeHTML(ord.status || 'Processing');
+
+        const card = document.createElement('div');
+        card.className = 'order-card';
+        card.innerHTML = `
+          <div class="order-header">
+            <div class="order-meta">
+              <div class="meta-block">
+                <p>Order Placed</p>
+                <span>${escapeHTML(dateStr)}</span>
+              </div>
+              <div class="meta-block">
+                <p>Total</p>
+                <span>₹${ord.total?.toLocaleString('en-IN') || 0}</span>
+              </div>
+              <div class="meta-block">
+                <p>Order ID</p>
+                <span>#${orderId}</span>
+              </div>
             </div>
-            <div class="meta-block">
-              <p>Total</p>
-              <span>₹${ord.total?.toLocaleString('en-IN') || 0}</span>
+            <div class="order-status status ${statusClass}">${safeStatus}</div>
+          </div>
+          <div class="order-body">
+            <div class="order-items">
+              <p>${itemsStr}</p>
             </div>
-            <div class="meta-block">
-              <p>Order ID</p>
-              <span>#${orderId}</span>
+            <div class="order-actions">
+              <button class="btn-outline" onclick="showShippingStatus('${safeStatus}', '#${orderId}')">Track Order</button>
+              ${safeStatus !== 'Cancelled' ? `<button class="btn-primary" onclick="showInvoice(${JSON.stringify(ord).replace(/"/g, '&quot;')})">Invoice</button>` : ''}
             </div>
           </div>
-          <div class="order-status status ${statusClass}">${ord.status || 'Processing'}</div>
-        </div>
-        <div class="order-body">
-          <div class="order-items">
-            <p>${itemsStr}</p>
-          </div>
-          <div class="order-actions">
-            <button class="btn-outline" onclick="showShippingStatus('${ord.status || 'Processing'}', '#${orderId}')">Track Order</button>
-            <button class="btn-primary" onclick="showInvoice(${JSON.stringify(ord).replace(/"/g, '&quot;')})">Invoice</button>
-          </div>
-        </div>
-      `;
-      list.appendChild(card);
+        `;
+        list.appendChild(card);
+      });
+    }, (error) => {
+      console.error("Error fetching orders real-time:", error);
+      list.innerHTML = '<p style="padding: 2rem; text-align: center; color: #ff4d4f;">Error loading orders. Please try again.</p>';
     });
   } catch (error) {
     console.error("Error fetching orders:", error);
@@ -494,10 +548,11 @@ async function renderOrders() {
 // Track Order
 window.showShippingStatus = (status, orderId) => {
   const modal = document.createElement('div');
+  modal.id = 'track-order-modal';
   modal.style.cssText = `position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;`;
   modal.innerHTML = `
     <div style="background:#fff;border-radius:16px;max-width:420px;width:100%;padding:2rem;text-align:center;position:relative;">
-      <button onclick="this.closest('[style*=position:fixed]').remove()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#666;">✕</button>
+      <button onclick="document.getElementById('track-order-modal').remove()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#666;">✕</button>
       <div style="font-size:3rem;margin-bottom:1rem;">📦</div>
       <h2 style="margin-bottom:0.5rem;font-size:1.3rem;">Order ${orderId}</h2>
       <div style="display:inline-block;padding:0.4rem 1rem;border-radius:50px;background:#fef3c7;color:#92400e;font-weight:600;margin-bottom:1.5rem;">${status}</div>
@@ -532,10 +587,10 @@ window.showInvoice = (ord) => {
   }
 
   const shipping = ord.shipping || 0;
-  const total = ord.total || subtotal + shipping;
+  const total = ord.total ?? (subtotal + shipping);
 
   const addr = ord.shippingAddress;
-  const addrStr = addr ? `${escapeHTML(addr.firstName || '')} ${escapeHTML(addr.lastName || '')}<br>${escapeHTML(addr.address || '')}, ${escapeHTML(addr.city || '')}, ${escapeHTML(addr.state || '')} - ${escapeHTML(addr.pin || '')}` : '—';
+  const addrStr = addr ? `${escapeHTML(addr.name || '')}<br>${escapeHTML(addr.house || '')}, ${escapeHTML(addr.area || '')}<br>${escapeHTML(addr.city || '')}, ${escapeHTML(addr.state || '')} - ${escapeHTML(addr.pin || '')}` : '—';
 
   const win = window.open('', '_blank');
   win.document.write(`<!DOCTYPE html><html><head><title>Invoice #${orderId} - KAD Multiplier</title>

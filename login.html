@@ -26,6 +26,10 @@
 
     <!-- Right Side: Login Form -->
     <div class="login-right">
+      <a href="index.html" style="position: absolute; top: 20px; right: 20px; text-decoration: none; color: #64748b; display: flex; align-items: center; gap: 5px; font-weight: 500; font-size: 0.9rem;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to Home
+      </a>
       <div class="login-form-wrapper">
         <a href="index.html" class="login-logo-link">
           <div class="login-logo-icon">
@@ -48,8 +52,10 @@
         </div>
 
         <form class="login-form" action="#" method="POST">
+          <!-- Invisible Anti-Bot Honeypot Trap -->
+          <input type="text" name="sec_login_trap" id="login-hp" style="display:none !important; position:absolute; left:-9999px;" tabindex="-1" autocomplete="off">
           <div class="form-group" id="phone-group">
-            <input type="tel" id="phone" class="form-input" placeholder=" " pattern="[0-9]*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+            <input type="tel" id="phone" class="form-input" placeholder=" " autocomplete="tel" pattern="[0-9]*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required maxlength="10">
             <label for="phone" class="form-label">Phone Number <span style="color:#ff4d4f;">*</span></label>
           </div>
 
@@ -100,7 +106,7 @@
               </svg>
             </div>
 
-            <input type="password" id="password" class="form-input" placeholder=" " required>
+            <input type="password" id="password" class="form-input" placeholder=" " autocomplete="current-password" required>
             <label for="password" class="form-label">Password <span style="color:#ff4d4f;">*</span></label>
             <button type="button" class="toggle-password">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

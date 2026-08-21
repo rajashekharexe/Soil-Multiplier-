@@ -27,9 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
       e.preventDefault();
-      const targetId = this.getAttribute('href');
+      let targetId = this.getAttribute('href');
       if(targetId === '#') return;
       
+      if (targetId === '#expert-advice' && window.innerWidth <= 768) {
+        targetId = '#mobile-lead-form';
+      }
+
       if(targetId === '#purchase') {
         // Scroll to the absolute bottom to ensure full cart is visible
         lenis.scrollTo('bottom', { duration: 1.5, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });

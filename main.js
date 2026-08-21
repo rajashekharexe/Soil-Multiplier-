@@ -8,6 +8,16 @@ import { collection, getDocs, addDoc, deleteDoc, query, where, doc } from 'fireb
 import { onAuthStateChanged } from 'firebase/auth';
 import { showToast } from './toast.js';
 
+// --- Zero-Cost Security: Console Self-XSS Warning ---
+console.log(
+  '%c🚨 STOP! SECURITY WARNING!',
+  'color: #ff3333; font-size: 24px; font-weight: bold; -webkit-text-stroke: 1px black;'
+);
+console.log(
+  '%cThis browser feature is intended for developers. If someone told you to copy and paste code here to get a discount or hack an account, it is a SCAM that will give attackers access to your account!',
+  'font-size: 14px; color: #ff6666; font-weight: 500;'
+);
+
 gsap.registerPlugin(ScrollTrigger)
 
 
@@ -92,23 +102,24 @@ const airpods = { frame: 1 }
     if (preloaderStarted) return;
     preloaderStarted = true;
     tl.play();
+    
+    // Background load the rest of the frames
+    for (let i = 2; i <= frameCount; i++) {
+      if (!images[i - 1].src) {
+        const img = images[i - 1];
+        img.onload = () => {
+          if (Math.round(airpods.frame - 1) === i - 1) {
+            render();
+          }
+        };
+        img.src = currentFrame(i);
+      }
+    }
   }
 
   images[0].onload = () => {
     render();
     startPreloader();
-    
-    // Background load the rest of the frames
-    for (let i = 2; i <= frameCount; i++) {
-      const img = images[i - 1];
-      img.onload = () => {
-        // If this image finishes loading and it's currently the frame the user is looking at, re-render immediately!
-        if (Math.round(airpods.frame - 1) === i - 1) {
-          render();
-        }
-      };
-      img.src = currentFrame(i);
-    }
   };
   
   if (images[0].complete) {
@@ -117,15 +128,6 @@ const airpods = { frame: 1 }
 
   setTimeout(() => {
     startPreloader();
-    for (let i = 2; i <= frameCount; i++) {
-      if (!images[i - 1].src) {
-         const img = images[i - 1];
-         img.onload = () => {
-           if (Math.round(airpods.frame - 1) === i - 1) render();
-         };
-         img.src = currentFrame(i);
-      }
-    }
   }, 4000);
   
   // Set initial states for Ripple Focus
@@ -283,6 +285,7 @@ if (heroProductImg) {
   });
 }
 
+
 if (dynamicProductImg) {
   dynamicProductImg.addEventListener('click', scrollToBottom);
 }
@@ -387,8 +390,8 @@ videoCartBtns.forEach(btn => {
 // --- 7. Live Calculator Logic ---
 const weightBtns = document.querySelectorAll('.weight-btn');
 const qtyDisplay = document.querySelector('.qty-display');
-const btnMinus = document.querySelector('.qty-btn.minus');
-const btnPlus = document.querySelector('.qty-btn.plus');
+const btnMinusList = document.querySelectorAll('.qty-btn.minus');
+const btnPlusList = document.querySelectorAll('.qty-btn.plus');
 
 const displayAmount = document.getElementById('display-price');
 const displayMrpWrap = document.getElementById('display-mrp');
@@ -500,7 +503,8 @@ if(activeBtn) updatePrice();
 
 weightBtns.forEach(btn => {
   btn.addEventListener('click', () => {
-    weightBtns.forEach(b => {
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.weight-btn').forEach(b => {
       b.classList.remove('active');
       const val = b.querySelector('.fq-val');
       if(val) val.innerHTML = '1';
@@ -544,21 +548,32 @@ function updateAllQtyDisplays() {
   }
 }
 
-if(btnPlus) {
-  btnPlus.addEventListener('click', () => {
-    currentQty++;
-    updateAllQtyDisplays();
-    updatePrice();
+if(btnPlusList.length > 0) {
+  btnPlusList.forEach(btnPlus => {
+    btnPlus.addEventListener('click', () => {
+      currentQty++;
+      updateAllQtyDisplays();
+      updatePrice();
+    });
   });
 }
 
-if(btnMinus) {
-  btnMinus.addEventListener('click', () => {
-    if (currentQty > 1) {
-      currentQty--;
-      updateAllQtyDisplays();
-      updatePrice();
-    }
+if(btnMinusList.length > 0) {
+  btnMinusList.forEach(btnMinus => {
+    btnMinus.addEventListener('click', () => {
+      if (currentQty > 1) {
+        currentQty--;
+        updateAllQtyDisplays();
+        updatePrice();
+      }
+    });
+  });
+}
+
+const backToTopBtn = document.querySelector('.back-to-top-btn');
+if (backToTopBtn) {
+  backToTopBtn.addEventListener('click', () => {
+    lenis.scrollTo(0, { duration: 1.5, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
   });
 }
 
@@ -704,6 +719,17 @@ function renderCart() {
       cartBadge.innerHTML = totalItemsCount;
     } else {
       cartBadge.style.display = 'none';
+    }
+  }
+
+  const checkoutBtn = document.querySelector('.fpc-checkout-btn');
+  if (checkoutBtn) {
+    if (cart.length === 0) {
+      checkoutBtn.style.pointerEvents = 'none';
+      checkoutBtn.style.opacity = '0.5';
+    } else {
+      checkoutBtn.style.pointerEvents = 'auto';
+      checkoutBtn.style.opacity = '1';
     }
   }
   
@@ -994,9 +1020,9 @@ document.querySelectorAll('.wishlist-heart').forEach(heart => {
       try {
         const q = query(collection(db, "wishlist"), where("uid", "==", currentUser.uid), where("variantId", "==", variantId));
         const querySnapshot = await getDocs(q);
-        querySnapshot.forEach(async (docSnap) => {
+        for (const docSnap of querySnapshot.docs) {
           await deleteDoc(doc(db, "wishlist", docSnap.id));
-        });
+        }
         showToast('Removed from wishlist');
       } catch (err) {
         console.error(err);
@@ -1022,13 +1048,109 @@ document.querySelectorAll('.wishlist-heart').forEach(heart => {
   });
 });
 
+// ---- Mobile Lead Form Logic ----
+const mLeadForm = document.getElementById('mobile-lead-form');
+if (mLeadForm) {
+  mLeadForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Security Check 1: Anti-Bot Honeypot Trap
+    const hpVal = document.getElementById('mlead-hp')?.value;
+    if (hpVal) {
+      // Bot detected! Drop silently, simulate success to fool bot, save Firestore quota
+      document.getElementById('lead-success').style.display = 'block';
+      mLeadForm.reset();
+      return;
+    }
+
+    // Security Check 2: Rate Limiting / Flood Cooldown (30 seconds)
+    const now = Date.now();
+    const lastSub = parseInt(sessionStorage.getItem('last_lead_sub') || '0', 10);
+    if (now - lastSub < 30000) {
+      const waitSecs = Math.ceil((30000 - (now - lastSub)) / 1000);
+      const errEl = document.getElementById('lead-error');
+      if (errEl) {
+        errEl.textContent = `Please wait ${waitSecs}s before submitting another request.`;
+        errEl.style.display = 'block';
+      }
+      return;
+    }
+
+    const nameVal = document.getElementById('lead-name').value.trim();
+    const phoneVal = document.getElementById('lead-phone').value.trim();
+    const villageVal = document.getElementById('lead-village').value.trim();
+    const cropVal = document.getElementById('lead-crop').value.trim();
+    const errEl = document.getElementById('lead-error');
+    const successEl = document.getElementById('lead-success');
+    const submitBtn = mLeadForm.querySelector('button[type="submit"]');
+
+    if (errEl) errEl.style.display = 'none';
+    if (!nameVal || nameVal.length < 2) { if (errEl) { errEl.textContent = 'Please enter your name.'; errEl.style.display = 'block'; } return; }
+    if (!/^[6-9]\d{9}$/.test(phoneVal)) { if (errEl) { errEl.textContent = 'Please enter a valid 10-digit mobile number.'; errEl.style.display = 'block'; } return; }
+
+    if (submitBtn) {
+      submitBtn.textContent = 'Sending...';
+      submitBtn.disabled = true;
+    }
+
+    try {
+      await addDoc(collection(db, 'leads'), {
+        name: nameVal,
+        phone: phoneVal,
+        village: villageVal || 'Not specified',
+        crop: cropVal || 'Not specified',
+        source: 'mobile_lead_form',
+        createdAt: new Date().toISOString()
+      });
+      sessionStorage.setItem('last_lead_sub', String(Date.now()));
+      if (successEl) successEl.style.display = 'block';
+      mLeadForm.reset();
+      if (submitBtn) submitBtn.textContent = 'Submitted ✓';
+    } catch (err) {
+      if (errEl) {
+        errEl.textContent = 'Failed to submit. Please call us at +91 8088775223.';
+        errEl.style.display = 'block';
+      }
+      if (submitBtn) {
+        submitBtn.textContent = 'Request Free Consultation';
+        submitBtn.disabled = false;
+      }
+      console.error(err);
+    }
+  });
+}
+
 // ---- Desktop Lead Form → Firebase ----
 const dLeadForm = document.getElementById('desktop-lead-form');
 if (dLeadForm) {
   dLeadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    // Security Check 1: Anti-Bot Honeypot Trap
+    const hpVal = document.getElementById('dlead-hp')?.value;
+    if (hpVal) {
+      // Bot detected! Drop silently, simulate success to fool bot, save Firestore quota
+      document.getElementById('desktop-lead-success').style.display = 'block';
+      dLeadForm.reset();
+      return;
+    }
+
+    // Security Check 2: Rate Limiting / Flood Cooldown (30 seconds)
+    const now = Date.now();
+    const lastSub = parseInt(sessionStorage.getItem('last_lead_sub') || '0', 10);
+    if (now - lastSub < 30000) {
+      const waitSecs = Math.ceil((30000 - (now - lastSub)) / 1000);
+      const errEl = document.getElementById('desktop-lead-error');
+      if (errEl) {
+        errEl.textContent = `Please wait ${waitSecs}s before submitting another request.`;
+        errEl.style.display = 'block';
+      }
+      return;
+    }
+
     const nameVal = document.getElementById('desktop-lead-name').value.trim();
     const phoneVal = document.getElementById('desktop-lead-phone').value.trim();
+    const villageVal = document.getElementById('desktop-lead-village').value.trim();
     const cropVal = document.getElementById('desktop-lead-crop').value.trim();
     const errEl = document.getElementById('desktop-lead-error');
     const successEl = document.getElementById('desktop-lead-success');
@@ -1045,10 +1167,12 @@ if (dLeadForm) {
       await addDoc(collection(db, 'leads'), {
         name: nameVal,
         phone: phoneVal,
+        village: villageVal || 'Not specified',
         crop: cropVal || 'Not specified',
         source: 'desktop_lead_form',
         createdAt: new Date().toISOString()
       });
+      sessionStorage.setItem('last_lead_sub', String(Date.now()));
       successEl.style.display = 'block';
       dLeadForm.reset();
       submitBtn.textContent = 'Submitted ✓';

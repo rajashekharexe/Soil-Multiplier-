@@ -24,8 +24,12 @@
       <img src="/login-bg.png" alt="Login Background" style="width: 100%; height: 100%; object-fit: cover;">
     </div>
 
-    <!-- Right Side: Login Form -->
+    <!-- Right Side: Registration Form -->
     <div class="login-right">
+      <a href="index.html" style="position: absolute; top: 20px; right: 20px; text-decoration: none; color: #64748b; display: flex; align-items: center; gap: 5px; font-weight: 500; font-size: 0.9rem;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to Home
+      </a>
       <div class="login-form-wrapper">
         <a href="index.html" class="login-logo-link">
           <div class="login-logo-icon">
@@ -48,13 +52,15 @@
         </div>
 
         <form class="login-form" action="#" method="POST">
+          <!-- Invisible Anti-Bot Honeypot Trap -->
+          <input type="text" name="sec_bot_trap" id="reg-hp" style="display:none !important; position:absolute; left:-9999px;" tabindex="-1" autocomplete="off">
           <div class="form-group" id="name-group">
-            <input type="text" id="name" class="form-input" placeholder=" " required>
+            <input type="text" id="name" class="form-input" placeholder=" " maxlength="60" required>
             <label for="name" class="form-label">Full Name <span style="color:#ff4d4f;">*</span></label>
           </div>
 
           <div class="form-group" id="phone-group">
-            <input type="tel" id="phone" class="form-input" placeholder=" " pattern="[0-9]*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+            <input type="tel" id="phone" class="form-input" placeholder=" " pattern="[0-9]*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required maxlength="10">
             <label for="phone" class="form-label">Phone Number <span style="color:#ff4d4f;">*</span></label>
           </div>
 
@@ -131,7 +137,7 @@
           </div>
 
           <div class="form-options" id="form-options" style="justify-content: flex-end;">
-            <span class="forgot-password" style="font-size: 0.8rem;">By signing up, you agree to our <a href="/terms.html" target="_blank" style="color: var(--color-primary); text-decoration: underline;">Terms of Service</a> and <a href="/privacy.html" target="_blank" style="color: var(--color-primary); text-decoration: underline;">Privacy Policy</a>.</span>
+            <span class="forgot-password" style="font-size: 0.8rem;">By signing up, you agree to our <a href="/terms.html" target="_blank" rel="noopener noreferrer" style="color: var(--color-primary); text-decoration: underline;">Terms of Service</a> and <a href="/privacy.html" target="_blank" rel="noopener noreferrer" style="color: var(--color-primary); text-decoration: underline;">Privacy Policy</a>.</span>
           </div>
 
           <!-- Log in Button with Peeking Character -->
@@ -260,7 +266,10 @@
       }
     });
 
-    let isPasswordVisible = false;
+    let isPasswordVisible = {
+      'password': false,
+      'confirm-password': false
+    };
     let mouseTimeout;
 
     // Function to determine where the eyes should look when the mouse stops moving
@@ -272,7 +281,7 @@
         const rightX = -7 + (length / 25) * 3;
         gsap.to(leftEyes, { x: leftX, y: -6, duration: 0.2 });
         gsap.to(rightEyes, { x: rightX, y: -6, duration: 0.2 });
-      } else if ((active === passInput || active === confirmPassInput) && isPasswordVisible) {
+      } else if ((active === passInput && isPasswordVisible['password']) || (active === confirmPassInput && isPasswordVisible['confirm-password'])) {
         // Look directly at the visible password
         gsap.to(leftEyes, { x: 5, y: 0, duration: 0.2 });
         gsap.to(rightEyes, { x: -5, y: 0, duration: 0.2 });
@@ -285,7 +294,7 @@
     // 1. Mouse & Touch Tracking
     function handlePointerMove(e) {
       const active = document.activeElement;
-      if ((active === passInput || active === confirmPassInput) && !isPasswordVisible) return;
+      if ((active === passInput && !isPasswordVisible['password']) || (active === confirmPassInput && !isPasswordVisible['confirm-password'])) return;
 
       clearTimeout(mouseTimeout);
       
@@ -321,7 +330,8 @@
     [passInput, confirmPassInput].forEach(input => {
       input.addEventListener('focus', () => {
         updateIdleEyes();
-        if (!isPasswordVisible) {
+        const targetId = input.id;
+        if (!isPasswordVisible[targetId]) {
           gsap.to('.blob-hand-l', { x: 18, y: -25, duration: 0.4, ease: 'back.out(1.5)' });
           gsap.to('.blob-hand-r', { x: -18, y: -25, duration: 0.4, ease: 'back.out(1.5)' });
         }
@@ -344,7 +354,7 @@
         
         if (targetInput.type === 'password') {
           targetInput.type = 'text';
-          isPasswordVisible = true;
+          isPasswordVisible[targetId] = true;
           updateIdleEyes();
           
           if (document.activeElement === targetInput) {
@@ -353,7 +363,7 @@
           }
         } else {
           targetInput.type = 'password';
-          isPasswordVisible = (passInput.type === 'text' || confirmPassInput.type === 'text');
+          isPasswordVisible[targetId] = false;
           
           if (document.activeElement === targetInput) {
             gsap.to('.blob-hand-l', { x: 18, y: -25, duration: 0.3, ease: 'back.out(1.5)' });

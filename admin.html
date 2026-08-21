@@ -250,6 +250,7 @@
       <button class="admin-tab-btn" data-target="tab-orders">Orders</button>
       <button class="admin-tab-btn" data-target="tab-leads">Leads</button>
       <button class="admin-tab-btn" data-target="tab-products">Products</button>
+      <button class="admin-tab-btn" data-target="tab-users">Users</button>
     </div>
 
     <!-- DASHBOARD TAB -->
@@ -285,7 +286,7 @@
           <option value="Delivered">Delivered</option>
           <option value="Cancelled">Cancelled</option>
         </select>
-        <button id="export-csv" class="btn-export">⬇ Download CSV</button>
+        <button id="btn-export-orders" class="btn-export">⬇ Download CSV</button>
       </div>
       
       <div class="table-wrapper">
@@ -313,6 +314,10 @@
 
     <!-- LEADS TAB -->
     <div id="tab-leads" class="admin-tab-content">
+      <div class="toolbar">
+        <div style="flex:1;"></div>
+        <button id="export-csv-leads" class="btn-export">⬇ Download Leads CSV</button>
+      </div>
       <div class="table-wrapper">
         <table>
           <thead>
@@ -320,6 +325,8 @@
               <th>Date</th>
               <th>Name</th>
               <th>Phone Number</th>
+              <th>Village</th>
+              <th>Crop</th>
             </tr>
           </thead>
           <tbody id="leads-tbody">
@@ -347,13 +354,38 @@
           </thead>
           <tbody id="products-tbody">
             <tr>
-              <td colspan="5"><div class="loading">Loading products...</div></td>
+              <td colspan="6"><div class="loading">Loading products...</div></td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
+    <!-- USERS TAB -->
+    <div id="tab-users" class="admin-tab-content">
+      <div class="toolbar">
+        <div style="flex:1;"></div>
+        <button id="export-csv-users" class="btn-export">⬇ Download Users CSV</button>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Joined</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <tr>
+              <td colspan="5"><div class="loading">Loading users...</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

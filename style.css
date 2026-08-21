@@ -2903,3 +2903,15 @@ body.dark-mode #navbar.scrolled {
   color: #ef4444;
   text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
 }
+
+@media (max-width: 768px) {
+  .fpc-item {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .fpc-item-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+

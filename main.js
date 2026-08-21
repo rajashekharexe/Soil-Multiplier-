@@ -703,26 +703,28 @@ function renderCart() {
     
     const itemHtml = `
       <div class="fpc-item">
-        <div class="fpc-item-img" style="background: #f4f6f8; display: flex; align-items: center; justify-content: center;">
-          <img src="${item.image || '/kad-multiplier-cropped.png'}" alt="KAD Multiplier" style="width: 80%; height: 80%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));" />
+        <div class="fpc-item-img">
+          <img src="${item.image || '/kad-multiplier-cropped.png'}" alt="KAD Multiplier" style="width: 100%; height: 100%; object-fit: contain; padding: 6px;" />
         </div>
         <div class="fpc-item-details">
+          <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+            <span style="background:#f0fdf4; color:#166534; font-size:0.68rem; font-weight:700; padding:2px 7px; border-radius:4px; border:1px solid #bbf7d0; letter-spacing:0.04em;">🌱 ORGANIC</span>
+            <span style="background:#f1f5f9; color:#64748b; font-size:0.68rem; font-weight:700; padding:2px 7px; border-radius:4px; letter-spacing:0.04em;">${item.weight}kg</span>
+          </div>
           <h4>KAD Multiplier</h4>
           <p>${item.title} ${item.sub}</p>
-          <div class="fpc-item-price">\u20B9 ${formatCurrency(itemTotal)}</div>
+          <div class="fpc-item-price">₹ ${formatCurrency(itemTotal)} <span style="font-size:0.75rem; font-weight:500; color:#94a3b8;">/ ₹${formatCurrency(item.price)} each</span></div>
         </div>
         <div class="fpc-item-actions">
           <div class="fpc-qty-selector">
-            <button class="cart-minus" data-index="${index}">-</button>
+            <button class="cart-minus" data-index="${index}">−</button>
             <span>${item.qty}</span>
             <button class="cart-plus" data-index="${index}">+</button>
           </div>
-          <button class="fpc-delete-btn cart-remove" data-index="${index}">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="fpc-delete-btn cart-remove" data-index="${index}" title="Remove item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              <line x1="10" y1="11" x2="10" y2="17"></line>
-              <line x1="14" y1="11" x2="14" y2="17"></line>
             </svg>
           </button>
         </div>

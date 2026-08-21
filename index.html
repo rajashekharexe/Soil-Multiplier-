@@ -832,17 +832,7 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
-                  <span>Added!</span>
-                </div>
-              </button>
-            </div>
-          </div>
-        </section>
-
-      </div>
-    </main>
-
-    <!-- Full Page Bubble Cart -->
+       <!-- Full Page Bubble Cart -->
     <div class="full-page-cart" id="full-page-cart" data-lenis-prevent>
       <div class="fpc-inner">
         
@@ -866,7 +856,7 @@
             <div class="step-line"></div>
             <div class="step">
               <span class="step-num">2</span>
-              <span class="step-label">Checkout details</span>
+              <span class="step-label">Checkout</span>
             </div>
             <div class="step-line"></div>
             <div class="step">
@@ -876,16 +866,16 @@
           </div>
           
           <!-- Empty div to balance header flexbox -->
-          <div style="width: 170px;"></div>
+          <div style="width: 192px;"></div>
         </header>
 
-        <h1 class="fpc-title">Your Shopping Cart</h1>
+        <h1 class="fpc-title">Your Cart 🛒</h1>
 
         <div class="fpc-content">
           <!-- Left: Cart Items -->
           <div class="fpc-items-section">
             <div class="fpc-items-header">
-              <h3>Your cart</h3>
+              <h3>Items in your cart</h3>
             </div>
             
             <div class="fpc-items-list" id="cart-items-container">
@@ -896,35 +886,46 @@
           <!-- Right: Summary Section -->
           <div class="fpc-summary-section">
             <div class="fpc-summary-card">
-              <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.3rem; color: #0f172a; margin-bottom: 1.25rem;">Order Summary</h3>
+              <h3>Order Summary</h3>
 
               <!-- Delivery Guarantee Note -->
-              <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 1.5rem; font-size: 0.88rem; color: #166534; display: flex; align-items: center; gap: 8px;">
+              <div class="fpc-delivery-note">
                 <span>🚚</span>
-                <span><strong>Guaranteed Delivery:</strong> Dispatched immediately & delivered within 7 days across India.</span>
+                <span><strong>Guaranteed Delivery:</strong> Within 7 days across India. Free shipping on all orders.</span>
               </div>
 
               <div class="fpc-summary-row">
                 <span>Subtotal</span>
-                <span id="cart-subtotal" style="font-weight: 600; color: #0f172a;">₹ 0</span>
+                <span id="cart-subtotal">₹ 0</span>
               </div>
-              <div class="fpc-summary-row highlight-red" style="display: none;">
-                <span>Discount</span>
-                <span>-₹ 0</span>
-              </div>
-              <div class="fpc-summary-row">
+              <div class="fpc-summary-row highlight-green">
                 <span>Delivery Fee</span>
-                <span id="cart-shipping" style="color: #16a34a; font-weight: 600;">Free</span>
+                <span id="cart-shipping" class="free-tag">Free</span>
               </div>
               
-              <div class="fpc-divider" style="height: 1px; background: #e2e8f0; margin: 1.25rem 0;"></div>
+              <div class="fpc-divider"></div>
               
-              <div class="fpc-summary-total" style="display: flex; justify-content: space-between; align-items: center; font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 1.5rem;">
+              <div class="fpc-summary-total">
                 <span>Total</span>
-                <span id="cart-total" style="color: #16a34a;">₹ 0</span>
+                <span id="cart-total" class="total-amount">₹ 0</span>
               </div>
               
-              <a href="checkout.html" class="fpc-checkout-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center; width: 100%; padding: 1rem 1.5rem; background: #16a34a; color: white; border-radius: 50px; font-weight: 700; font-size: 1rem; box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35); transition: all 0.2s ease;">Go to Checkout <span class="checkout-arrow" style="margin-left: 8px;">&rarr;</span></a>
+              <a href="checkout.html" class="fpc-checkout-btn">
+                Proceed to Checkout <span class="checkout-arrow">→</span>
+              </a>
+
+              <!-- Trust Badges -->
+              <div class="fpc-trust-strip">
+                <div class="fpc-trust-item">
+                  <span>🔒</span><span>Secure</span>
+                </div>
+                <div class="fpc-trust-item">
+                  <span>✅</span><span>100% Organic</span>
+                </div>
+                <div class="fpc-trust-item">
+                  <span>↩️</span><span>Easy Returns</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

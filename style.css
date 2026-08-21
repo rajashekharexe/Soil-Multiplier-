@@ -1137,42 +1137,48 @@ body.lang-scientific .text-simple { display: none; }
   margin-bottom: 2rem;
 }
 
-/* Hide global floating navbar on cart modal open or on checkout page */
+/* Hide global floating navbar and widgets on cart modal open or on checkout page */
 body.cart-open .navbar,
-.full-page-cart.open ~ .navbar,
-.full-page-cart.open ~ * .navbar,
+body.cart-open #scroll-cursor,
+body.cart-open .contact-bubble,
+body.cart-open .floating-social-widget,
+body.cart-open [class*="whatsapp"],
 .checkout-page .navbar {
   display: none !important;
   opacity: 0 !important;
   pointer-events: none !important;
+  visibility: hidden !important;
 }
 
 /* ==========================================================================
    FULL PAGE SHOPPING CART (100% 16:9 Template Replica)
    ========================================================================== */
 .full-page-cart {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: #f7faf7;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: #f7faf7 !important;
   background-image: 
     radial-gradient(circle at 50% 0%, #ffffff 0%, #f7faf7 70%),
-    linear-gradient(180deg, #ffffff 0%, #f5f9f5 100%);
-  z-index: 10000;
-  overflow-y: auto;
-  overflow-x: hidden;
+    linear-gradient(180deg, #ffffff 0%, #f5f9f5 100%) !important;
+  z-index: 999999 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
   color: #0f172a;
-  clip-path: circle(0% at 50% 50%);
-  visibility: hidden;
-  opacity: 0;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  box-sizing: border-box;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
 }
 
 .full-page-cart.open {
-  visibility: visible;
-  opacity: 1;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 /* Background Artwork from Template */

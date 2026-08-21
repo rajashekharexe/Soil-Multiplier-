@@ -251,24 +251,33 @@ function openFullPageCart(buttonElement) {
   // Animate the bubble expanding from the clicked button
   gsap.fromTo(fpc, 
     { clipPath: `circle(0px at ${lastCartOriginX}px ${lastCartOriginY}px)` },
-    { clipPath: `circle(150% at ${lastCartOriginX}px ${lastCartOriginY}px)`, duration: 0.8, ease: 'power3.inOut' }
+    { 
+      clipPath: `circle(200% at ${lastCartOriginX}px ${lastCartOriginY}px)`, 
+      duration: 0.7, 
+      ease: 'power3.inOut',
+      onComplete: () => {
+        fpc.style.clipPath = 'none'; // Guarantee 100% full-screen coverage with zero border clipping
+      }
+    }
   );
   
   // Stagger animate the cart content fading in
   gsap.fromTo('.fpc-inner > *', 
-    { y: 30, opacity: 0 },
-    { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, delay: 0.3, ease: 'power2.out' }
+    { y: 25, opacity: 0 },
+    { y: 0, opacity: 1, duration: 0.45, stagger: 0.08, delay: 0.2, ease: 'power2.out' }
   );
 }
 
 function closeFullPageCart() {
+  fpc.style.clipPath = `circle(200% at ${lastCartOriginX}px ${lastCartOriginY}px)`;
   // Animate the circle shrinking back to the exact button that opened it!
   gsap.to(fpc, {
     clipPath: `circle(0px at ${lastCartOriginX}px ${lastCartOriginY}px)`,
-    duration: 0.6,
+    duration: 0.55,
     ease: 'power3.inOut',
     onComplete: () => {
       fpc.classList.remove('open');
+      fpc.style.clipPath = '';
       document.body.classList.remove('cart-open');
       if (typeof lenis !== 'undefined' && lenis) lenis.start(); // Resume scrolling
     }

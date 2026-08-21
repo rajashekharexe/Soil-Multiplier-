@@ -14,6 +14,9 @@ export default defineConfig({
         productInfo: resolve(__dirname, 'product-info.html'),
         privacy: resolve(__dirname, 'privacy.html'),
         terms: resolve(__dirname, 'terms.html'),
+        shipping: resolve(__dirname, 'shipping.html'),
+        returns: resolve(__dirname, 'returns.html'),
+        faq: resolve(__dirname, 'faq.html'),
         admin: resolve(__dirname, 'admin.html')
       }
     }

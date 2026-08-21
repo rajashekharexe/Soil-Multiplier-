@@ -1,0 +1,23 @@
+{
+  "name": "KAD Multiplier - Soil & Crop Nutrition",
+  "short_name": "KAD Multiplier",
+  "description": "Revolutionizing Indian agriculture through bio-active micro-nutrition and chemical-free soil transformation.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "icons": [
+    {
+      "src": "/kad-multiplier-cropped.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/kad-multiplier-cropped.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

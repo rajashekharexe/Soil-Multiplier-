@@ -18,6 +18,13 @@ console.log(
   'font-size: 14px; color: #ff6666; font-weight: 500;'
 );
 
+// Register Service Worker for PWA & Offline Support
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
 gsap.registerPlugin(ScrollTrigger)
 
 
@@ -1205,8 +1212,114 @@ document.addEventListener('DOMContentLoaded', async () => {
         saveCart(cart);
         renderCart();
       }
-    } catch(err) {
-      console.error("Failed to sync cart prices", err);
+    } catch (e) {
+      console.warn('Could not sync cart prices offline:', e);
     }
   }
 });
+
+// ---- Farmer Acreage & Dosage Calculator Logic ----
+(function initDosageCalculator() {
+  const cropPills = document.querySelectorAll('#calc-crop-pills .calc-pill');
+  const acreInput = document.getElementById('calc-acre-input');
+  const acrePresets = document.querySelectorAll('.calc-acre-preset');
+  const resultQty = document.getElementById('calc-result-qty');
+  const resultPack = document.getElementById('calc-result-pack');
+  const addBtn = document.getElementById('calc-add-btn');
+
+  if (!cropPills.length || !acreInput) return;
+
+  let currentRate = 2; // kg per acre (Sugarcane default)
+
+  function updateCalculation() {
+    const acres = Math.max(1, parseFloat(acreInput.value) || 1);
+    const totalKg = Math.round(acres * currentRate * 10) / 10;
+    
+    let packText = '';
+    let targetVariant = 'variant-1kg';
+    let targetQty = 1;
+
+    if (totalKg <= 1) {
+      packText = '(Recommended: 1× 1Kg Multiplier Pack)';
+      targetVariant = 'variant-1kg';
+      targetQty = 1;
+    } else if (totalKg <= 5) {
+      packText = '(Recommended: 1× 5Kg Multiplier Pack)';
+      targetVariant = 'variant-5kg';
+      targetQty = 1;
+    } else if (totalKg <= 10) {
+      packText = '(Recommended: 1× 10Kg Multiplier Pack)';
+      targetVariant = 'variant-10kg';
+      targetQty = 1;
+    } else {
+      const tenKgCount = Math.ceil(totalKg / 10);
+      packText = `(Recommended: ${tenKgCount}× 10Kg Multiplier Packs)`;
+      targetVariant = 'variant-10kg';
+      targetQty = tenKgCount;
+    }
+
+    if (resultQty) resultQty.textContent = `${totalKg} Kg`;
+    if (resultPack) resultPack.textContent = packText;
+
+    if (addBtn) {
+      addBtn.setAttribute('data-target-variant', targetVariant);
+      addBtn.setAttribute('data-target-qty', String(targetQty));
+    }
+  }
+
+  cropPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      cropPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentRate = parseFloat(pill.getAttribute('data-rate')) || 1;
+      updateCalculation();
+    });
+  });
+
+  acrePresets.forEach(preset => {
+    preset.addEventListener('click', () => {
+      acrePresets.forEach(p => p.classList.remove('active'));
+      preset.classList.add('active');
+      acreInput.value = preset.getAttribute('data-acres');
+      updateCalculation();
+    });
+  });
+
+  acreInput.addEventListener('input', () => {
+    acrePresets.forEach(p => {
+      if (p.getAttribute('data-acres') === acreInput.value) {
+        p.classList.add('active');
+      } else {
+        p.classList.remove('active');
+      }
+    });
+    updateCalculation();
+  });
+
+  if (addBtn) {
+    addBtn.addEventListener('click', () => {
+      const targetVarId = addBtn.getAttribute('data-target-variant') || 'variant-5kg';
+      const targetQuantity = parseInt(addBtn.getAttribute('data-target-qty') || '1', 10);
+
+      // Select target variant in Purchase section
+      const targetWeightBtn = document.querySelector(`.weight-btn[data-variant-id="${targetVarId}"]`);
+      if (targetWeightBtn) {
+        targetWeightBtn.click();
+      }
+
+      // Update quantity
+      const qtyDisplays = document.querySelectorAll('.qty-display');
+      qtyDisplays.forEach(d => { d.textContent = String(targetQuantity); });
+      window.currentQty = targetQuantity;
+
+      // Smooth scroll to purchase section
+      const purchaseSec = document.getElementById('purchase');
+      if (purchaseSec) {
+        purchaseSec.scrollIntoView({ behavior: 'smooth' });
+      }
+      showToast(`Selected ${targetQuantity}x ${targetVarId.replace('variant-', '')} pack!`, 'success');
+    });
+  }
+
+  updateCalculation();
+})();

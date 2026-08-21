@@ -838,98 +838,182 @@
         
         <!-- Header / Stepper -->
         <header class="fpc-header">
-          <button id="close-cart" class="go-back-btn" type="button" aria-label="Close Cart">
-            <div class="go-back-icon-container">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" height="25px" width="25px">
-                <path d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z" fill="#000000"></path>
-                <path d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z" fill="#000000"></path>
-              </svg>
-            </div>
-            <p class="go-back-text">Go Back</p>
+    <!-- Full Page Bubble Cart -->
+    <div class="full-page-cart" id="full-page-cart" data-lenis-prevent>
+      
+      <!-- Farm Landscape Background overlay for bottom -->
+      <div class="fpc-farm-bg"></div>
+
+      <div class="fpc-inner">
+        
+        <!-- Header -->
+        <header class="fpc-header-new">
+          <button id="close-cart" class="fpc-continue-btn" type="button" aria-label="Close Cart">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Continue Shopping
           </button>
           
-          <div class="fpc-stepper">
-            <div class="step active">
-              <span class="step-num">1</span>
-              <span class="step-label">Shopping cart</span>
+          <div class="fpc-title-wrapper">
+            <div class="fpc-title-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C12 2 8 4 6 9C4 14 6 19 9 22L12 18L15 22C18 19 20 14 18 9C16 4 12 2 12 2Z" fill="#22c55e"/>
+                <path d="M12 22V10" stroke="#166534" stroke-width="2" stroke-linecap="round"/>
+              </svg>
             </div>
-            <div class="step-line"></div>
-            <div class="step">
-              <span class="step-num">2</span>
-              <span class="step-label">Checkout</span>
-            </div>
-            <div class="step-line"></div>
-            <div class="step">
-              <span class="step-num">3</span>
-              <span class="step-label">Order complete</span>
-            </div>
+            <h1>Your Shopping Cart</h1>
+            <p>
+               <span style="color:#84cc16;">🌿</span> 
+               Review your items and proceed to checkout 
+               <span style="color:#84cc16;">🌿</span>
+            </p>
           </div>
           
-          <!-- Empty div to balance header flexbox -->
-          <div style="width: 192px;"></div>
+          <div class="fpc-secure-badge">
+            <div class="secure-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#22c55e" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <rect x="9" y="9" width="6" height="7" rx="1" fill="#fff"></rect>
+              </svg>
+            </div>
+            <div class="secure-text">
+              <strong>Safe & Secure Checkout</strong>
+              <span>100% secure payments</span>
+            </div>
+          </div>
         </header>
 
-        <h1 class="fpc-title">Your Cart 🛒</h1>
-
-        <div class="fpc-content">
-          <!-- Left: Cart Items -->
-          <div class="fpc-items-section">
-            <div class="fpc-items-header">
-              <h3>Items in your cart</h3>
-            </div>
-            
+        <div class="fpc-content-new">
+          <!-- Left Column -->
+          <div class="fpc-left-col">
             <div class="fpc-items-list" id="cart-items-container">
               <!-- JS will populate cart items here -->
             </div>
+            
+            <div class="fpc-feature-strip">
+              <div class="fpc-feature">
+                <div class="feature-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="#22c55e" stroke="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                </div>
+                <div class="feature-text">
+                  <strong>100% Organic & Safe</strong>
+                  <span>For healthier soil and better yield</span>
+                </div>
+              </div>
+              <div class="fpc-feature">
+                <div class="feature-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="#22c55e" stroke="none"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                </div>
+                <div class="feature-text">
+                  <strong>Fast Delivery</strong>
+                  <span>Delivered within 7 days across India</span>
+                </div>
+              </div>
+              <div class="fpc-feature">
+                <div class="feature-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+                </div>
+                <div class="feature-text">
+                  <strong>Secure Payment</strong>
+                  <span>Multiple safe payment options</span>
+                </div>
+              </div>
+            </div>
+
+            <button id="fpc-checkout-trigger" class="fpc-checkout-btn-main">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" stroke="none">
+                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+              </svg>
+              Proceed to Checkout &rarr;
+            </button>
+            <div class="fpc-encryption-text">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+              Your data is protected and encrypted
+            </div>
           </div>
 
-          <!-- Right: Summary Section -->
-          <div class="fpc-summary-section">
-            <div class="fpc-summary-card">
-              <h3>Order Summary</h3>
-
-              <!-- Delivery Guarantee Note -->
-              <div class="fpc-delivery-note">
-                <span>🚚</span>
-                <span><strong>Guaranteed Delivery:</strong> Within 7 days across India. Free shipping on all orders.</span>
-              </div>
-
+          <!-- Right Column -->
+          <div class="fpc-right-col">
+            <div class="fpc-summary-card-new">
+              <h3 class="fpc-summary-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#166534" stroke="none"><path d="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z"/></svg>
+                Price Details
+              </h3>
+              
               <div class="fpc-summary-row">
                 <span>Subtotal</span>
-                <span id="cart-subtotal">₹ 0</span>
+                <span id="cart-subtotal" style="font-weight: 700; color: #000;">₹ 0</span>
               </div>
-              <div class="fpc-summary-row highlight-green">
+              <div class="fpc-summary-row">
                 <span>Delivery Fee</span>
-                <span id="cart-shipping" class="free-tag">Free</span>
+                <span id="cart-shipping" style="font-weight: 700; color: #000;">₹ 0</span>
               </div>
               
-              <div class="fpc-divider"></div>
+              <div class="fpc-divider-dashed"></div>
               
               <div class="fpc-summary-total">
-                <span>Total</span>
-                <span id="cart-total" class="total-amount">₹ 0</span>
+                <span>Total Amount</span>
+                <span id="cart-total">₹ 0</span>
               </div>
-              
-              <a href="checkout.html" class="fpc-checkout-btn">
-                Proceed to Checkout <span class="checkout-arrow">→</span>
-              </a>
 
-              <!-- Trust Badges -->
-              <div class="fpc-trust-strip">
-                <div class="fpc-trust-item">
-                  <span>🔒</span><span>Secure</span>
+              <!-- Promo Code -->
+              <div class="fpc-promo-box">
+                <div class="promo-header">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#166534" stroke="none"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
+                  Have a promo code?
                 </div>
-                <div class="fpc-trust-item">
-                  <span>✅</span><span>100% Organic</span>
+                <div class="promo-input-group">
+                  <input type="text" placeholder="Enter code">
+                  <button>Apply</button>
                 </div>
-                <div class="fpc-trust-item">
-                  <span>↩️</span><span>Easy Returns</span>
+              </div>
+
+              <!-- Delivery Guarantee -->
+              <div class="fpc-delivery-box">
+                <div class="delivery-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="#166534" stroke="none"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                </div>
+                <div class="delivery-text">
+                  <strong>Guaranteed Delivery</strong>
+                  <span>Delivered within 7 days across India.</span>
+                </div>
+                <div class="delivery-check">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#22c55e" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
+        <!-- Trust Badges Footer -->
+        <div class="fpc-trust-footer">
+          <div class="trust-badge">
+            <div class="tb-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </div>
+            <div class="tb-text"><strong>Original & Genuine</strong><span>100% original products direct from our farm</span></div>
+          </div>
+          <div class="trust-badge">
+            <div class="tb-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            </div>
+            <div class="tb-text"><strong>Farmer First</strong><span>Supporting farmers and sustainable agriculture</span></div>
+          </div>
+          <div class="trust-badge">
+            <div class="tb-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><path d="M2 12h10M12 2v10m0 0l-3-3m3 3l3-3m-3 3l-3 3m3-3l3 3M22 12A10 10 0 1 1 12 2"></path></svg>
+            </div>
+            <div class="tb-text"><strong>Easy Returns</strong><span>Hassle-free returns within 7 days</span></div>
+          </div>
+          <div class="trust-badge">
+            <div class="tb-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            </div>
+            <div class="tb-text"><strong>Customer Support</strong><span>We're here to help you 7 days a week</span></div>
+          </div>
+        </div>
       </div>
     </div>
 

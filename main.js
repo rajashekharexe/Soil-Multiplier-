@@ -704,16 +704,23 @@ function renderCart() {
     const itemHtml = `
       <div class="fpc-item">
         <div class="fpc-item-img">
-          <img src="${item.image || '/kad-multiplier-cropped.png'}" alt="KAD Multiplier" style="width: 100%; height: 100%; object-fit: contain; padding: 6px;" />
+          <img src="${item.image || '/kad-multiplier-cropped.png'}" alt="KAD Multiplier" />
         </div>
         <div class="fpc-item-details">
-          <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
-            <span style="background:#f0fdf4; color:#166534; font-size:0.68rem; font-weight:700; padding:2px 7px; border-radius:4px; border:1px solid #bbf7d0; letter-spacing:0.04em;">🌱 ORGANIC</span>
-            <span style="background:#f1f5f9; color:#64748b; font-size:0.68rem; font-weight:700; padding:2px 7px; border-radius:4px; letter-spacing:0.04em;">${item.weight}kg</span>
+          <div class="fpc-item-tags">
+            <span class="fpc-tag-organic">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#166534" stroke="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              ORGANIC
+            </span>
+            <span class="fpc-tag-weight">${item.weight}kg</span>
           </div>
           <h4>KAD Multiplier</h4>
-          <p>${item.title} ${item.sub}</p>
-          <div class="fpc-item-price">₹ ${formatCurrency(itemTotal)} <span style="font-size:0.75rem; font-weight:500; color:#94a3b8;">/ ₹${formatCurrency(item.price)} each</span></div>
+          <p>${item.title} Category: Fertilizer</p>
+          <div class="fpc-price-block">
+            <span class="current-price">₹${formatCurrency(itemTotal)}</span>
+            <span class="old-price">₹${formatCurrency(Math.round(itemTotal * 1.09))}</span>
+            <span class="discount-badge">8% OFF</span>
+          </div>
         </div>
         <div class="fpc-item-actions">
           <div class="fpc-qty-selector">
@@ -722,9 +729,11 @@ function renderCart() {
             <button class="cart-plus" data-index="${index}">+</button>
           </div>
           <button class="fpc-delete-btn cart-remove" data-index="${index}" title="Remove item">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
             </svg>
           </button>
         </div>
@@ -750,7 +759,7 @@ function renderCart() {
     }
   }
 
-  const checkoutBtn = document.querySelector('.fpc-checkout-btn');
+  const checkoutBtn = document.querySelector('.fpc-checkout-btn-main');
   if (checkoutBtn) {
     if (cart.length === 0) {
       checkoutBtn.style.pointerEvents = 'none';
@@ -758,6 +767,7 @@ function renderCart() {
     } else {
       checkoutBtn.style.pointerEvents = 'auto';
       checkoutBtn.style.opacity = '1';
+      checkoutBtn.onclick = () => window.location.href = 'checkout.html';
     }
   }
   

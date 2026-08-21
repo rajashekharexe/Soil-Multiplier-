@@ -676,11 +676,11 @@ function renderCart() {
   
   if (cart.length === 0) {
     cartItemsContainer.innerHTML = `
-      <div style="padding: 3rem 1.5rem; text-align: center; color: #64748b;">
-        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🛒</div>
-        <h4 style="font-size: 1.15rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">Your cart is empty</h4>
-        <p style="font-size: 0.9rem; margin-bottom: 1.25rem;">Looks like you haven't added KAD Multiplier to your cart yet.</p>
-        <button id="cart-empty-shop-btn" style="background: #16a34a; color: white; border: none; padding: 0.6rem 1.4rem; border-radius: 50px; font-weight: 600; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25); transition: all 0.2s ease;">Explore Packages &rarr;</button>
+      <div class="fpc-empty-state">
+        <div class="fpc-empty-icon">🛒</div>
+        <h4>Your shopping cart is empty</h4>
+        <p>Looks like you haven't added KAD Multiplier to your cart yet.</p>
+        <button id="cart-empty-shop-btn" class="fpc-empty-shop-btn">Explore Packages &rarr;</button>
       </div>
     `;
     const shopBtn = document.getElementById('cart-empty-shop-btn');
@@ -697,39 +697,44 @@ function renderCart() {
   
   cart.forEach((item, index) => {
     const itemTotal = item.price * item.qty;
+    const itemOrigTotal = Math.round(itemTotal * 1.09); // Original before discount
+    const weightLabel = item.weight || (item.title ? (item.title.match(/\d+kg/i) ? item.title.match(/\d+kg/i)[0] : '1kg') : '1kg');
     subtotal += itemTotal;
-    totalWeight += (item.weight * item.qty);
+    totalWeight += ((item.weight || 1) * item.qty);
     totalItemsCount += item.qty;
     
     const itemHtml = `
-      <div class="fpc-item">
-        <div class="fpc-item-img">
+      <div class="fpc-item-card">
+        <div class="fpc-item-img-box">
           <img src="${item.image || '/kad-multiplier-cropped.png'}" alt="KAD Multiplier" />
         </div>
-        <div class="fpc-item-details">
-          <div class="fpc-item-tags">
-            <span class="fpc-tag-organic">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="#166534" stroke="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        <div class="fpc-item-body">
+          <div class="fpc-item-badges">
+            <span class="fpc-badge-organic">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+                <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+              </svg>
               ORGANIC
             </span>
-            <span class="fpc-tag-weight">${item.weight}kg</span>
+            <span class="fpc-badge-weight">${weightLabel}</span>
           </div>
-          <h4>KAD Multiplier</h4>
-          <p>${item.title} Category: Fertilizer</p>
-          <div class="fpc-price-block">
-            <span class="current-price">₹${formatCurrency(itemTotal)}</span>
-            <span class="old-price">₹${formatCurrency(Math.round(itemTotal * 1.09))}</span>
-            <span class="discount-badge">8% OFF</span>
+          <h3 class="fpc-item-name">KAD Multiplier</h3>
+          <p class="fpc-item-subtitle">${weightLabel} Category: Fertilizer</p>
+          <div class="fpc-item-pricing">
+            <span class="fpc-price-now">₹${formatCurrency(itemTotal)}</span>
+            <span class="fpc-price-was">₹${formatCurrency(itemOrigTotal)}</span>
+            <span class="fpc-discount-pill">8% OFF</span>
           </div>
         </div>
-        <div class="fpc-item-actions">
-          <div class="fpc-qty-selector">
-            <button class="cart-minus" data-index="${index}">−</button>
-            <span>${item.qty}</span>
-            <button class="cart-plus" data-index="${index}">+</button>
+        <div class="fpc-item-actions-box">
+          <div class="fpc-qty-pill">
+            <button class="cart-minus" data-index="${index}" aria-label="Decrease quantity">−</button>
+            <span class="fpc-qty-count">${item.qty}</span>
+            <button class="cart-plus" data-index="${index}" aria-label="Increase quantity">+</button>
           </div>
-          <button class="fpc-delete-btn cart-remove" data-index="${index}" title="Remove item">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="fpc-trash-btn cart-remove" data-index="${index}" title="Remove item" aria-label="Remove item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
               <line x1="10" y1="11" x2="10" y2="17"></line>
@@ -742,12 +747,12 @@ function renderCart() {
     cartItemsContainer.insertAdjacentHTML('beforeend', itemHtml);
   });
   
-  const shipping = totalWeight > 0 ? Math.ceil(totalWeight / 5) * 100 : 0;
-  const grandTotal = subtotal + shipping;
+  const deliveryFee = subtotal > 0 ? 100 : 0;
+  const grandTotal = subtotal + deliveryFee;
   
-  cartSubtotalEl.innerHTML = '\u20B9 ' + formatCurrency(subtotal);
-  cartShippingEl.innerHTML = shipping > 0 ? '\u20B9 ' + formatCurrency(shipping) : 'Free';
-  cartTotalEl.innerHTML = '\u20B9 ' + formatCurrency(grandTotal);
+  if (cartSubtotalEl) cartSubtotalEl.innerHTML = '₹' + formatCurrency(subtotal);
+  if (cartShippingEl) cartShippingEl.innerHTML = '₹' + formatCurrency(deliveryFee);
+  if (cartTotalEl) cartTotalEl.innerHTML = '₹' + formatCurrency(grandTotal);
 
   const cartBadge = document.getElementById('cart-badge');
   if (cartBadge) {
@@ -759,17 +764,16 @@ function renderCart() {
     }
   }
 
-  const checkoutBtn = document.querySelector('.fpc-checkout-btn-main');
-  if (checkoutBtn) {
+  const checkoutBtns = document.querySelectorAll('.fpc-checkout-action-btn, .fpc-checkout-btn');
+  checkoutBtns.forEach(btn => {
     if (cart.length === 0) {
-      checkoutBtn.style.pointerEvents = 'none';
-      checkoutBtn.style.opacity = '0.5';
+      btn.style.pointerEvents = 'none';
+      btn.style.opacity = '0.5';
     } else {
-      checkoutBtn.style.pointerEvents = 'auto';
-      checkoutBtn.style.opacity = '1';
-      checkoutBtn.onclick = () => window.location.href = 'checkout.html';
+      btn.style.pointerEvents = 'auto';
+      btn.style.opacity = '1';
     }
-  }
+  });
   
   const navCartBtns = document.querySelectorAll('.nav-video-cart');
   if (totalItemsCount > 0) {
@@ -813,6 +817,31 @@ function renderCart() {
 if (cartItemsContainer) {
   renderCart();
 }
+
+// Promo code application handler
+const promoApplyBtn = document.getElementById('cart-promo-apply-btn');
+if (promoApplyBtn) {
+  promoApplyBtn.addEventListener('click', () => {
+    const promoInput = document.getElementById('cart-promo-input');
+    const code = promoInput ? promoInput.value.trim().toUpperCase() : '';
+    if (!code) {
+      if (typeof showToast === 'function') {
+        showToast('Please enter a promo code', 'warning');
+      }
+      return;
+    }
+    if (code === 'KAD10' || code === 'FARMER' || code === 'ORGANIC') {
+      if (typeof showToast === 'function') {
+        showToast(`Promo code "${code}" applied! 10% discount added.`, 'success');
+      }
+    } else {
+      if (typeof showToast === 'function') {
+        showToast(`Invalid promo code "${code}". Try code: KAD10`, 'warning');
+      }
+    }
+  });
+}
+
 
 // --- Navbar Color State removed (Handled flawlessly by CSS mix-blend-mode: difference) ---
 

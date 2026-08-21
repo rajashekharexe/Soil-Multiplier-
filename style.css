@@ -1137,7 +1137,15 @@ body.lang-scientific .text-simple { display: none; }
   margin-bottom: 2rem;
 }
 
-/* Removed old animated-cart-btn */
+/* Hide global floating navbar on cart modal open or on checkout page */
+body.cart-open .navbar,
+.full-page-cart.open ~ .navbar,
+.full-page-cart.open ~ * .navbar,
+.checkout-page .navbar {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
 
 /* Full Page Bubble Cart */
 .full-page-cart {
@@ -1146,10 +1154,10 @@ body.lang-scientific .text-simple { display: none; }
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #f8f9fa; /* Very light, clean gray */
-  z-index: 200;
+  background: #f8fafc; /* Clean, modern light slate */
+  z-index: 10000; /* Higher than navbar */
   overflow-y: auto;
-  color: #1a1a1a;
+  color: #0f172a;
   
   /* Hidden by default with clip-path for bubble expanding effect */
   clip-path: circle(0% at 50% 50%); /* Will be overridden by JS */
@@ -1163,9 +1171,9 @@ body.lang-scientific .text-simple { display: none; }
 }
 
 .fpc-inner {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem 5%;
+  padding: 2rem 1.5rem 4rem 1.5rem;
   font-family: var(--font-sans);
 }
 
@@ -1174,24 +1182,7 @@ body.lang-scientific .text-simple { display: none; }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4rem;
-}
-
-.close-fpc-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: transparent;
-  border: none;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  color: #555;
-  transition: color 0.3s;
-}
-
-.close-fpc-btn:hover {
-  color: var(--color-primary);
+  margin-bottom: 2.5rem;
 }
 
 .fpc-stepper {
@@ -1204,55 +1195,62 @@ body.lang-scientific .text-simple { display: none; }
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #a0a0a0;
+  color: #94a3b8;
   font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .step.active {
-  color: #1a1a1a;
+  color: #0f172a;
+  font-weight: 700;
 }
 
 .step-num {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  background: #e0e0e0;
+  width: 26px;
+  height: 26px;
+  background: #e2e8f0;
   border-radius: 50%;
   font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .step.active .step-num {
-  background: #1a1a1a;
+  background: #16a34a;
   color: white;
 }
 
 .step-line {
-  width: 50px;
+  width: 40px;
   height: 2px;
-  background: #e0e0e0;
+  background: #e2e8f0;
 }
 
 /* Content Layout */
 .fpc-title {
-  font-family: var(--font-display);
-  font-size: 3rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.5rem;
   text-align: center;
-  margin-bottom: 3rem;
-  font-weight: 600;
+  margin-bottom: 2.5rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .fpc-content {
   display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 3rem;
+  grid-template-columns: 1fr 380px;
+  gap: 2rem;
+  align-items: start;
 }
 
 /* Items Section */
 .fpc-items-header h3 {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  font-family: 'Outfit', sans-serif;
+  margin-bottom: 1rem;
+  color: #0f172a;
 }
 
 .fpc-items-list {
@@ -2258,53 +2256,51 @@ body.has-scroll-cursor #scroll-cursor {
   transform: scaleX(1);
 }
 
-/* Animated Go Back Button (Translated from Tailwind) */
+/* Sleek Modern Go Back Button */
 .go-back-btn {
-  background-color: white;
-  text-align: center;
-  width: 192px; /* w-48 */
-  border-radius: 16px; /* rounded-2xl */
-  height: 56px; /* h-14 */
-  position: relative;
-  color: black;
-  font-size: 1.25rem; /* text-xl */
-  font-weight: 600; /* font-semibold */
-  border: none;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 50px;
+  height: 42px;
+  padding: 0 1.25rem 0 0.85rem;
+  color: #0f172a;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 0;
-  overflow: hidden;
+  gap: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   font-family: inherit;
   outline: none;
 }
 
+.go-back-btn:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateX(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
 .go-back-icon-container {
-  background-color: #4ade80; /* bg-green-400 */
-  border-radius: 12px; /* rounded-xl */
-  height: 48px; /* h-12 */
-  width: 48px; /* fixed 48px instead of 25% for better precision */
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #f1f5f9;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  padding-left: 11.5px; /* centers the 25px SVG inside the 48px box */
-  position: absolute;
-  left: 4px;
-  top: 4px;
-  z-index: 10;
-  transition: width 0.5s cubic-bezier(0.86, 0, 0.07, 1);
+  justify-content: center;
+  transition: background-color 0.2s ease;
 }
 
 .go-back-btn:hover .go-back-icon-container {
-  width: calc(100% - 8px); /* w-[184px] max on hover */
+  background-color: #e2e8f0;
 }
 
 .go-back-text {
-  transform: translateX(8px); /* translate-x-2 */
   margin: 0;
-  position: relative;
-  z-index: 11;
+  font-weight: 600;
 }
 
 /* --- Premium UX: Toast Notification --- */

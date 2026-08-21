@@ -893,15 +893,20 @@
             </div>
           </div>
 
+          <!-- Right: Summary Section -->
+          <div class="fpc-summary-section">
+            <div class="fpc-summary-card">
+              <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.3rem; color: #0f172a; margin-bottom: 1.25rem;">Order Summary</h3>
+
               <!-- Delivery Guarantee Note -->
-              <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.88rem; color: #166534; display: flex; align-items: center; gap: 8px;">
+              <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 1.5rem; font-size: 0.88rem; color: #166534; display: flex; align-items: center; gap: 8px;">
                 <span>🚚</span>
                 <span><strong>Guaranteed Delivery:</strong> Dispatched immediately & delivered within 7 days across India.</span>
               </div>
 
               <div class="fpc-summary-row">
                 <span>Subtotal</span>
-                <span id="cart-subtotal">₹ 0</span>
+                <span id="cart-subtotal" style="font-weight: 600; color: #0f172a;">₹ 0</span>
               </div>
               <div class="fpc-summary-row highlight-red" style="display: none;">
                 <span>Discount</span>
@@ -909,17 +914,17 @@
               </div>
               <div class="fpc-summary-row">
                 <span>Delivery Fee</span>
-                <span id="cart-shipping">₹ 0</span>
+                <span id="cart-shipping" style="color: #16a34a; font-weight: 600;">Free</span>
               </div>
               
-              <div class="fpc-divider"></div>
+              <div class="fpc-divider" style="height: 1px; background: #e2e8f0; margin: 1.25rem 0;"></div>
               
-              <div class="fpc-summary-total">
+              <div class="fpc-summary-total" style="display: flex; justify-content: space-between; align-items: center; font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 1.5rem;">
                 <span>Total</span>
-                <span id="cart-total">₹ 0</span>
+                <span id="cart-total" style="color: #16a34a;">₹ 0</span>
               </div>
               
-              <a href="checkout.html" class="fpc-checkout-btn" style="text-decoration: none;">Go to Checkout <span class="checkout-arrow">&rarr;</span></a>
+              <a href="checkout.html" class="fpc-checkout-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center; width: 100%; padding: 1rem 1.5rem; background: #16a34a; color: white; border-radius: 50px; font-weight: 700; font-size: 1rem; box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35); transition: all 0.2s ease;">Go to Checkout <span class="checkout-arrow" style="margin-left: 8px;">&rarr;</span></a>
             </div>
           </div>
         </div>

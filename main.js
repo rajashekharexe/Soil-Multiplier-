@@ -240,12 +240,13 @@ let lastCartOriginY = window.innerHeight / 2;
 
 function openFullPageCart(buttonElement) {
   // Get button coordinates for the bubble origin
-  const rect = buttonElement.getBoundingClientRect();
+  const rect = buttonElement ? buttonElement.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0, height: 0 };
   lastCartOriginX = rect.left + rect.width / 2;
   lastCartOriginY = rect.top + rect.height / 2;
   
   fpc.classList.add('open');
-  lenis.stop(); // Prevent background scrolling
+  document.body.classList.add('cart-open');
+  if (typeof lenis !== 'undefined' && lenis) lenis.stop(); // Prevent background scrolling
   
   // Animate the bubble expanding from the clicked button
   gsap.fromTo(fpc, 
@@ -268,7 +269,8 @@ function closeFullPageCart() {
     ease: 'power3.inOut',
     onComplete: () => {
       fpc.classList.remove('open');
-      lenis.start(); // Resume scrolling
+      document.body.classList.remove('cart-open');
+      if (typeof lenis !== 'undefined' && lenis) lenis.start(); // Resume scrolling
     }
   });
 }
@@ -673,7 +675,24 @@ function renderCart() {
   let totalItemsCount = 0;
   
   if (cart.length === 0) {
-    cartItemsContainer.innerHTML = '<p style="padding: 2rem; color: #666;">Your cart is empty.</p>';
+    cartItemsContainer.innerHTML = `
+      <div style="padding: 3rem 1.5rem; text-align: center; color: #64748b;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🛒</div>
+        <h4 style="font-size: 1.15rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem;">Your cart is empty</h4>
+        <p style="font-size: 0.9rem; margin-bottom: 1.25rem;">Looks like you haven't added KAD Multiplier to your cart yet.</p>
+        <button id="cart-empty-shop-btn" style="background: #16a34a; color: white; border: none; padding: 0.6rem 1.4rem; border-radius: 50px; font-weight: 600; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25); transition: all 0.2s ease;">Explore Packages &rarr;</button>
+      </div>
+    `;
+    const shopBtn = document.getElementById('cart-empty-shop-btn');
+    if (shopBtn) {
+      shopBtn.addEventListener('click', () => {
+        closeFullPageCart();
+        const purchaseSection = document.getElementById('purchase') || document.getElementById('specs');
+        if (purchaseSection && typeof lenis !== 'undefined' && lenis) {
+          lenis.scrollTo(purchaseSection, { offset: -80, duration: 1.2 });
+        }
+      });
+    }
   }
   
   cart.forEach((item, index) => {
